@@ -1,13 +1,13 @@
 job :compile do
-  execute "avsim -u hk/eth --compile"
+  execute "echo avsim -u hk/eth --compile"
 end
 
 job :run_basic, :compile do
-  execute "avsim --unit hk/eth --run --test eth_basic_test"
+  execute "echo avsim --unit hk/eth --run --test eth_basic_test"
 end
 
 job :run_random, :compile do
-  execute "avsim --unit hk/eth --run --test eth_random_test"
+  execute "echo avsim --unit hk/eth --run --test eth_random_test"
   repeat 10
 end
 

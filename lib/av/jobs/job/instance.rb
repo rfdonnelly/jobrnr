@@ -7,6 +7,7 @@ module AV
         attr_reader :command
         attr_reader :iteration
         attr_reader :log
+        attr_reader :state
 
         def initialize(job:, slot:, log:)
           @job = job
@@ -15,6 +16,7 @@ module AV
           @command = job.evaluate_command
           @iteration = job.state.num_scheduled
           @status = nil
+          @state = :pending
 
           @start_time = Time.new
           @end_time = Time.new
@@ -25,7 +27,11 @@ module AV
         def execute
           @start_time = Time.now
 
-          @status = system("echo #{@command} > #{log}")
+          @state = :dispatched
+
+          @status = system("#{@command} > #{log}")
+
+          @state = :finished
 
           @end_time = Time.now
 

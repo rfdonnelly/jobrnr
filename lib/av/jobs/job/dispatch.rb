@@ -52,9 +52,8 @@ module AV
             # process completed job instances
             completed_instances = completed_futures.map { |future| future.value }
             completed_instances.each do |job_instance|
+              message(job_instance)
               # TODO post process job instance here
-              
-              message('Finsihed:', job_instance)
 
               # find new jobs to be queued
               if job_instance.job.state.finished?
@@ -83,6 +82,8 @@ module AV
                 log: File.join(output_directory, "regr%02d" % slot)
               )
               job_queue.shift if job_instance.job.state.scheduled?
+
+              message(job_instance)
               future = Concurrent::Future.execute { job_instance.execute }
 
               # IMPORTANT: Need to yield to thread scheduler so that we context
@@ -93,8 +94,6 @@ module AV
               # instances in array, and create futures for them all at once?
               sleep 0.001
 
-              message('Running:', job_instance)
-
               futures.push(future)
             end
 
@@ -102,9 +101,11 @@ module AV
           end
         end
 
-        def message(prefix, job_instance)
+        def message(job_instance)
+
           s = []
-          s << prefix
+          s << "Running:" if job_instance.state == :pending
+          s << (job_instance.success? ? "PASSED:" : "FAILED:") if job_instance.state == :finished
           s << "'#{job_instance}'"
           s << File.basename(job_instance.log)
           s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
