@@ -3,13 +3,16 @@ module AV
     module Job
       class Dispatch
         require 'concurrent'
+        require 'fileutils'
 
         TIME_SLICE_INTERVAL = 1
 
+        attr_reader :output_directory
         attr_reader :graph
         attr_reader :slots
 
-        def initialize(graph, slots)
+        def initialize(output_directory:, graph:, slots:)
+          @output_directory = output_directory
           @graph = graph
           @slots = slots
         end
@@ -35,6 +38,8 @@ module AV
           past_futures = []
           slots_available = slots
           job_queue = graph.roots
+
+          FileUtils.mkdir_p(output_directory)
 
           while !done?(job_queue, futures)
             completed_futures = futures.select { |f| f.fulfilled? }
@@ -67,7 +72,7 @@ module AV
             # launch new job instances
             while job_queue.size > 0 && slots_available > 0
               slots_available -= 1
-              job_instance = AV::Jobs::Job::Instance.new(job_queue.first, '/dev/null')
+              job_instance = AV::Jobs::Job::Instance.new(job_queue.first, File.join(output_directory, "regr#{rand(100)}"))
               job_queue.shift if job_instance.job.state.scheduled?
               future = Concurrent::Future.execute { job_instance.execute }
 

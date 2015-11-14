@@ -2,12 +2,10 @@ module AV
   module Jobs
     module DSL
       class Commands
-        def prefix_id(prefix, id)
-          if prefix.length > 0
-            "#{prefix}_#{id}".to_sym
-          else
-            id
-          end
+        attr_reader :options
+
+        def initialize
+          @options = Struct.new(:directory).new
         end
 
         def job(id, predecessor_ids = nil, &block)
@@ -25,6 +23,14 @@ module AV
 
         def import(prefix, jobs, filename)
           AV::Jobs::DSL::Loader.evaluate(prefix, jobs, filename)
+        end
+
+        def prefix_id(prefix, id)
+          if prefix.length > 0
+            "#{prefix}_#{id}".to_sym
+          else
+            id
+          end
         end
       end
     end

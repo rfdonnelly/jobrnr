@@ -10,11 +10,15 @@ module AV
       end
 
       def run
-        AV::Jobs::DSL::Loader.evaluate(nil, nil, argv[0])
+        user_script = AV::Jobs::DSL::Loader.evaluate(nil, nil, argv[0])
 
         AV::Log.debug AV::Jobs::Graph.to_dot
 
-        AV::Jobs::Job::Dispatch.new(AV::Jobs::Graph, JOB_SLOTS).run
+        AV::Jobs::Job::Dispatch.new(
+          output_directory: user_script.options.directory,
+          graph: AV::Jobs::Graph,
+          slots: JOB_SLOTS
+        ).run
       end
     end
   end

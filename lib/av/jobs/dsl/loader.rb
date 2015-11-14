@@ -10,9 +10,11 @@ module AV
           @@imports.push(@@import) if @@import
           @@prefixes.push(prefix) if prefix
           @@import = {filename: filename, prefix: prefix, valid_jobs: valid_jobs}
-          AV::Jobs::Script.new.from_file(filename, AV::Jobs::DSL::Commands)
+          script_obj = AV::Jobs::Script.new.from_file(filename, AV::Jobs::DSL::Commands)
           @@import = @@imports.pop if @@imports.length > 0
           @@prefixes.pop
+
+          script_obj
         end
 
         def self.valid_jobs

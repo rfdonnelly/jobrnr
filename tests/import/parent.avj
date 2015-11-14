@@ -13,4 +13,6 @@ job :run_random, :compile do
   repeat 10
 end
 
+options.directory = File.join(File.dirname(__FILE__), "output")
+
 # vim: ft=ruby
