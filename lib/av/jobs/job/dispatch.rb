@@ -14,12 +14,20 @@ module AV
           @slots = slots
         end
 
-        def dependencies_met?(job)
+        def dependencies_resolved?(job)
           job.predecessors.all? { |predecessor| predecessor.state.finished? }
         end
 
         def done?(job_queue, futures)
           job_queue.size == 0 && futures.size == 0
+        end
+
+        def nothing_todo?(completed_futures, job_queue, slots_available)
+          completed_futures.size == 0 && (job_queue.size == 0 || slots_available == 0)
+        end
+
+        def ready_to_queue(successors)
+          successors.select { |successor| !successor.state.queued? && dependencies_resolved?(successor) }
         end
 
         def run
@@ -31,31 +39,24 @@ module AV
           while !done?(job_queue, futures)
             completed_futures = futures.select { |f| f.fulfilled? }
 
-            if completed_futures.size == 0 && (job_queue.size == 0 || slots_available == 0)
-              # nothing to do in this interval, skip
+            if nothing_todo?(completed_futures, job_queue, slots_available)
+              # skip this interval
               sleep TIME_SLICE_INTERVAL
               next
             end
 
             # process completed job instances
-            completed_futures.each do |future|
-              job_instance = future.value
-
+            completed_instances = completed_futures.map { |future| future.value }
+            completed_instances.each do |job_instance|
               # TODO post process job instance here
               
-              message = []
-              message << "Finished: '#{job_instance}'"
-              message << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-              message << "in %#.2fs" % job_instance.duration
-              AV::Log.info message.join(" ")
+              message('Finsihed:', job_instance)
 
               # find new jobs to be queued
               if job_instance.job.state.finished?
-                job_instance.job.successors.each do |successor|
-                  if !successor.state.queued? && dependencies_met?(successor)
+                ready_to_queue(job_instance.job.successors).each do |successor|
                     successor.state.queue
                     job_queue.push(successor)
-                  end
                 end
               end
             end
@@ -78,16 +79,22 @@ module AV
               # instances in array, and create futures for them all at once?
               sleep 0.001
 
-              message = []
-              message << "Running: '#{job_instance}'"
-              message << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-              AV::Log.info message.join(" ")
+              message('Running:', job_instance)
 
               futures.push(future)
             end
 
             sleep TIME_SLICE_INTERVAL
           end
+        end
+
+        def message(prefix, job_instance)
+          s = []
+          s << prefix
+          s << "'#{job_instance}'"
+          s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
+          s << "in %#.2fs" % job_instance.duration if job_instance.duration > 0
+          AV::Log.info s.join(" ")
         end
       end
     end

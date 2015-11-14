@@ -11,6 +11,9 @@ module AV
           @command = job.evaluate_command
           @iteration = job.state.num_scheduled
 
+          @start_time = Time.new
+          @end_time = Time.new
+
           job.state.schedule
         end
 
