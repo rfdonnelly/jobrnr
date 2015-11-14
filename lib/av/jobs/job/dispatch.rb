@@ -67,7 +67,7 @@ module AV
             # launch new job instances
             while job_queue.size > 0 && slots_available > 0
               slots_available -= 1
-              job_instance = AV::Jobs::Job::Instance.new(job_queue.first)
+              job_instance = AV::Jobs::Job::Instance.new(job_queue.first, '/dev/null')
               job_queue.shift if job_instance.job.state.scheduled?
               future = Concurrent::Future.execute { job_instance.execute }
 

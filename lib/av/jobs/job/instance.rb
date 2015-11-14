@@ -5,9 +5,11 @@ module AV
         attr_reader :job
         attr_reader :command
         attr_reader :iteration
+        attr_reader :log
 
-        def initialize(job)
+        def initialize(job, log)
           @job = job
+          @log = log
           @command = job.evaluate_command
           @iteration = job.state.num_scheduled
 
@@ -20,8 +22,7 @@ module AV
         def execute
           @start_time = Time.now
 
-          # FIXME redirect to log
-          system("echo #{@command} > /dev/null")
+          system("echo #{@command} > #{log}")
 
           @end_time = Time.now
 
