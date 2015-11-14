@@ -4,6 +4,7 @@ module AV
       class Dispatch
         require 'concurrent'
         require 'fileutils'
+        require 'pastel'
 
         TIME_SLICE_INTERVAL = 1
 
@@ -102,10 +103,11 @@ module AV
         end
 
         def message(job_instance)
+          pastel = Pastel.new
 
           s = []
           s << "Running:" if job_instance.state == :pending
-          s << (job_instance.success? ? "PASSED:" : "FAILED:") if job_instance.state == :finished
+          s << (job_instance.success? ? pastel.green("PASSED:") : pastel.red("FAILED:")) if job_instance.state == :finished
           s << "'#{job_instance}'"
           s << File.basename(job_instance.log)
           s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
