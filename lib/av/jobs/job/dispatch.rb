@@ -9,12 +9,12 @@ module AV
 
         attr_reader :output_directory
         attr_reader :graph
-        attr_reader :slots
+        attr_reader :num_slots
 
-        def initialize(output_directory:, graph:, slots:)
+        def initialize(output_directory:, graph:, num_slots:)
           @output_directory = output_directory
           @graph = graph
-          @slots = slots
+          @num_slots = num_slots
         end
 
         def dependencies_resolved?(job)
@@ -25,8 +25,8 @@ module AV
           job_queue.size == 0 && futures.size == 0
         end
 
-        def nothing_todo?(completed_futures, job_queue, slots_available)
-          completed_futures.size == 0 && (job_queue.size == 0 || slots_available == 0)
+        def nothing_todo?(completed_futures, job_queue, slots)
+          completed_futures.size == 0 && (job_queue.size == 0 || slots.size == 0)
         end
 
         def ready_to_queue(successors)
@@ -36,7 +36,7 @@ module AV
         def run
           futures = []
           past_futures = []
-          slots_available = slots
+          slots = *(0..(num_slots - 1))
           job_queue = graph.roots
 
           FileUtils.mkdir_p(output_directory)
@@ -44,7 +44,7 @@ module AV
           while !done?(job_queue, futures)
             completed_futures = futures.select { |f| f.fulfilled? }
 
-            if nothing_todo?(completed_futures, job_queue, slots_available)
+            if nothing_todo?(completed_futures, job_queue, slots)
               # skip this interval
               sleep TIME_SLICE_INTERVAL
               next
@@ -66,13 +66,17 @@ module AV
               end
             end
 
-            slots_available += completed_futures.size
+            slots.concat(completed_instances.map { |job_instance| job_instance.slot })
             futures = futures.reject { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
             # launch new job instances
-            while job_queue.size > 0 && slots_available > 0
-              slots_available -= 1
-              job_instance = AV::Jobs::Job::Instance.new(job_queue.first, File.join(output_directory, "regr#{rand(100)}"))
+            while job_queue.size > 0 && slots.size > 0
+              slot = slots.pop
+              job_instance = AV::Jobs::Job::Instance.new(
+                job: job_queue.first,
+                slot: slot,
+                log: File.join(output_directory, "regr%02d" % slot)
+              )
               job_queue.shift if job_instance.job.state.scheduled?
               future = Concurrent::Future.execute { job_instance.execute }
 

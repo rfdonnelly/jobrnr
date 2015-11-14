@@ -3,15 +3,18 @@ module AV
     module Job
       class Instance
         attr_reader :job
+        attr_reader :slot
         attr_reader :command
         attr_reader :iteration
         attr_reader :log
 
-        def initialize(job, log)
+        def initialize(job:, slot:, log:)
           @job = job
+          @slot = slot
           @log = log
           @command = job.evaluate_command
           @iteration = job.state.num_scheduled
+          @status = nil
 
           @start_time = Time.new
           @end_time = Time.new
@@ -22,7 +25,7 @@ module AV
         def execute
           @start_time = Time.now
 
-          system("echo #{@command} > #{log}")
+          @status = system("echo #{@command} > #{log}")
 
           @end_time = Time.now
 
@@ -33,6 +36,10 @@ module AV
 
         def duration
           @end_time - @start_time
+        end
+
+        def success?
+          @status
         end
 
         def to_s

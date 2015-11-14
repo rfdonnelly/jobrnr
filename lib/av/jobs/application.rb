@@ -17,7 +17,7 @@ module AV
         AV::Jobs::Job::Dispatch.new(
           output_directory: user_script.options.directory,
           graph: AV::Jobs::Graph,
-          slots: JOB_SLOTS
+          num_slots: JOB_SLOTS
         ).run
       end
     end
