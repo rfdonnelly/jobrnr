@@ -8,6 +8,7 @@ require_relative 'jobs/job/definition'
 require_relative 'jobs/job/instance'
 require_relative 'jobs/job/dispatch'
 require_relative 'jobs/job/state'
+require_relative 'jobs/job/slots'
 
 require_relative 'log'
 require_relative 'error'

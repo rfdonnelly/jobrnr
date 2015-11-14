@@ -9,12 +9,12 @@ module AV
 
         attr_reader :output_directory
         attr_reader :graph
-        attr_reader :num_slots
+        attr_reader :slots
 
         def initialize(output_directory:, graph:, num_slots:)
           @output_directory = output_directory
           @graph = graph
-          @num_slots = num_slots
+          @slots = AV::Jobs::Job::Slots.new(num_slots)
         end
 
         def dependencies_resolved?(job)
@@ -36,7 +36,6 @@ module AV
         def run
           futures = []
           past_futures = []
-          slots = *(0..(num_slots - 1))
           job_queue = graph.roots
 
           FileUtils.mkdir_p(output_directory)
@@ -66,12 +65,18 @@ module AV
               end
             end
 
-            slots.concat(completed_instances.map { |job_instance| job_instance.slot })
+            completed_instances.each do |job_instance|
+              if job_instance.success?
+                slots.free(job_instance.slot)
+              else
+                slots.reserve(job_instance.slot)
+              end
+            end
             futures = futures.reject { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
             # launch new job instances
-            while job_queue.size > 0 && slots.size > 0
-              slot = slots.pop
+            while job_queue.size > 0 && slots.available > 0
+              slot = slots.allocate
               job_instance = AV::Jobs::Job::Instance.new(
                 job: job_queue.first,
                 slot: slot,
@@ -101,6 +106,7 @@ module AV
           s = []
           s << prefix
           s << "'#{job_instance}'"
+          s << File.basename(job_instance.log)
           s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
           s << "in %#.2fs" % job_instance.duration if job_instance.duration > 0
           AV::Log.info s.join(" ")
