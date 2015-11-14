@@ -10,3 +10,5 @@ job :run_random, :compile do
   execute "avsim --unit hk/eth --run --test eth_random_test"
   repeat 10
 end
+
+# vim: ft=ruby

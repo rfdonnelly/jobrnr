@@ -12,3 +12,5 @@ job :run_random, :compile do
   execute "avsim --unit cvac --run --test cvac_random_test"
   repeat 10
 end
+
+# vim: ft=ruby

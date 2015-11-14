@@ -13,3 +13,4 @@ job :run_random, :compile do
   repeat 10
 end
 
+# vim: ft=ruby
