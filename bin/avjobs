@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/av/jobs'
+
+begin
+  AV::Jobs::Application.new(ARGV).run
+rescue AV::Error => e
+  AV::Log::error e
+# rescue StandardError => e
+#   AV::Log::error e
+end
