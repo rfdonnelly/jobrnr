@@ -1,17 +1,17 @@
 import 'child', [:compile, :run_basic], File.join(File.dirname(__FILE__), "child.avj")
 
-job :compile do
-  execute "echo avsim --unit cvac --compile"
+job :compile, [:child_compile] do
+  execute "echo avs --unit parent --compile"
 end
 
 job :run_basic, :compile do
-  execute "echo avsim --unit cvac --run --test cvac_basic_test --seed __SEED%d__"
+  execute "echo avs --unit parent --run --test parent_basic_test --seed __SEED%d__"
 end
 
 job :run_random, :compile do
   execute do
     pass = rand(5) == 1 ? "false" : "true"
-    "#{pass} echo avsim --unit cvac --run --test cvac_random_test --seed __SEED%x__"
+    "#{pass} echo avs --unit parent --run --test parent_random_test --seed __SEED%x__"
   end
   repeat 10
 end

@@ -1,15 +1,15 @@
 import "grandchild", [:compile], File.join(File.dirname(__FILE__), "grandchild.avj")
 
 job :compile do
-  execute "echo avsim -u hk --compile"
+  execute "echo avs --unit child --compile"
 end
 
 job :run_basic, :compile do
-  execute "echo avsim --unit hk --run --test hk_basic_test"
+  execute "echo avs --unit child --run --test child_basic_test"
 end
 
 job :run_random, :compile do
-  execute "echo avsim --unit hk --run --test hk_random_test"
+  execute "echo avs --unit child --run --test child_random_test"
   repeat 10
 end
 
