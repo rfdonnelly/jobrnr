@@ -20,11 +20,27 @@ module AV
           predecessors.each { |p| p.successors.push(self) }
         end
 
+        def generate_command
+          seed_substitution(evaluate_command)
+        end
+
         def evaluate_command
           if command.respond_to?(:call)
             command.call
           else
             eval('"' + command + '"')
+          end
+        end
+
+        def seed_substitution(s)
+          seed = Random.rand(0xffff_ffff)
+
+          substitutions = [
+            [/__SEED%x__/, "0x%08x" % seed],
+            [/__SEED%d__/, seed.to_s],
+          ]
+          substitutions.each_with_object(s) do |substitution, string|
+            string.gsub!(*substitution)
           end
         end
       end

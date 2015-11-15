@@ -13,7 +13,7 @@ module AV
           @job = job
           @slot = slot
           @log = log
-          @command = job.evaluate_command
+          @command = job.generate_command
           @iteration = job.state.num_scheduled
           @status = nil
           @state = :pending

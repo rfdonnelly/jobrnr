@@ -5,13 +5,13 @@ job :compile do
 end
 
 job :run_basic, :compile do
-  execute "echo avsim --unit cvac --run --test cvac_basic_test"
+  execute "echo avsim --unit cvac --run --test cvac_basic_test --seed __SEED%d__"
 end
 
 job :run_random, :compile do
   execute do
     pass = rand(5) == 1 ? "false" : "true"
-    "#{pass} echo avsim --unit cvac --run --test cvac_random_test"
+    "#{pass} echo avsim --unit cvac --run --test cvac_random_test --seed __SEED%x__"
   end
   repeat 10
 end
