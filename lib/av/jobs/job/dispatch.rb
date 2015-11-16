@@ -57,7 +57,7 @@ module AV
               # TODO post process job instance here
 
               # find new jobs to be queued
-              if job_instance.job.state.finished?
+              if job_instance.success? && job_instance.job.state.finished?
                 ready_to_queue(job_instance.job.successors).each do |successor|
                     successor.state.queue
                     job_queue.push(successor)
