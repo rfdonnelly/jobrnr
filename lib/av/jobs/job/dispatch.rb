@@ -59,8 +59,8 @@ module AV
               # find new jobs to be queued
               if job_instance.success? && job_instance.job.state.finished?
                 ready_to_queue(job_instance.job.successors).each do |successor|
-                    successor.state.queue
-                    job_queue.push(successor)
+                  successor.state.queue
+                  job_queue.push(successor)
                 end
               end
             end
@@ -89,8 +89,8 @@ module AV
 
               # IMPORTANT: Need to yield to thread scheduler so that we context
               # switch to the future so it can begin execution before we reassign
-              # job_inst variable.  Otherwise all futures in this tick will use
-              # same job_inst object.
+              # job_instance variable.  Otherwise all futures in this tick will use
+              # same job_instance object.
               # FIXME to make more foolproof can we remove sleep, put all job
               # instances in array, and create futures for them all at once?
               sleep 0.001
