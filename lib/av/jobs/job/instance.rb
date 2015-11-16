@@ -29,7 +29,7 @@ module AV
 
           @state = :dispatched
 
-          @status = system("#{@command} > #{log}")
+          @status = system("#{@command} > #{log} 2>&1")
 
           @state = :finished
 
