@@ -111,7 +111,7 @@ module AV
           s << "'#{job_instance}'"
           s << File.basename(job_instance.log)
           s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-          s << "in %#.2fs" % job_instance.duration if job_instance.duration > 0
+          s << "in %#.2fs" % job_instance.duration if job_instance.state == :finished
           AV::Log.info s.join(" ")
         end
       end
