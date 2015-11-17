@@ -13,7 +13,7 @@ module AV
         attr_reader :slots
 
         def initialize(output_directory:, graph:, num_slots:)
-          @output_directory = output_directory
+          @output_directory = AV::Util.expand_envars(output_directory)
           @graph = graph
           @slots = AV::Jobs::Job::Slots.new(num_slots)
         end

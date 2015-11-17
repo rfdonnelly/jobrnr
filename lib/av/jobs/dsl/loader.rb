@@ -7,6 +7,8 @@ module AV
         @@prefixes = []
 
         def self.evaluate(prefix, valid_jobs, filename)
+          filename = AV::Util.expand_envars(filename)
+
           @@imports.push(@@import) if @@import
           @@prefixes.push(prefix) if prefix
           @@import = {filename: filename, prefix: prefix, valid_jobs: valid_jobs}

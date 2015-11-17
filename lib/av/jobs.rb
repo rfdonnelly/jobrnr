@@ -12,3 +12,4 @@ require_relative 'jobs/job/slots'
 
 require_relative 'log'
 require_relative 'error'
+require_relative 'util'
