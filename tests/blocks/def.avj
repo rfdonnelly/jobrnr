@@ -1,0 +1,13 @@
+def function(arg)
+  "hello #{arg}"
+end
+
+job :run do
+  execute do
+    "echo #{function("world")}"
+  end
+end
+
+options.directory = File.join(File.dirname(__FILE__), "results")
+
+# vim: ft=ruby sw=2
