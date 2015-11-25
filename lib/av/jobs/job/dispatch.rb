@@ -11,11 +11,13 @@ module AV
         attr_reader :output_directory
         attr_reader :graph
         attr_reader :slots
+        attr_reader :stats
 
         def initialize(output_directory:, graph:, num_slots:)
           @output_directory = AV::Util.expand_envars(output_directory)
           @graph = graph
           @slots = AV::Jobs::Job::Slots.new(num_slots)
+          @stats = AV::Jobs::Stats.new(graph.roots)
         end
 
         def dependencies_resolved?(job)
@@ -54,14 +56,17 @@ module AV
             completed_instances = completed_futures.map { |future| future.value }
             completed_instances.each do |job_instance|
               message(job_instance)
+
+              stats.collect(job_instance)
+
               # TODO post process job instance here
 
               # find new jobs to be queued
               if job_instance.success? && job_instance.job.state.finished?
-                ready_to_queue(job_instance.job.successors).each do |successor|
-                  successor.state.queue
-                  job_queue.push(successor)
-                end
+                successors_to_queue = ready_to_queue(job_instance.job.successors)
+                successors_to_queue.each { |successor| successor.state.queue }
+                job_queue.push(*successors_to_queue)
+                stats.queue(successors_to_queue)
               end
             end
 
@@ -85,6 +90,7 @@ module AV
               job_queue.shift if job_instance.job.state.scheduled?
 
               message(job_instance)
+              stats.collect(job_instance)
               future = Concurrent::Future.execute { job_instance.execute }
 
               # IMPORTANT: Need to yield to thread scheduler so that we context
@@ -97,6 +103,7 @@ module AV
 
               futures.push(future)
             end
+            AV::Log.info stats.to_s
 
             sleep TIME_SLICE_INTERVAL
           end
