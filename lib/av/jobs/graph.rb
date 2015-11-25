@@ -23,7 +23,7 @@ module AV
       def self.to_dot
         lines = jobs.each_with_object([]) do |j, lines|
           if j.successors.empty? && j.predecessors.empty?
-            lines << j.id.to_s
+            lines << "#{j.id}"
           else
             j.successors.each do |s|
               lines << "#{j.id} -> #{s.id}"
