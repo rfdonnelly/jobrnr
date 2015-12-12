@@ -3,10 +3,11 @@ module JobRnr
     class Instance
       attr_reader :job
       attr_reader :slot
-      attr_reader :command
+      attr_accessor :command
       attr_reader :iteration
       attr_reader :log
       attr_reader :state
+      attr_reader :types
 
       def initialize(job:, slot:, log:)
         @job = job
@@ -16,11 +17,20 @@ module JobRnr
         @iteration = job.state.num_scheduled
         @status = nil
         @state = :pending
+        @types = get_types
 
         @start_time = Time.new
         @end_time = Time.new
 
         job.state.schedule
+      end
+
+      def pre_process
+        types.each { |type| type.pre_process(self) } if types
+      end
+
+      def post_process
+        types.each { |type| type.post_process(self) } if types
       end
 
       def execute
@@ -37,6 +47,11 @@ module JobRnr
         job.state.complete
 
         self
+      end
+
+      def get_types
+        JobRnr::Plugins.instance.job_types
+          .select { |job_type| job_type.handles?(command) }
       end
 
       def duration

@@ -13,6 +13,13 @@ module JobRnr
 
       JobRnr::Log.debug JobRnr::Graph.to_dot
 
+      # load plugins
+      if ENV.has_key?('JOBRNR_PLUGIN_PATH')
+        paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/)
+        JobRnr::Log.debug "Loading plugins from:\n#{paths.map { |path| "  #{path}" }.join("\n")}"
+        JobRnr::Plugins.instance.load(paths)
+      end
+
       JobRnr::Job::Dispatch.new(
         output_directory: user_script.options.directory,
         graph: JobRnr::Graph,
