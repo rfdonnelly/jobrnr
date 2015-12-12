@@ -1,6 +1,6 @@
-module AV
-  # All errors raised by AV code shall be AV::Error or derived
-  # from AV::Error
+module JobRnr
+  # All errors raised by JobRnr code shall be JobRnr::Error or derived
+  # from JobRnr::Error
   class Error < StandardError; end
   class OptionsError < Error; end
 end

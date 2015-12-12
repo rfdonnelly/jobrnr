@@ -3,9 +3,9 @@
 require_relative '../lib/job_rnr'
 
 begin
-  AV::Jobs::Application.new(ARGV).run
-rescue AV::Error => e
-  AV::Log::error e
+  JobRnr::Application.new(ARGV).run
+rescue JobRnr::Error => e
+  JobRnr::Log::error e
 # rescue StandardError => e
-#   AV::Log::error e
+#   JobRnr::Log::error e
 end

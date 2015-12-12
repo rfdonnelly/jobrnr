@@ -1,7 +1,7 @@
-module AV
+module JobRnr
   class Log
     def self.error(exception)
-      abort "avjobs: ERROR: #{exception.message}"
+      abort "jobrnr: ERROR: #{exception.message}"
     end
 
     def self.info(message)
@@ -9,7 +9,7 @@ module AV
     end
 
     def self.debug(message)
-      puts "avjobs: DEBUG: #{message}"
+      puts "jobrnr: DEBUG: #{message}"
     end
   end
 end
