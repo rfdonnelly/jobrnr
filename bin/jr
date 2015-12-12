@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/av/jobs'
+require_relative '../lib/job_rnr'
 
 begin
   AV::Jobs::Application.new(ARGV).run
