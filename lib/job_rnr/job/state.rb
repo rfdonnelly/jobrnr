@@ -6,11 +6,10 @@ module JobRnr
     class State
       attr_reader :num_scheduled
 
-      def initialize(job, iterations)
+      def initialize(job)
         @job = job
         @state = :pending
         @queued = false
-        @iterations = iterations
         @num_scheduled = 0
         @num_completed = 0
       end
@@ -24,12 +23,12 @@ module JobRnr
         raise JobRnr::RuntimeError.new("Cannot schedule, already scheduled.\n#{self}") if scheduled?
         @num_scheduled += 1
         @state = :scheduling
-        @state = :scheduled if @num_scheduled == @iterations
+        @state = :scheduled if @num_scheduled == @job.iterations
       end
 
       def complete
         @num_completed += 1
-        @state = :finished if @num_completed == @iterations
+        @state = :finished if @num_completed == @job.iterations
       end
 
       def queued?
