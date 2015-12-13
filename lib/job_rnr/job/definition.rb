@@ -4,17 +4,17 @@ module JobRnr
       attr_reader :id
       attr_reader :predecessors
       attr_reader :successors
-      attr_reader :command
-      attr_reader :iterations
+      attr_accessor :command
+      attr_accessor :iterations
       attr_reader :state
 
-      def initialize(id, predecessors, command, iterations)
+      def initialize(id:, predecessors:)
         @id = id
         @predecessors = predecessors
         @successors = []
-        @command = command
-        @iterations = iterations
-        @state = JobRnr::Job::State.new(self, iterations)
+        @command = nil
+        @iterations = 1
+        @state = JobRnr::Job::State.new(self)
 
         predecessors.each { |p| p.successors.push(self) }
       end
