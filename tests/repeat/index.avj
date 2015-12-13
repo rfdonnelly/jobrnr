@@ -1,0 +1,8 @@
+job :repeat do
+  execute 'sleep #{rand(5)}'
+  repeat 50
+end
+
+options.directory = File.join(File.dirname(__FILE__), "results")
+
+# vim: ft=ruby
