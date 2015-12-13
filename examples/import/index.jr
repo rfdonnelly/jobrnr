@@ -1,4 +1,4 @@
-import 'child', [:compile, :run_random], File.join(File.dirname(__FILE__), "child.avj")
+import 'child', [:compile, :run_random], File.join(File.dirname(__FILE__), "child.jr")
 
 job :compile, [:child_compile] do
   execute "false echo avs --unit parent --compile"

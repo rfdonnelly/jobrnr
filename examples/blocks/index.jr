@@ -1,0 +1,6 @@
+import 'def', [:run], File.join(File.dirname(__FILE__), 'def.jr')
+import 'lambda', [:run], File.join(File.dirname(__FILE__), 'lambda.jr')
+
+options.directory = File.join(File.dirname(__FILE__), "results")
+
+# vim: ft=ruby sw=2
