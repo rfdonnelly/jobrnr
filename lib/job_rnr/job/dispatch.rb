@@ -58,7 +58,7 @@ module JobRnr
 
             stats.collect(job_instance)
 
-            # TODO post process job instance here
+            job_instance.post_process
 
             # find new jobs to be queued
             if job_instance.success? && job_instance.job.state.finished?
@@ -88,6 +88,7 @@ module JobRnr
             )
             job_queue.shift if job_instance.job.state.scheduled?
 
+            job_instance.pre_process
             message(job_instance)
             stats.collect(job_instance)
             future = Concurrent::Future.execute { job_instance.execute }

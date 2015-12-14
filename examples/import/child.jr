@@ -1,6 +1,6 @@
 import "grandchild", [:compile], File.join(File.dirname(__FILE__), "grandchild.jr")
 
-job :compile do
+job :compile, [:grandchild_compile] do
   execute "echo avs --unit child --compile"
 end
 

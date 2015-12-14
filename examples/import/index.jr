@@ -1,7 +1,5 @@
-import 'child', [:compile, :run_random], File.join(File.dirname(__FILE__), "child.jr")
-
-job :compile, [:child_compile] do
-  execute "false echo avs --unit parent --compile"
+job :compile do
+  execute "true echo avs --unit parent --compile"
 end
 
 job :run_basic, :compile do
@@ -11,10 +9,12 @@ end
 job :run_random, :compile do
   execute do
     pass = rand(5) == 1 ? "false" : "true"
-    "#{pass} echo avs --unit parent --run --test parent_random_test --seed __SEED%x__"
+    "#{pass} echo avs --unit parent --run --test parent_random_test --seed __SEED%x__ --coverage"
   end
   repeat 10
 end
+
+import 'child', [:compile, :run_random], File.join(File.dirname(__FILE__), "child.jr")
 
 options.directory = File.join(File.dirname(__FILE__), "output")
 
