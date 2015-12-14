@@ -1,6 +1,6 @@
 require_relative 'job_rnr/application'
 require_relative 'job_rnr/dsl/commands'
-require_relative 'job_rnr/dsl/jobcommand'
+require_relative 'job_rnr/dsl/job_builder'
 require_relative 'job_rnr/dsl/loader'
 require_relative 'job_rnr/script'
 require_relative 'job_rnr/graph'
