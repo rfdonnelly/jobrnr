@@ -1,6 +1,6 @@
 # JobRnr
 
-JobRnr runs jobs.  Jobs can be dependent on other jobs.  Jobs are run in parallel when possible.  Jobs can be repeated with different random seeds.  Additionally functionality can be added via a plugin system.
+JobRnr runs jobs.  Jobs can be dependent on other jobs.  Jobs are run in parallel when possible.  Jobs can be repeated with different random seeds.  Additional functionality can be added via a plugin system.
 
 ## Example
 
