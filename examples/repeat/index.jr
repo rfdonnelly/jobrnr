@@ -1,5 +1,5 @@
 job :repeat do
-  execute 'sleep #{rand(5)}'
+  execute 'sleep #{4 + rand(5)}'
   repeat 50
 end
 
