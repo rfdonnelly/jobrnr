@@ -8,8 +8,6 @@ module JobRnr
       @@script_obj = nil
 
       def self.evaluate(prefix, valid_jobs, filename)
-        filename = JobRnr::Util.expand_envars(filename)
-
         @@imports.push(@@import) if @@import
         @@prefixes.push(prefix) if prefix
         @@import = {filename: filename, prefix: prefix, valid_jobs: valid_jobs}

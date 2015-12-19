@@ -9,7 +9,17 @@ module JobRnr
     end
 
     def run
-      user_script = JobRnr::DSL::Loader.evaluate(nil, nil, argv[0])
+      filename = argv[0]
+
+      user_script = JobRnr::DSL::Loader.evaluate(nil, nil, filename)
+
+      directory_option = JobRnr::Util.expand_envars(user_script.options.directory)
+      output_directory =
+        if directory_option[0] != '/'
+          JobRnr::Util.relative_to_file(directory_option, filename)
+        else
+          directory_option
+        end
 
       JobRnr::Log.debug JobRnr::Graph.to_dot
 
@@ -21,7 +31,7 @@ module JobRnr
       end
 
       JobRnr::Job::Dispatch.new(
-        output_directory: user_script.options.directory,
+        output_directory: output_directory,
         graph: JobRnr::Graph,
         num_slots: JOB_SLOTS
       ).run

@@ -14,8 +14,8 @@ job :run_random, :compile do
   repeat 10
 end
 
-import 'child', [:compile, :run_random], File.join(File.dirname(__FILE__), "child.jr")
+import 'child', [:compile, :run_random], "child.jr"
 
-options.directory = File.join(File.dirname(__FILE__), "output")
+options.directory = "output"
 
 # vim: ft=ruby

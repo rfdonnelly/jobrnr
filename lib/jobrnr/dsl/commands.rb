@@ -24,7 +24,17 @@ module JobRnr
       end
 
       def import(prefix, jobs, filename)
-        JobRnr::DSL::Loader.evaluate(prefix, jobs, filename)
+        expanded_filename = JobRnr::Util.expand_envars(filename)
+        importer_relative = JobRnr::Util.relative_to_file(expanded_filename, importer_filename)
+
+        load_filename =
+          if expanded_filename[0] != '/' && File.exists?(importer_relative)
+            importer_relative 
+          else
+            expanded_filename
+          end
+
+        JobRnr::DSL::Loader.evaluate(prefix, jobs, load_filename)
       end
 
       def prefix_id(prefix, id)
@@ -33,6 +43,10 @@ module JobRnr
         else
           id
         end
+      end
+
+      def importer_filename
+        caller(2)[0].split(/:/).first
       end
     end
   end
