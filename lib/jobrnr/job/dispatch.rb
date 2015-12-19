@@ -107,6 +107,8 @@ module JobRnr
 
           sleep TIME_SLICE_INTERVAL
         end
+
+        stats.failed
       end
 
       def message(job_instance)
