@@ -23,7 +23,7 @@ module JobRnr
         JobRnr::Graph.add_job(job)
       end
 
-      def import(prefix, jobs, filename)
+      def import(prefix, valid_jobs, filename)
         expanded_filename = JobRnr::Util.expand_envars(filename)
         importer_relative = JobRnr::Util.relative_to_file(expanded_filename, importer_filename)
 
@@ -34,7 +34,7 @@ module JobRnr
             expanded_filename
           end
 
-        JobRnr::DSL::Loader.evaluate(prefix, jobs, load_filename)
+        JobRnr::DSL::Loader.evaluate(prefix, valid_jobs, load_filename)
       end
 
       def prefix_id(prefix, id)
