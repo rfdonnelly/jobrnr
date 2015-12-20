@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (1.0.0)
+    docile (1.1.5)
+    equatable (0.5.0)
+    pastel (0.5.2)
+      equatable (~> 0.5)
+      tty-screen (~> 0.4)
+    tty-screen (0.4.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  concurrent-ruby
+  docile
+  pastel
+
+BUNDLED WITH
+   1.11.2
