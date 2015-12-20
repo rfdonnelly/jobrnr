@@ -17,7 +17,7 @@ module JobRnr
         @iteration = job.state.num_scheduled
         @status = nil
         @state = :pending
-        @types = get_types
+        @types = initialize_types
 
         @start_time = Time.new
         @end_time = Time.new
@@ -49,7 +49,7 @@ module JobRnr
         self
       end
 
-      def get_types
+      def initialize_types
         JobRnr::Plugins.instance.job_types
           .select { |job_type| job_type.handles?(command) }
       end

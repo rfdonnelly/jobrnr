@@ -27,7 +27,7 @@ module JobRnr
     end
 
     def queue(jobs)
-      @queued += [0, *jobs.map { |job| job.iterations }].reduce(:+)
+      @queued += [0, *jobs.map(&:iterations)].reduce(:+)
     end
 
     def completed

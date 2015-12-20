@@ -15,12 +15,12 @@ module JobRnr
       end
 
       def queue
-        raise JobRnr::RuntimeError.new("Cannot queue, already queued.\n#{self}") if queued?
+        fail JobRnr::RuntimeError, "Cannot queue, already queued.\n#{self}" if queued?
         @queued = true
       end
 
       def schedule
-        raise JobRnr::RuntimeError.new("Cannot schedule, already scheduled.\n#{self}") if scheduled?
+        fail JobRnr::RuntimeError, "Cannot schedule, already scheduled.\n#{self}" if scheduled?
         @num_scheduled += 1
         @state = :scheduling
         @state = :scheduled if @num_scheduled == @job.iterations

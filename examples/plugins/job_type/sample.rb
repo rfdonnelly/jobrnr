@@ -4,7 +4,7 @@ module JobRnr
       def self.pre_process(job_instance)
         # modify the job before it is run
         # add an option
-        if !job_instance.command.match(/\s--results-directory\b/)
+        unless job_instance.command.match(/\s--results-directory\b/)
           results_directory = File.basename(job_instance.log, '.log')
           job_instance.command << " --results-directory #{results_directory}"
         end

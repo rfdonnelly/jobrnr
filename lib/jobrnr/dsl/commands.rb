@@ -28,8 +28,8 @@ module JobRnr
         importer_relative = JobRnr::Util.relative_to_file(expanded_filename, importer_filename)
 
         load_filename =
-          if expanded_filename[0] != '/' && File.exists?(importer_relative)
-            importer_relative 
+          if expanded_filename[0] != '/' && File.exist?(importer_relative)
+            importer_relative
           else
             expanded_filename
           end

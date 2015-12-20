@@ -31,9 +31,9 @@ module JobRnr
       end
 
       [
-        "digraph DependencyGraph {",
+        'digraph DependencyGraph {',
         *lines.map { |line| "  #{line};" },
-        "}",
+        '}',
       ].join("\n")
     end
   end

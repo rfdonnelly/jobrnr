@@ -10,7 +10,7 @@ module JobRnr
       def self.evaluate(prefix, valid_jobs, filename)
         @@imports.push(@@import) if @@import
         @@prefixes.push(prefix) if prefix
-        @@import = {filename: filename, prefix: prefix, valid_jobs: valid_jobs}
+        @@import = { filename: filename, prefix: prefix, valid_jobs: valid_jobs }
         @@script_objs.push(@@script_obj) if @@script_obj
         @@script_obj = JobRnr::Script.new.from_file(filename, JobRnr::DSL::Commands)
         @@script_obj = @@script_objs.pop if @@script_objs.size > 0
@@ -33,7 +33,7 @@ module JobRnr
       end
 
       def self.prefix
-        @@prefixes.join("_")
+        @@prefixes.join('_')
       end
     end
   end

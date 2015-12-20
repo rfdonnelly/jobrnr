@@ -19,7 +19,7 @@ module JobRnr
     def load(paths)
       Array(paths).each do |path|
         Dir.glob(File.join(path, '*.rb')) do |file|
-          # FIXME require raises LoadError if it cannot find file.
+          # FIXME: require raises LoadError if it cannot find file.
           # Here we are only calling require on files we have found.
           # What about insufficient permissions?
           # What about syntax error?

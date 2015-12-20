@@ -13,4 +13,3 @@ module JobRnr
     end
   end
 end
-

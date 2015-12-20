@@ -11,8 +11,6 @@ module JobRnr
     end
 
     def from_file(filename, base_class = nil)
-      basename = File.basename(filename, '.jr')
-
       code_string = IO.read(filename)
       from_string(code_string, filename, base_class)
     end

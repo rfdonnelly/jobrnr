@@ -37,13 +37,12 @@ module JobRnr
 
       def run
         futures = []
-        past_futures = []
         job_queue = graph.roots
 
         FileUtils.mkdir_p(output_directory)
 
-        while !done?(job_queue, futures)
-          completed_futures = futures.select { |f| f.fulfilled? }
+        until done?(job_queue, futures)
+          completed_futures = futures.select(&:fulfilled?)
 
           if nothing_todo?(completed_futures, job_queue, slots)
             # skip this interval
@@ -52,7 +51,7 @@ module JobRnr
           end
 
           # process completed job instances
-          completed_instances = completed_futures.map { |future| future.value }
+          completed_instances = completed_futures.map(&:value)
           completed_instances.each do |job_instance|
             message(job_instance)
 
@@ -84,7 +83,7 @@ module JobRnr
             job_instance = JobRnr::Job::Instance.new(
               job: job_queue.first,
               slot: slot,
-              log: File.join(output_directory, "regr%02d" % slot)
+              log: File.join(output_directory, 'regr%02d' % slot)
             )
             job_queue.shift if job_instance.job.state.scheduled?
 
@@ -115,13 +114,13 @@ module JobRnr
         pastel = Pastel.new
 
         s = []
-        s << "Running:" if job_instance.state == :pending
-        s << (job_instance.success? ? pastel.green("PASSED:") : pastel.red("FAILED:")) if job_instance.state == :finished
+        s << 'Running:' if job_instance.state == :pending
+        s << (job_instance.success? ? pastel.green('PASSED:') : pastel.red('FAILED:')) if job_instance.state == :finished
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-        s << "in %#.2fs" % job_instance.duration if job_instance.state == :finished
-        JobRnr::Log.info s.join(" ")
+        s << 'in %#.2fs' % job_instance.duration if job_instance.state == :finished
+        JobRnr::Log.info s.join(' ')
       end
     end
   end
