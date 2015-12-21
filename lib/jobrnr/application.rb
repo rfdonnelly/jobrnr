@@ -1,7 +1,5 @@
 module JobRnr
   class Application
-    JOB_SLOTS = 5
-
     attr_reader :argv
 
     def initialize(argv)
@@ -30,10 +28,17 @@ module JobRnr
         JobRnr::Plugins.instance.load(paths)
       end
 
+      job_slots =
+        if ENV.key?('JOBRNR_MAX_JOBS')
+          Integer(ENV['JOBRNR_MAX_JOBS'])
+        else
+          1
+        end
+
       JobRnr::Job::Dispatch.new(
         output_directory: output_directory,
         graph: JobRnr::Graph,
-        num_slots: JOB_SLOTS
+        num_slots: job_slots
       ).run
     end
   end
