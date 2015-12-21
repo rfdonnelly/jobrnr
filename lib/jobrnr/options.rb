@@ -33,7 +33,7 @@ module JobRnr
           exit
         end
         op.on('--help', 'Display long help') do
-          man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.5.ronn'))
+          man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.1.ronn'))
           exec "ronn --man #{man_path}"
         end
       end.parse!(argv)

@@ -1,0 +1,105 @@
+jobrnr(5) -- job description file format
+========================================
+
+## SYNOPSIS
+
+The JobRnr job description file format is an internal [DSL][1] writen in [Ruby][2] used to describe a [DAG][3] of jobs.
+
+[1]: http://martinfowler.com/bliki/DomainSpecificLanguage.html
+     "Domain Specific Language"
+
+[2]: https://www.ruby-lang.org
+     "The Ruby programming language"
+
+[3]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
+     "Directed Acyclic Graph"
+
+## KEYWORDS
+
+  * `job <id>, [<predecessor(s)>], <&block>`:
+    Defines a job.
+
+  * job::`execute <String | Proc>`:
+    Define the command a job will execute.
+
+  * job::`repeat <Fixnum>`:
+    Define the number of times a job should be repated.
+
+  * `import <prefix>, <jobs>, <filename>`:
+    Imports jobs from another job description (*.jr) file.
+
+## EXAMPLES
+
+A simple job:
+
+```ruby
+job :simple do
+  execute 'sleep 1'
+end
+```
+
+A repeating job:
+
+```ruby
+job :repeat do
+  execute 'sleep 1'
+  repeat 5
+end
+```
+
+A block job.  The block is executed at job execution time so each repition will execute a different command.
+
+```ruby
+job :block do
+  execute do
+    "sleep " + rand(10)
+  end
+  repeat 5
+end
+```
+
+An immediate evaluation job.  The string is evaluated at job definition time so all 5 repitions will execute the same command.
+
+```ruby
+job :immediate_evaluation do
+  execute "sleep #{rand(10)}"
+  repeat 5
+end
+```
+
+A delayed evaluation job.  The string is evaluated at job execution time so each repition will execute a different command.
+
+```ruby
+job :delayed_evaluation do
+  execute 'sleep #{rand(10)}'
+  repeat 5
+end
+```
+
+A dependent job:
+
+```ruby
+job :compile do
+  execute 'make compile'
+end
+
+job :run, :compile do
+  execute 'make run'
+end
+```
+
+Import job 'b' from 'c.jr' as 'a_b':
+
+```ruby
+import 'a', ['b'], 'c.jr'
+```
+
+Import jobs 'compile' and 'run' from 'imports.jr' as 'import_compile' and 'import_run' respectively:
+
+```ruby
+import 'import', ['compile', 'run'], 'imports.jr'
+```
+
+## SEE ALSO
+
+jobrnr(1)
