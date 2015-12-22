@@ -1,0 +1,53 @@
+jobrnr(1) -- runs jobs
+======================
+
+## SYNOPSIS
+
+`jobrnr` [<option(s)>] <file.jr>
+
+## DESCRIPTION
+
+**JobRnr** runs jobs.  Jobs can be made dependent on the success of other jobs.  Jobs are run simultaneously where possible.  A job can be repeated many times.
+
+## FILES
+
+The `jobrnr` command expects input to be a valid jobrnr(5) source file.  Source files are typically named <name>.jr (e.g. `example.jr`).
+
+## OPTIONS
+
+General options:
+
+  * `-j`, `--max-jobs` <jobs>:
+    The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS environment variable.  Default: 1
+
+Debug options:
+
+  * `--dot`:
+    Display the job graph to `STDOUT` in Graphviz [DOT][1] format and exit.
+
+[1]: http://www.graphviz.org/content/dot-language
+     "The DOT Language"
+
+Miscellaneous options:
+
+  * `-h`:
+    Display short help.
+
+  * `--help`:
+    Display long help.
+
+## ENVIRONMENT
+
+  * `JOBRNR_PLUGIN_PATH`:
+    A semicolon separated list of absolute path(s) to JobRnr plug-ins.
+
+  * `JOBRNR_MAX_JOBS`:
+    The number of jobs to run simultaneously.  The `-j` option takes precendence over this value.
+
+## COPYRIGHT
+
+JobRnr is Copyright (C) 2015 Rob Donnelly
+
+## SEE ALSO
+
+jobrnr(5)
