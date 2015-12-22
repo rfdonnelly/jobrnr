@@ -36,6 +36,10 @@ module JobRnr
           man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.1.ronn'))
           exec "ronn --man #{man_path}"
         end
+        op.on('--help-format', 'Display job description file format help') do
+          man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.5.ronn'))
+          exec "ronn --man #{man_path}"
+        end
       end.parse!(argv)
 
       options

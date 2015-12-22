@@ -31,10 +31,13 @@ Debug options:
 Miscellaneous options:
 
   * `-h`:
-    Display short help.
+    Display short help and exit.
 
   * `--help`:
-    Display long help.
+    Display long help and exit.
+
+  * `--help`:
+    Display job description file format help and exit.
 
 ## ENVIRONMENT
 
