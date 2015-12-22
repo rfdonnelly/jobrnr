@@ -7,7 +7,8 @@ module JobRnr
     end
 
     def run
-      filename = argv[0]
+      options = JobRnr::Options.new.parse(@argv)
+      filename = @argv[0]
 
       user_script = JobRnr::DSL::Loader.evaluate(nil, nil, filename)
 
@@ -19,26 +20,18 @@ module JobRnr
           directory_option
         end
 
-      JobRnr::Log.debug JobRnr::Graph.to_dot
-
-      # load plugins
-      if ENV.key?('JOBRNR_PLUGIN_PATH')
-        paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/)
-        JobRnr::Log.debug "Loading plugins from:\n#{paths.map { |path| "  #{path}" }.join("\n")}"
-        JobRnr::Plugins.instance.load(paths)
+      if options.dot
+        JobRnr::Log.info JobRnr::Graph.to_dot
+        exit
       end
 
-      job_slots =
-        if ENV.key?('JOBRNR_MAX_JOBS')
-          Integer(ENV['JOBRNR_MAX_JOBS'])
-        else
-          1
-        end
+      # load plugins
+      JobRnr::Plugins.instance.load(paths) unless options.plugin_paths.empty?
 
       JobRnr::Job::Dispatch.new(
         output_directory: output_directory,
         graph: JobRnr::Graph,
-        num_slots: job_slots
+        num_slots: options.max_jobs
       ).run
     end
   end
