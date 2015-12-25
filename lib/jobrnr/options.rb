@@ -33,11 +33,11 @@ module JobRnr
           exit
         end
         op.on('--help', 'Display long help') do
-          man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.1.ronn'))
+          man_path = JobRnr::Util.relative_to_file('../../man/jobrnr.1.ronn', __FILE__)
           exec "ronn --man #{man_path}"
         end
         op.on('--help-format', 'Display job description file format help') do
-          man_path = File.expand_path(File.join(File.dirname(__FILE__), '../../man/jobrnr.5.ronn'))
+          man_path = JobRnr::Util.relative_to_file('../../man/jobrnr.5.ronn', __FILE__)
           exec "ronn --man #{man_path}"
         end
       end.parse!(argv)
