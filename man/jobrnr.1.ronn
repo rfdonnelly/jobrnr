@@ -7,18 +7,21 @@ jobrnr(1) -- runs jobs
 
 ## DESCRIPTION
 
-**JobRnr** runs jobs.  Jobs can be made dependent on the success of other jobs.  Jobs are run simultaneously where possible.  A job can be repeated many times.
+**JobRnr** runs jobs.  Jobs can be made dependent on the success of other jobs.
+Jobs are run simultaneously where possible.  A job can be repeated many times.
 
 ## FILES
 
-The `jobrnr` command expects input to be a valid jobrnr(5) source file.  Source files are typically named <name>.jr (e.g. `example.jr`).
+The `jobrnr` command expects input to be a valid jobrnr(5) source file.  Source
+files are typically named <name>.jr (e.g. `example.jr`).
 
 ## OPTIONS
 
 General options:
 
   * `-j`, `--max-jobs` <jobs>:
-    The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS environment variable.  Default: 1
+    The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS
+    environment variable.  Default: 1
 
 Debug options:
 
@@ -45,7 +48,8 @@ Miscellaneous options:
     A semicolon separated list of absolute path(s) to JobRnr plug-ins.
 
   * `JOBRNR_MAX_JOBS`:
-    The number of jobs to run simultaneously.  The `-j` option takes precendence over this value.
+    The number of jobs to run simultaneously.  The `-j` option takes
+    precendence over this value.
 
 ## COPYRIGHT
 

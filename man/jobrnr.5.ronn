@@ -3,7 +3,8 @@ jobrnr(5) -- job description file format
 
 ## SYNOPSIS
 
-The JobRnr job description file format is an internal [DSL][1] writen in [Ruby][2] used to describe a [DAG][3] of jobs.
+The JobRnr job description file format is an internal [DSL][1] writen in
+[Ruby][2] used to describe a [DAG][3] of jobs.
 
 [1]: http://martinfowler.com/bliki/DomainSpecificLanguage.html
      "Domain Specific Language"
@@ -47,7 +48,8 @@ job :repeat do
 end
 ```
 
-A block job.  The block is executed at job execution time so each repition will execute a different command.
+A block job.  The block is executed at job execution time so each repition will
+execute a different command.
 
 ```ruby
 job :block do
@@ -58,7 +60,8 @@ job :block do
 end
 ```
 
-An immediate evaluation job.  The string is evaluated at job definition time so all 5 repitions will execute the same command.
+An immediate evaluation job.  The string is evaluated at job definition time so
+all 5 repitions will execute the same command.
 
 ```ruby
 job :immediate_evaluation do
@@ -67,7 +70,8 @@ job :immediate_evaluation do
 end
 ```
 
-A delayed evaluation job.  The string is evaluated at job execution time so each repition will execute a different command.
+A delayed evaluation job.  The string is evaluated at job execution time so
+each repition will execute a different command.
 
 ```ruby
 job :delayed_evaluation do
@@ -94,7 +98,8 @@ Import job 'b' from 'c.jr' as 'a_b':
 import 'a', ['b'], 'c.jr'
 ```
 
-Import jobs 'compile' and 'run' from 'imports.jr' as 'import_compile' and 'import_run' respectively:
+Import jobs 'compile' and 'run' from 'imports.jr' as 'import_compile' and
+'import_run' respectively:
 
 ```ruby
 import 'import', ['compile', 'run'], 'imports.jr'
