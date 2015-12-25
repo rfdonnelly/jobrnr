@@ -1,18 +1,14 @@
 # JobRnr
 
-JobRnr runs jobs.  Jobs can be dependent on other jobs.  Jobs are run in
-parallel when possible.  Jobs can be repeated with different random seeds.
-Additional functionality can be added via a plugin system.
+JobRnr runs jobs.
+
+* A job can have prerequisite jobs.
+* A job can be repeated many times.
+* A job can be passed a random seed.
+* Jobs are run simultaneously where possible.
+* Additional functionality can be added via plug-ins.
 
 ## Example
-
-The following job description describes a single compilation job and a single
-simulation job that is dependent on the compilation job.  The simulation job
-will not be executed until the compilation job completes successfully.  After
-the compile job completes successfully, 50 instances of the simulation job will
-be executed.  Each instance will execute with a random value for SEED.  The
-simulation job instances will be run in parallel.  The maximum number of job
-instances run in parallel is user configurable.
 
 ```ruby
 job :compile do
@@ -24,3 +20,11 @@ job :simulate, :compile do
   repeat 50
 end
 ```
+
+This job description specifies a single compilation job and a single simulation
+job with the compilation job as a prerequisite for the simulation job.  The
+simulation job will not be executed until the compilation job completes
+successfully.  After the compile job completes successfully, 50 instances of
+the simulation job will be executed.  Each instance will execute with a random
+value for SEED.  The simulation job instances can be run simultaneously.
+

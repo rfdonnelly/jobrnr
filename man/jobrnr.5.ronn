@@ -17,7 +17,7 @@ The JobRnr job description file format is an internal [DSL][1] writen in
 
 ## KEYWORDS
 
-  * `job <id>, [<predecessor(s)>], <&block>`:
+  * `job <id>, [<prerequisite(s)>], <&block>`:
     Defines a job.
 
   * job::`execute <String | Proc>`:
@@ -80,7 +80,7 @@ job :delayed_evaluation do
 end
 ```
 
-A dependent job:
+A job with a prerequisite:
 
 ```ruby
 job :compile do

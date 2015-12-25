@@ -19,7 +19,7 @@ module JobRnr
         @stats = JobRnr::Stats.new(graph.roots)
       end
 
-      def dependencies_resolved?(job)
+      def prerequisites_met?(job)
         job.predecessors.all? { |predecessor| predecessor.state.finished? }
       end
 
@@ -32,7 +32,7 @@ module JobRnr
       end
 
       def ready_to_queue(successors)
-        successors.select { |successor| !successor.state.queued? && dependencies_resolved?(successor) }
+        successors.select { |successor| !successor.state.queued? && prerequisites_met?(successor) }
       end
 
       def run

@@ -7,8 +7,13 @@ jobrnr(1) -- runs jobs
 
 ## DESCRIPTION
 
-**JobRnr** runs jobs.  Jobs can be made dependent on the success of other jobs.
-Jobs are run simultaneously where possible.  A job can be repeated many times.
+**JobRnr** runs jobs.
+
+* A job can have prerequisite jobs.
+* A job can be repeated many times.
+* A job can be passed a random seed.
+* Jobs are run simultaneously where possible.
+* Additional functionality can be added via plug-ins.
 
 ## FILES
 
