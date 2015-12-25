@@ -105,6 +105,16 @@ Import jobs 'compile' and 'run' from 'imports.jr' as 'import_compile' and
 import 'import', ['compile', 'run'], 'imports.jr'
 ```
 
+Prerequisite from an import:
+
+```ruby
+import 'import', ['compile'], 'imports.jr'
+
+job :run, :import_compile do
+  execute 'make run'
+end
+```
+
 ## SEE ALSO
 
 jobrnr(1)
