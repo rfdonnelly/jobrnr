@@ -36,7 +36,7 @@ Miscellaneous options:
   * `--help`:
     Display long help and exit.
 
-  * `--help`:
+  * `--help-format`:
     Display job description file format help and exit.
 
 ## ENVIRONMENT
