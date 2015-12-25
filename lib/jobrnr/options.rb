@@ -50,14 +50,14 @@ module JobRnr
     end
 
     def default_options(options)
-      options.max_jobs = 
-        if ENV.key?('JOBRNR_MAX_JOBS') 
-          Integer(ENV['JOBRNR_MAX_JOBS']) 
+      options.max_jobs =
+        if ENV.key?('JOBRNR_MAX_JOBS')
+          Integer(ENV['JOBRNR_MAX_JOBS'])
         else
           1
         end
 
-      options.plugin_paths = 
+      options.plugin_paths =
         if ENV.key?('JOBRNR_PLUGIN_PATH')
           ENV['JOBRNR_PLUGIN_PATH'].split(/:/)
         else

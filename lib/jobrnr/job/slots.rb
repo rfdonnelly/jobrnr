@@ -23,7 +23,7 @@ module JobRnr
         @slots.push(slot)
       end
 
-      def reserve(slot)
+      def reserve(_slot)
         @slots.push(@next_slot)
         @next_slot += 1
       end

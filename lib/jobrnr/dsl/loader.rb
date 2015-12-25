@@ -1,39 +1,45 @@
 module JobRnr
   module DSL
+    require 'singleton'
+
     class Loader
-      @@imports = []
-      @@import = {}
-      @@prefixes = []
-      @@script_objs = []
-      @@script_obj = nil
+      include Singleton
 
-      def self.evaluate(prefix, valid_jobs, filename)
-        @@imports.push(@@import) if @@import
-        @@prefixes.push(prefix) if prefix
-        @@import = { filename: filename, prefix: prefix, valid_jobs: valid_jobs }
-        @@script_objs.push(@@script_obj) if @@script_obj
-        @@script_obj = JobRnr::Script.new.from_file(filename, JobRnr::DSL::Commands)
-        @@script_obj = @@script_objs.pop if @@script_objs.size > 0
-        @@import = @@imports.pop if @@imports.size > 0
-        @@prefixes.pop
-
-        @@script_obj
+      def initialize
+        @imports = []
+        @import = {}
+        @prefixes = []
+        @script_objs = []
+        @script_obj = nil
       end
 
-      def self.valid_jobs
-        @@import[:valid_jobs]
+      def evaluate(prefix, valid_jobs, filename)
+        @imports.push(@import) if @import
+        @prefixes.push(prefix) if prefix
+        @import = { filename: filename, prefix: prefix, valid_jobs: valid_jobs }
+        @script_objs.push(@script_obj) if @script_obj
+        @script_obj = JobRnr::Script.new.from_file(filename, JobRnr::DSL::Commands)
+        @script_obj = @script_objs.pop if @script_objs.size > 0
+        @import = @imports.pop if @imports.size > 0
+        @prefixes.pop
+
+        @script_obj
       end
 
-      def self.filename
-        @@import[:filename]
+      def valid_jobs
+        @import[:valid_jobs]
       end
 
-      def self.script
-        @@script_obj
+      def filename
+        @import[:filename]
       end
 
-      def self.prefix
-        @@prefixes.join('_')
+      def script
+        @script_obj
+      end
+
+      def prefix
+        @prefixes.join('_')
       end
     end
   end

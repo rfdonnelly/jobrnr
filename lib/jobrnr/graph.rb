@@ -1,25 +1,31 @@
 module JobRnr
+  require 'singleton'
+
   class Graph
-    @@jobs = {}
+    include Singleton
 
-    def self.add_job(job)
-      @@jobs[job.id] = job
+    def initialize
+      @jobs = {}
     end
 
-    def self.jobs
-      @@jobs.values
+    def add_job(job)
+      @jobs[job.id] = job
     end
 
-    def self.[](id)
-      @@jobs[id]
+    def jobs
+      @jobs.values
     end
 
-    def self.roots
+    def [](id)
+      @jobs[id]
+    end
+
+    def roots
       jobs.select { |j| j.predecessors.size == 0 }
     end
 
     # Generates GraphViz dot format
-    def self.to_dot
+    def to_dot
       lines = jobs.each_with_object([]) do |j, lines|
         if j.successors.empty? && j.predecessors.empty?
           lines << "#{j.id}"
