@@ -23,7 +23,7 @@ module JobRnr
         JobRnr::Graph.instance.add_job(job)
       end
 
-      def import(prefix, valid_jobs, filename)
+      def import(prefix, import_jobs, filename)
         expanded_filename = JobRnr::Util.expand_envars(filename)
         importer_relative = JobRnr::Util.relative_to_file(expanded_filename, importer_filename)
 
@@ -34,7 +34,25 @@ module JobRnr
             expanded_filename
           end
 
-        JobRnr::DSL::Loader.instance.evaluate(prefix, valid_jobs, load_filename)
+        jobs_before_import = JobRnr::Graph.instance.ids.clone
+        JobRnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename)
+        jobs_after_import = JobRnr::Graph.instance.ids
+        imported_jobs = jobs_after_import.reject { |job| jobs_before_import.include?(job) }
+
+        full_prefix = [JobRnr::DSL::Loader.instance.prefix, prefix].reject { |item| item.empty? }.join("_")
+        jobs_not_imported = import_jobs
+          .map { |job| "#{full_prefix}_#{job}".to_sym }
+          .reject { |job| imported_jobs.include?(job) }
+          .map { |job| job.to_s.match(/^#{full_prefix}_(.*)/).captures.first.to_sym }
+
+        unless jobs_not_imported.empty?
+          file_line = caller(1).first.split(/:/)[0..1].join(':')
+          fail JobRnr::ImportError, 
+            [
+              "Failed to import ids #{jobs_not_imported} from #{filename}",
+              "  on import @ #{file_line}"
+            ].join("\n")
+        end
       end
 
       def prefix_id(prefix, id)

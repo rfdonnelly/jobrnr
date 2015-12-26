@@ -3,4 +3,5 @@ module JobRnr
   # from JobRnr::Error
   class Error < StandardError; end
   class OptionsError < Error; end
+  class ImportError < Error; end
 end

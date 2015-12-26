@@ -16,6 +16,10 @@ module JobRnr
       @jobs.values
     end
 
+    def ids
+      @jobs.keys
+    end
+
     def [](id)
       @jobs[id]
     end
