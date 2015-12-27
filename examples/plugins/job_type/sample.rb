@@ -1,20 +1,21 @@
 module JobRnr
   module Plugin
     class Sample
-      def pre_instance(instance)
+      def pre_instance(message)
         # modify the job before it is run
         # add an option
-        unless instance.command.match(/\s--results-directory\b/)
-          results_directory = File.basename(instance.log, '.log')
-          instance.command << " --results-directory #{results_directory}"
+        unless message.instance.command.match(/\s--results-directory\b/)
+          results_directory = File.basename(message.instance.log, '.log')
+          message.instance.command << " --results-directory #{results_directory}"
         end
       end
 
-      def post_instance(instance)
+      def post_instance(message)
         # do something special for when a specific option is found
-        if instance.command.match(/\s--coverage\b/)
-          if instance.success?
-            puts "        doing something special for regr#{instance.slot}"
+        if message.instance.command.match(/\s--coverage\b/)
+          results_directory = File.basename(message.instance.log, '.log')
+          if message.instance.success?
+            puts "        doing something special for #{results_directory}"
           end
         end
       end

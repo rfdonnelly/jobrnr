@@ -7,11 +7,11 @@ module JobRnr
       :pre_instance,
       :post_instance,
       :post_interval,
-      :terminate
+      :post_application
     ]
 
     PLUGIN_METHODS.each do |meth|
-      define_method(meth) {}
+      define_method(meth) { |*args|}
     end
   end
 
