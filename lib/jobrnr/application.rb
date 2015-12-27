@@ -10,6 +10,14 @@ module JobRnr
       options = JobRnr::Options.new.parse(@argv)
       filename = @argv[0]
 
+      if options.dot
+        JobRnr::Log.info JobRnr::Graph.instance.to_dot
+        exit
+      end
+
+      # load plugins
+      JobRnr::Plugins.instance.load(options.plugin_paths)
+
       user_script = JobRnr::DSL::Loader.instance.evaluate(nil, nil, filename)
 
       directory_option = JobRnr::Util.expand_envars(user_script.options.directory)
@@ -19,14 +27,6 @@ module JobRnr
         else
           directory_option
         end
-
-      if options.dot
-        JobRnr::Log.info JobRnr::Graph.instance.to_dot
-        exit
-      end
-
-      # load plugins
-      JobRnr::Plugins.instance.load(options.plugin_paths) unless options.plugin_paths.empty?
 
       JobRnr::Job::Dispatch.new(
         output_directory: output_directory,

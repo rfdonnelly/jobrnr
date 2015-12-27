@@ -54,10 +54,8 @@ module JobRnr
           completed_instances = completed_futures.map(&:value)
           completed_instances.each do |job_instance|
             message(job_instance)
-
             stats.collect(job_instance)
-
-            job_instance.post_process
+            JobRnr::Plugins.instance.post_instance(job_instance)
 
             # find new jobs to be queued
             if job_instance.success? && job_instance.job.state.finished?
@@ -87,7 +85,7 @@ module JobRnr
             )
             job_queue.shift if job_instance.job.state.scheduled?
 
-            job_instance.pre_process
+            JobRnr::Plugins.instance.pre_instance(job_instance)
             message(job_instance)
             stats.collect(job_instance)
             future = Concurrent::Future.execute { job_instance.execute }
@@ -103,9 +101,12 @@ module JobRnr
             futures.push(future)
           end
           JobRnr::Log.info stats.to_s
+          JobRnr::Plugins.instance.post_interval
 
           sleep TIME_SLICE_INTERVAL
         end
+
+        JobRnr::Plugins.instance.terminate
 
         stats.failed
       end

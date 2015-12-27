@@ -20,6 +20,7 @@ module JobRnr
           predecessors: predecessors
         )
         job = Docile.dsl_eval(builder, &block).build
+        JobRnr::Plugins.instance.post_definition(job)
         JobRnr::Graph.instance.add_job(job)
       end
 

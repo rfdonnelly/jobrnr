@@ -1,0 +1,23 @@
+jobrnr-plugin(3) -- plugin API for JobRnr
+=========================================
+
+## SYNOPSIS
+
+The JobRnr plugin API allows additional functionality to be added
+without changing the core.
+
+## TEMPLATE
+
+```ruby
+module JobRnr
+  module Plugin
+    class <plugin-class-name>
+      def post_definition(job); end
+      def pre_instance(job); end
+      def post_instance(job); end
+      def post_interval; end
+      def terminate; end
+    end
+  end
+end
+```
