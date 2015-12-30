@@ -9,6 +9,7 @@ module JobRnr
       @options = initialize_options
 
       default_options(@options)
+      load_environment(@options)
     end
 
     def parse(argv)
@@ -50,21 +51,14 @@ module JobRnr
     end
 
     def default_options(options)
-      options.max_jobs =
-        if ENV.key?('JOBRNR_MAX_JOBS')
-          Integer(ENV['JOBRNR_MAX_JOBS'])
-        else
-          8
-        end
-
-      options.plugin_paths =
-        if ENV.key?('JOBRNR_PLUGIN_PATH')
-          ENV['JOBRNR_PLUGIN_PATH'].split(/:/)
-        else
-          []
-        end
-
       options.dot = false
+      options.max_jobs = 8
+      options.plugin_paths = []
+    end
+
+    def load_environment(options)
+      options.max_jobs = Integer(ENV['JOBRNR_MAX_JOBS']) if ENV.key?('JOBRNR_MAX_JOBS')
+      options.plugin_paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/) if ENV.key?('JOBRNR_PLUGIN_PATH')
     end
   end
 end
