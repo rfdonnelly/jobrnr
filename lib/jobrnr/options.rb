@@ -34,16 +34,21 @@ module JobRnr
           exit
         end
         op.on('--help', 'Display long help') do
-          man_path = JobRnr::Util.relative_to_file('../../man/jobrnr.1.ronn', __FILE__)
-          exec "ronn --man #{man_path}"
+          exec "ronn --man #{man_path('jobrnr.1.ronn')}"
         end
         op.on('--help-format', 'Display job description file format help') do
-          man_path = JobRnr::Util.relative_to_file('../../man/jobrnr.5.ronn', __FILE__)
-          exec "ronn --man #{man_path}"
+          exec "ronn --man #{man_path('jobrnr.5.ronn')}"
+        end
+        op.on('--help-plugin', 'Display plugin API help and exit.') do
+          exec "ronn --man #{man_path('jobrnr-plugin.3.ronn')}"
         end
       end.parse!(argv)
 
       options
+    end
+
+    def man_path(man_file)
+      JobRnr::Util.relative_to_file(File.join('../../man', man_file), __FILE__)
     end
 
     def initialize_options

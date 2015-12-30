@@ -1,8 +1,27 @@
 module JobRnr
   require 'singleton'
 
+  module PluginMethodStubs
+    PLUGIN_METHODS = [
+      :post_definition,
+      :pre_instance,
+      :post_instance,
+      :post_interval,
+      :post_application
+    ]
+
+    PLUGIN_METHODS.each do |meth|
+      define_method(meth) { |*args|}
+    end
+  end
+
   class Plugins
     include Singleton
+    include JobRnr::PluginMethodStubs
+
+    def initialize
+      @plugins = []
+    end
 
     # Public: Load plugins from path(s).
     #
@@ -27,13 +46,15 @@ module JobRnr
           require file
         end
       end
+
+      @plugins = create_plugin_instances(classes_in_module(JobRnr::Plugin))
     end
 
-    # Public: Returns all JobType plugins
-    #
-    # Returns Array of JobType plugins
-    def job_types
-      @job_types ||= classes_in_module(JobRnr::JobType)
+    # Dispatches plugin method calls to all plugin instances.
+    PLUGIN_METHODS.each do |meth|
+      define_method(meth) do |*args|
+        @plugins.each { |plugin| plugin.send(meth, *args) }
+      end
     end
 
     # Internal: Returns all Classes defined in a given Module.
@@ -50,9 +71,24 @@ module JobRnr
         .select { |c| Class === mod.const_get(c) }
         .map { |c| mod.const_get(c) }
     end
+
+    # Internal: Creates instances of plugin classes.
+    #
+    # Include PluginMethodStubs in each plugin so that they only need to define
+    # the events they are interested in.
+    #
+    # Examples
+    #
+    #   plugins = create_plugin_instances(classes)
+    #
+    # Returns array of plugin class instances
+    def create_plugin_instances(classes)
+      classes.map { |c| c.new }
+        .each { |o| o.class.send(:include, JobRnr::PluginMethodStubs) }
+    end
   end
 end
 
 module JobRnr
-  module JobType; end
+  module Plugin; end
 end

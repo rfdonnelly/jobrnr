@@ -42,6 +42,10 @@ module JobRnr
       def finished?
         @state == :finished
       end
+
+      def to_be_scheduled
+        @job.iterations - @num_scheduled
+      end
     end
   end
 end

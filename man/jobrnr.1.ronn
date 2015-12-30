@@ -47,6 +47,9 @@ Miscellaneous options:
   * `--help-format`:
     Display job description file format help and exit.
 
+  * `--help-plugin`:
+    Display plugin API help and exit.
+
 ## ENVIRONMENT
 
   * `JOBRNR_PLUGIN_PATH`:
