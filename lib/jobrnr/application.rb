@@ -26,7 +26,7 @@ module JobRnr
       end
 
       # load plugins
-      JobRnr::Plugins.instance.load(paths) unless options.plugin_paths.empty?
+      JobRnr::Plugins.instance.load(options.plugin_paths) unless options.plugin_paths.empty?
 
       JobRnr::Job::Dispatch.new(
         output_directory: output_directory,
