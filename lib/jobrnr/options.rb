@@ -54,7 +54,7 @@ module JobRnr
         if ENV.key?('JOBRNR_MAX_JOBS')
           Integer(ENV['JOBRNR_MAX_JOBS'])
         else
-          1
+          8
         end
 
       options.plugin_paths =
