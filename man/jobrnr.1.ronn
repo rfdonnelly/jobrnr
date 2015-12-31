@@ -24,6 +24,11 @@ files are typically named <name>.jr (e.g. `example.jr`).
 
 General options:
 
+  * `-d`, `--output-directory` <dir>:
+    The directory where results will be placed.  Will be created if it does
+    not exist.  Overrides the JOBRNR_OUTPUT_DIRECTORY environment variable.
+    Default: $PWD.
+
   * `-j`, `--max-jobs` <jobs>:
     The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS
     environment variable.  Default: 8
@@ -54,6 +59,11 @@ Miscellaneous options:
 
   * `JOBRNR_PLUGIN_PATH`:
     A semicolon separated list of absolute path(s) to JobRnr plug-ins.
+
+  * `JOBRNR_OUTPUT_DIRECTORY`:
+    The directory where results will be placed.  Will be created if it does
+    not exist.  The `-d` option takes precendence over this value.  Default:
+    $PWD.
 
   * `JOBRNR_MAX_JOBS`:
     The number of jobs to run simultaneously.  The `-j` option takes

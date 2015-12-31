@@ -17,6 +17,9 @@ module JobRnr
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
         op.separator('GENERAL OPTIONS')
+        op.on('-d', '--output-directory <dir>', 'Directory to place results.') do |arg|
+          options.output_directory = arg
+        end
         op.on('-j', '--max-jobs <jobs>', 'Maximum number of jobs to run simultaneously') do |arg|
           options.max_jobs = Integer(arg)
         end
@@ -58,12 +61,14 @@ module JobRnr
     def default_options(options)
       options.dot = false
       options.max_jobs = 8
+      options.output_directory = Dir.pwd
       options.plugin_paths = []
     end
 
     def load_environment(options)
       options.max_jobs = Integer(ENV['JOBRNR_MAX_JOBS']) if ENV.key?('JOBRNR_MAX_JOBS')
       options.plugin_paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/) if ENV.key?('JOBRNR_PLUGIN_PATH')
+      options.output_directory = ENV['JOBRNR_OUTPUT_DIRECTORY'] if ENV.key?('JOBRNR_OUTPUT_DIRECTORY')
     end
   end
 end
