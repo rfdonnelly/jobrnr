@@ -4,7 +4,7 @@ module JobRnr
     # supports '${name}' and '$name' syntax
     # supports multiple environment variables in single string
     def self.expand_envars(path)
-      path.gsub(/\$\{?(\w+)\}?/) { |var| ENV[var] }
+      path.gsub(/\$\{?(\w+)\}?/) { ENV[Regexp.last_match.captures.first] }
     end
 
     # makes from_file relative to to_file location
