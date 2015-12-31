@@ -17,7 +17,7 @@ module JobRnr
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
         op.separator('GENERAL OPTIONS')
-        op.on('-d', '--output-directory <dir>', 'Directory to place results.') do |arg|
+        op.on('-d', '--output-directory <directory>', 'Directory to place results.') do |arg|
           options.output_directory = arg
         end
         op.on('-j', '--max-jobs <jobs>', 'Maximum number of jobs to run simultaneously') do |arg|

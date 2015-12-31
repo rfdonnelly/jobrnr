@@ -24,7 +24,7 @@ files are typically named <name>.jr (e.g. `example.jr`).
 
 General options:
 
-  * `-d`, `--output-directory` <dir>:
+  * `-d`, `--output-directory` <directory>:
     The directory where results will be placed.  Will be created if it does
     not exist.  Overrides the JOBRNR_OUTPUT_DIRECTORY environment variable.
     Default: $PWD.
