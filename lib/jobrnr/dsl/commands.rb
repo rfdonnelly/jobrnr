@@ -5,8 +5,8 @@ module JobRnr
 
       attr_reader :options
 
-      def initialize
-        @options = Struct.new(:directory).new
+      def initialize(options)
+        @options = options.clone
       end
 
       def job(id, predecessor_ids = nil, &block)
@@ -36,7 +36,7 @@ module JobRnr
           end
 
         jobs_before_import = JobRnr::Graph.instance.ids.clone
-        JobRnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename)
+        JobRnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename, options)
         jobs_after_import = JobRnr::Graph.instance.ids
         imported_jobs = jobs_after_import.reject { |job| jobs_before_import.include?(job) }
 

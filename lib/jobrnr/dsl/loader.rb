@@ -13,12 +13,12 @@ module JobRnr
         @script_obj = nil
       end
 
-      def evaluate(prefix, valid_jobs, filename)
+      def evaluate(prefix, valid_jobs, filename, *init_args)
         @imports.push(@import) if @import
         @prefixes.push(prefix) if prefix
         @import = { filename: filename, prefix: prefix, valid_jobs: valid_jobs }
         @script_objs.push(@script_obj) if @script_obj
-        @script_obj = JobRnr::Script.new.from_file(filename, JobRnr::DSL::Commands)
+        @script_obj = JobRnr::Script.load(filename, {init_args: init_args, base_class: JobRnr::DSL::Commands})
         @script_obj = @script_objs.pop if @script_objs.size > 0
         @import = @imports.pop if @imports.size > 0
         @prefixes.pop

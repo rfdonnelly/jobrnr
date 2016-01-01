@@ -2,17 +2,29 @@ module JobRnr
   # Wraps a Ruby script in a Ruby class so that multiple scripts can be
   # loaded without namespace conflicts
   class Script
-    def from_string(code_string, filename = nil, base_class = nil)
+    # param code [String] ruby code to evaluate
+    # param opts [Hash]
+    def self.eval(code, opts = {})
+      filename = opts[:filename]
+      base_class = opts[:base_class]
+      init_args = opts[:init_args] || []
+
       class_obj = Class.new(base_class)
-      obj = class_obj.new
-      obj.instance_eval(code_string, filename)
+      obj = class_obj.new(*init_args)
+      obj.instance_eval(code, filename)
 
       obj
     end
 
-    def from_file(filename, base_class = nil)
-      code_string = IO.read(filename)
-      from_string(code_string, filename, base_class)
+    # param filename [String] filename to load
+    # param opts [Hash]
+    def self.load(filename, opts = {})
+      base_class = opts[:base_class]
+      init_args = opts[:init_args] || []
+      opts[:filename] = filename
+
+      code = IO.read(filename)
+      self.eval(code, opts)
     end
   end
 end

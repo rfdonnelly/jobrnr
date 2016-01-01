@@ -16,6 +16,6 @@ end
 
 import 'child', [:compile, :run_random], "child.jr"
 
-options.directory = "results"
+options.output_directory = 'results'
 
 # vim: ft=ruby
