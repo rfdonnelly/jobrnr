@@ -1,6 +1,5 @@
 module JobRnr
   require 'optparse'
-  require 'ostruct'
 
   class Options
     attr_reader :options
@@ -55,7 +54,7 @@ module JobRnr
     end
 
     def initialize_options
-      OpenStruct.new
+      Struct.new(:dot, :max_jobs, :output_directory, :plugin_paths).new
     end
 
     def default_options(options)

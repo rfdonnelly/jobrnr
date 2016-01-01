@@ -8,6 +8,6 @@ job :run do
   end
 end
 
-options.directory = File.join(File.dirname(__FILE__), "results")
+options.output_directory = 'results'
 
 # vim: ft=ruby sw=2
