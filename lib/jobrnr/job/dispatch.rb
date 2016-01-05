@@ -70,6 +70,7 @@ module JobRnr
               stats.queue(successors_to_queue)
             end
           end
+          break if options.max_failures > 0 && stats.failed >= options.max_failures
 
           completed_instances.each do |job_instance|
             if job_instance.success?

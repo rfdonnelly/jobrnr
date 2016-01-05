@@ -29,6 +29,11 @@ General options:
     not exist.  Overrides the JOBRNR_OUTPUT_DIRECTORY environment variable.
     Default: $PWD.
 
+  * `-f`, `--max-failures` <failures>:
+    The number of failures to allow before terminating.  Value of `0`
+    effectively disables this setting.  Overrides the JOBRNR_MAX_FAILURES
+    environment variable.  Default: 0 (disabled)
+
   * `-j`, `--max-jobs` <jobs>:
     The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS
     environment variable.  Default: 8
@@ -63,11 +68,15 @@ Miscellaneous options:
   * `JOBRNR_OUTPUT_DIRECTORY`:
     The directory where results will be placed.  Will be created if it does
     not exist.  The `-d` option takes precendence over this value.  Default:
-    $PWD.
+    $PWD
+
+  * `JOBRNR_MAX_FAILURES`:
+    The number of failures to allow before terminating.  The `-f` option
+    takes precendence over this value.  Default: 0 (disabled)
 
   * `JOBRNR_MAX_JOBS`:
     The number of jobs to run simultaneously.  The `-j` option takes
-    precendence over this value.  Default: 8.
+    precendence over this value.  Default: 8
 
 ## COPYRIGHT
 

@@ -19,6 +19,9 @@ module JobRnr
         op.on('-d', '--output-directory <directory>', 'Directory to place results.') do |arg|
           options.output_directory = arg
         end
+        op.on('-f', '--max-failures <failures>', 'Maximum number of failures before termination') do |arg|
+          options.max_failures = Integer(arg)
+        end
         op.on('-j', '--max-jobs <jobs>', 'Maximum number of jobs to run simultaneously') do |arg|
           options.max_jobs = Integer(arg)
         end
@@ -54,17 +57,19 @@ module JobRnr
     end
 
     def initialize_options
-      Struct.new(:dot, :max_jobs, :output_directory, :plugin_paths).new
+      Struct.new(:dot, :max_failures, :max_jobs, :output_directory, :plugin_paths).new
     end
 
     def default_options(options)
       options.dot = false
+      options.max_failures = 0
       options.max_jobs = 8
       options.output_directory = Dir.pwd
       options.plugin_paths = []
     end
 
     def load_environment(options)
+      options.max_failures = Integer(ENV['JOBRNR_MAX_FAILURES']) if ENV.key?('JOBRNR_MAX_FAILURES')
       options.max_jobs = Integer(ENV['JOBRNR_MAX_JOBS']) if ENV.key?('JOBRNR_MAX_JOBS')
       options.plugin_paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/) if ENV.key?('JOBRNR_PLUGIN_PATH')
       options.output_directory = ENV['JOBRNR_OUTPUT_DIRECTORY'] if ENV.key?('JOBRNR_OUTPUT_DIRECTORY')
