@@ -35,7 +35,7 @@ module JobRnr
         seed = Random.rand(0xffff_ffff)
 
         substitutions = [
-          [/__SEED%x__/, '0x%08x' % seed],
+          [/__SEED%x__/, '%08x' % seed],
           [/__SEED%d__/, seed.to_s],
         ]
         substitutions.each_with_object(s) do |substitution, string|

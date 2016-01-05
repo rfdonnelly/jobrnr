@@ -9,7 +9,7 @@ end
 job :run_random, :compile do
   execute do
     pass = rand(5) == 1 ? "false" : "true"
-    "#{pass} echo avs --unit parent --run --test parent_random_test --seed __SEED%x__ --coverage"
+    "#{pass} echo avs --unit parent --run --test parent_random_test --seed 0x__SEED%x__ --coverage"
   end
   repeat 10
 end
