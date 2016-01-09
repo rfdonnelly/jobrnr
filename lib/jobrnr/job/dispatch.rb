@@ -91,7 +91,7 @@ module JobRnr
             job_instance = JobRnr::Job::Instance.new(
               job: job_queue.first,
               slot: slot,
-              log: File.join(options.output_directory, 'regr%02d' % slot)
+              log: File.join(options.output_directory, '%s%02d' % [File.basename(options.output_directory), slot])
             )
             job_queue.shift if job_instance.job.state.scheduled?
 
