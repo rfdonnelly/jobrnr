@@ -19,13 +19,13 @@ module JobRnr
         @slots.size
       end
 
-      def free(slot)
-        @slots.push(slot)
-      end
-
-      def reserve(_slot)
-        @slots.push(@next_slot)
-        @next_slot += 1
+      def deallocate(slot, retire)
+        if retire
+          @slots.push(@next_slot)
+          @next_slot += 1
+        else
+          @slots.push(slot)
+        end
       end
     end
   end

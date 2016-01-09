@@ -72,13 +72,7 @@ module JobRnr
           end
           break if options.max_failures > 0 && stats.failed >= options.max_failures
 
-          completed_instances.each do |job_instance|
-            if job_instance.success?
-              slots.free(job_instance.slot)
-            else
-              slots.reserve(job_instance.slot)
-            end
-          end
+          completed_instances.each { |job_instance| slots.deallocate(job_instance.slot, !job_instance.success?) }
           futures = futures.reject { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
           # launch new job instances
