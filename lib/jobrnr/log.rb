@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   class Log
     def self.error(exception)
       abort "jobrnr: ERROR: #{exception.message}"

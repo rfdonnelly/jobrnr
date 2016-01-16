@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   require 'singleton'
 
   module PluginMethodStubs
@@ -17,7 +17,7 @@ module JobRnr
 
   class Plugins
     include Singleton
-    include JobRnr::PluginMethodStubs
+    include Jobrnr::PluginMethodStubs
 
     def initialize
       @plugins = []
@@ -42,12 +42,12 @@ module JobRnr
           # Here we are only calling require on files we have found.
           # What about insufficient permissions?
           # What about syntax error?
-          JobRnr::Log.debug "Loading plugin: #{file}"
+          Jobrnr::Log.debug "Loading plugin: #{file}"
           require file
         end
       end
 
-      @plugins = create_plugin_instances(classes_in_module(JobRnr::Plugin))
+      @plugins = create_plugin_instances(classes_in_module(Jobrnr::Plugin))
     end
 
     # Dispatches plugin method calls to all plugin instances.
@@ -84,11 +84,11 @@ module JobRnr
     # Returns array of plugin class instances
     def create_plugin_instances(classes)
       classes.map { |c| c.new }
-        .each { |o| o.class.send(:include, JobRnr::PluginMethodStubs) }
+        .each { |o| o.class.send(:include, Jobrnr::PluginMethodStubs) }
     end
   end
 end
 
-module JobRnr
+module Jobrnr
   module Plugin; end
 end

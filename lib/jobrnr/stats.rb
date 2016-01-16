@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   class Stats
     attr_accessor :running, :failed, :passed, :queued
 

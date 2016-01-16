@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   require 'optparse'
 
   class Options
@@ -53,7 +53,7 @@ module JobRnr
     end
 
     def man_path(man_file)
-      JobRnr::Util.relative_to_file(File.join('../../man', man_file), __FILE__)
+      Jobrnr::Util.relative_to_file(File.join('../../man', man_file), __FILE__)
     end
 
     def initialize_options

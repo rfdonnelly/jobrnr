@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Job
     # Transitions
     #
@@ -15,12 +15,12 @@ module JobRnr
       end
 
       def queue
-        fail JobRnr::RuntimeError, "Cannot queue, already queued.\n#{self}" if queued?
+        fail Jobrnr::RuntimeError, "Cannot queue, already queued.\n#{self}" if queued?
         @queued = true
       end
 
       def schedule
-        fail JobRnr::RuntimeError, "Cannot schedule, already scheduled.\n#{self}" if scheduled?
+        fail Jobrnr::RuntimeError, "Cannot schedule, already scheduled.\n#{self}" if scheduled?
         @num_scheduled += 1
         @state = :scheduling
         @state = :scheduled if @num_scheduled == @job.iterations

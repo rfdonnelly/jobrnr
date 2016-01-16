@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module DSL
     class Commands
       require 'docile'
@@ -10,23 +10,23 @@ module JobRnr
       end
 
       def job(id, predecessor_ids = nil, &block)
-        valid_jobs = JobRnr::DSL::Loader.instance.valid_jobs
-        prefix = JobRnr::DSL::Loader.instance.prefix
+        valid_jobs = Jobrnr::DSL::Loader.instance.valid_jobs
+        prefix = Jobrnr::DSL::Loader.instance.prefix
         return if valid_jobs && !valid_jobs.any? { |valid_job_id| valid_job_id == id }
 
-        predecessors = Array(predecessor_ids).map { |id| JobRnr::Graph.instance[prefix_id(prefix, id)] }
-        builder = JobRnr::DSL::JobBuilder.new(
+        predecessors = Array(predecessor_ids).map { |id| Jobrnr::Graph.instance[prefix_id(prefix, id)] }
+        builder = Jobrnr::DSL::JobBuilder.new(
           id: prefix_id(prefix, id),
           predecessors: predecessors
         )
         job = Docile.dsl_eval(builder, &block).build
-        JobRnr::Plugins.instance.post_definition(job)
-        JobRnr::Graph.instance.add_job(job)
+        Jobrnr::Plugins.instance.post_definition(job)
+        Jobrnr::Graph.instance.add_job(job)
       end
 
       def import(prefix, import_jobs, filename)
-        expanded_filename = JobRnr::Util.expand_envars(filename)
-        importer_relative = JobRnr::Util.relative_to_file(expanded_filename, importer_filename)
+        expanded_filename = Jobrnr::Util.expand_envars(filename)
+        importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
         load_filename =
           if expanded_filename[0] != '/' && File.exist?(importer_relative)
@@ -35,12 +35,12 @@ module JobRnr
             expanded_filename
           end
 
-        jobs_before_import = JobRnr::Graph.instance.ids.clone
-        JobRnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename, options)
-        jobs_after_import = JobRnr::Graph.instance.ids
+        jobs_before_import = Jobrnr::Graph.instance.ids.clone
+        Jobrnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename, options)
+        jobs_after_import = Jobrnr::Graph.instance.ids
         imported_jobs = jobs_after_import.reject { |job| jobs_before_import.include?(job) }
 
-        full_prefix = [JobRnr::DSL::Loader.instance.prefix, prefix].reject { |item| item.empty? }.join("_")
+        full_prefix = [Jobrnr::DSL::Loader.instance.prefix, prefix].reject { |item| item.empty? }.join("_")
         jobs_not_imported = import_jobs
           .map { |job| "#{full_prefix}_#{job}".to_sym }
           .reject { |job| imported_jobs.include?(job) }
@@ -48,7 +48,7 @@ module JobRnr
 
         unless jobs_not_imported.empty?
           file_line = caller(1).first.split(/:/)[0..1].join(':')
-          fail JobRnr::ImportError, 
+          fail Jobrnr::ImportError, 
             [
               "Failed to import ids #{jobs_not_imported} from #{filename}",
               "  on import @ #{file_line}"

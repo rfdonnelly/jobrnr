@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Job
     class Dispatch
       require 'concurrent'
@@ -16,9 +16,9 @@ module JobRnr
       def initialize(options:, graph:, num_slots:)
         @options = options
         @graph = graph
-        @slots = JobRnr::Job::Slots.new(num_slots)
-        @stats = JobRnr::Stats.new(graph.roots)
-        @plugins = JobRnr::Plugins.instance
+        @slots = Jobrnr::Job::Slots.new(num_slots)
+        @stats = Jobrnr::Stats.new(graph.roots)
+        @plugins = Jobrnr::Plugins.instance
       end
 
       def prerequisites_met?(job)
@@ -60,7 +60,7 @@ module JobRnr
           completed_instances.each do |job_instance|
             message(job_instance)
             stats.collect(job_instance)
-            plugins.post_instance(JobRnr::PostInstanceMessage.new(job_instance, options))
+            plugins.post_instance(Jobrnr::PostInstanceMessage.new(job_instance, options))
 
             # find new jobs to be queued
             if job_instance.success? && job_instance.job.state.finished?
@@ -82,14 +82,14 @@ module JobRnr
 
           num_to_schedule.times do
             slot = slots.allocate
-            job_instance = JobRnr::Job::Instance.new(
+            job_instance = Jobrnr::Job::Instance.new(
               job: job_queue.first,
               slot: slot,
               log: File.join(options.output_directory, '%s%02d' % [File.basename(options.output_directory), slot])
             )
             job_queue.shift if job_instance.job.state.scheduled?
 
-            plugins.pre_instance(JobRnr::PreInstanceMessage.new(job_instance, options))
+            plugins.pre_instance(Jobrnr::PreInstanceMessage.new(job_instance, options))
             message(job_instance)
             stats.collect(job_instance)
 
@@ -101,14 +101,14 @@ module JobRnr
           end
           futures.push(*new_futures)
 
-          JobRnr::Log.info stats.to_s
-          plugins.post_interval(JobRnr::PostIntervalMessage.new(completed_instances, new_instances, stats, options))
+          Jobrnr::Log.info stats.to_s
+          plugins.post_interval(Jobrnr::PostIntervalMessage.new(completed_instances, new_instances, stats, options))
 
           sleep TIME_SLICE_INTERVAL
         end
 
         status_code = stats.failed
-        plugins.post_application(JobRnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
+        plugins.post_application(Jobrnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
 
         status_code
       end
@@ -123,7 +123,7 @@ module JobRnr
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
         s << 'in %#.2fs' % job_instance.duration if job_instance.state == :finished
-        JobRnr::Log.info s.join(' ')
+        Jobrnr::Log.info s.join(' ')
       end
     end
   end

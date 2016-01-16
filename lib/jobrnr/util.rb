@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Util
     # expand environment variables in string
     # supports '${name}' and '$name' syntax

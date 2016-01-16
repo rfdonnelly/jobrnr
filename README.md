@@ -1,6 +1,6 @@
-# JobRnr
+# Jobrnr
 
-JobRnr runs jobs.
+Jobrnr runs jobs.
 
 * A job can have prerequisite jobs.
 * A job can be repeated many times.

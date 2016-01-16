@@ -3,7 +3,7 @@ jobrnr(5) -- job description file format
 
 ## SYNOPSIS
 
-The JobRnr job description file format is an internal [DSL][1] writen in
+The Jobrnr job description file format is an internal [DSL][1] writen in
 [Ruby][2] used to describe a [DAG][3] of jobs.
 
 [1]: http://martinfowler.com/bliki/DomainSpecificLanguage.html

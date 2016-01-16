@@ -1,4 +1,4 @@
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class ModifyCommand
     def pre_instance(message)
       # modify the job before it is run

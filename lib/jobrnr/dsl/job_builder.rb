@@ -1,8 +1,8 @@
-module JobRnr
+module Jobrnr
   module DSL
     class JobBuilder
       def initialize(id:, predecessors:)
-        @obj = JobRnr::Job::Definition.new(id: id, predecessors: predecessors)
+        @obj = Jobrnr::Job::Definition.new(id: id, predecessors: predecessors)
       end
 
       def execute(command = nil, &block)

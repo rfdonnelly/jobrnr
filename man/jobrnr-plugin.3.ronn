@@ -1,9 +1,9 @@
-jobrnr-plugin(3) -- plugin API for JobRnr
+jobrnr-plugin(3) -- plugin API for Jobrnr
 =========================================
 
 ## SYNOPSIS
 
-The JobRnr plugin API allows additional functionality to be added
+The Jobrnr plugin API allows additional functionality to be added
 without changing the core.
 
 ## DESCRIPTION
@@ -20,7 +20,7 @@ for the given event.
 
     <message> structure members: <br/>
     `definition` - the job definition object <br/>
-    `options` - the JobRnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
+    `options` - the Jobrnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
 
   * `pre_instance` <message>:
     Called after a job instance has been created and before it has been logged
@@ -28,7 +28,7 @@ for the given event.
 
     <message> structure members: <br/>
     `instance` - the job instance object <br/>
-    `options` - the JobRnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
+    `options` - the Jobrnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
 
   * `post_instance` <message>:
     Called after a job instance has finished execution and after it has been
@@ -36,7 +36,7 @@ for the given event.
 
     <message> structure members: <br/>
     `instance` - the job instance object <br/>
-    `options` - the JobRnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
+    `options` - the Jobrnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
 
   * `post_interval` <message>:
     Called after a dispatch interval has completed.
@@ -45,16 +45,16 @@ for the given event.
     `completed_instances` - array of job instances completed in this interval <br/>
     `scheduled_instances` - array of job instances that have been scheduled in this interval <br/>
     `stats` - statistics object <br/>
-    `options` - the JobRnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
+    `options` - the Jobrnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
 
   * `post_application` <message>:
-    Called before JobRnr exits.
+    Called before Jobrnr exits.
 
     <message> structure members: <br/>
     `status_code` - number of failed jobs <br/>
     `completed_instances` - array of job instances completed <br/>
     `stats` - statistics object <br/>
-    `options` - the JobRnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
+    `options` - the Jobrnr options structure (see [COMMON MESSAGE OBJECTS][]) <br/>
 
 ### COMMON MESSAGE OBJECTS
 
@@ -86,7 +86,7 @@ for the given event.
 ### TEMPLATE
 
 ```ruby
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class <plugin-class-name>
     def post_definition(message); end
     def pre_instance(message); end
@@ -102,7 +102,7 @@ end
 Log job definitions:
 
 ```ruby
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class ExampleDefinitionLogger
     def post_definition(message)
       puts "JOB DEFINED: #{message.definition}"
@@ -114,7 +114,7 @@ end
 Report failure summary:
 
 ```ruby
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class FailureSummary
     def initialize
       @failures = []
@@ -136,7 +136,7 @@ end
 Write live status to a file:
 
 ```ruby
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class StatusWriter
     def initialize
       @failures = []
@@ -164,7 +164,7 @@ end
 Incrementally `tar` results then `gzip` on `post_application`:
 
 ```ruby
-module JobRnr::Plugin
+module Jobrnr::Plugin
   class ResultAccumulator
     def post_instance(message)
       @archive_path ||= File.join(message.options.output_directory, 'results.tar')

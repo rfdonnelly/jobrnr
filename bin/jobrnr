@@ -6,7 +6,7 @@ require 'bundler/setup'
 require_relative '../lib/jobrnr'
 
 begin
-  exit JobRnr::Application.new(ARGV).run
-rescue JobRnr::Error => e
-  JobRnr::Log.error e
+  exit Jobrnr::Application.new(ARGV).run
+rescue Jobrnr::Error => e
+  Jobrnr::Log.error e
 end

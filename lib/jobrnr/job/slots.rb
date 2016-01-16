@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Job
     class Slots
       def initialize(num_slots)

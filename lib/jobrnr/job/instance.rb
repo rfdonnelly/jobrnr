@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Job
     class Instance
       attr_reader :job

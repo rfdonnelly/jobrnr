@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   module Job
     class Definition
       attr_reader :id
@@ -14,7 +14,7 @@ module JobRnr
         @successors = []
         @command = nil
         @iterations = 1
-        @state = JobRnr::Job::State.new(self)
+        @state = Jobrnr::Job::State.new(self)
 
         predecessors.each { |p| p.successors.push(self) }
       end

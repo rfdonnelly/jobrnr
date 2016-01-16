@@ -7,7 +7,7 @@ jobrnr(1) -- runs jobs
 
 ## DESCRIPTION
 
-**JobRnr** runs jobs.
+**Jobrnr** runs jobs.
 
 * A job can have prerequisite jobs.
 * A job can be repeated many times.
@@ -63,7 +63,7 @@ Miscellaneous options:
 ## ENVIRONMENT
 
   * `JOBRNR_PLUGIN_PATH`:
-    A semicolon separated list of absolute path(s) to JobRnr plug-ins.
+    A semicolon separated list of absolute path(s) to Jobrnr plug-ins.
 
   * `JOBRNR_OUTPUT_DIRECTORY`:
     The directory where results will be placed.  Will be created if it does
@@ -80,7 +80,7 @@ Miscellaneous options:
 
 ## COPYRIGHT
 
-JobRnr is Copyright (C) 2015 Rob Donnelly
+Jobrnr is Copyright (C) 2015 Rob Donnelly
 
 ## SEE ALSO
 

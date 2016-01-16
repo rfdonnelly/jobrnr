@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   require 'singleton'
 
   class Graph

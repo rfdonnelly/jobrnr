@@ -1,4 +1,4 @@
-module JobRnr
+module Jobrnr
   # Wraps a Ruby script in a Ruby class so that multiple scripts can be
   # loaded without namespace conflicts
   class Script
