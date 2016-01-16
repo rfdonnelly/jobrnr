@@ -16,14 +16,20 @@ module Jobrnr
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
         op.separator('GENERAL OPTIONS')
-        op.on('-d', '--output-directory <directory>', 'Directory to place results.') do |arg|
+        op.on('-d', '--output-directory <directory>',
+              'Directory to place results.',
+              String) do |arg|
           options.output_directory = arg
         end
-        op.on('-f', '--max-failures <failures>', 'Maximum number of failures before disabling execution of new jobs') do |arg|
-          options.max_failures = Integer(arg)
+        op.on('-f', '--max-failures <failures>',
+              'Maximum number of failures before disabling execution of new jobs',
+              Integer) do |arg|
+          options.max_failures = arg
         end
-        op.on('-j', '--max-jobs <jobs>', 'Maximum number of jobs to run simultaneously') do |arg|
-          options.max_jobs = Integer(arg)
+        op.on('-j', '--max-jobs <jobs>',
+              'Maximum number of jobs to run simultaneously',
+              Integer) do |arg|
+          options.max_jobs = arg
         end
         op.separator('')
 
