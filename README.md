@@ -26,4 +26,4 @@ job.  The compilation job is a prerequisite for the simulation job.  The
 simulation job will not be executed until the compilation job completes
 successfully.  After the compile job completes successfully, 50 instances of
 the simulation job will be executed.  Each instance will execute with a random
-value for SEED.  The simulation job instances can be run simultaneously.
+value for SEED.  The simulation job instances will be run simultaneously.
