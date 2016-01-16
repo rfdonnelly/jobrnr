@@ -26,11 +26,11 @@ module Jobrnr
       end
 
       def done?(job_queue, futures)
-        job_queue.size == 0 && futures.size == 0
+        (job_queue.empty? || max_failures_reached) && futures.empty?
       end
 
       def nothing_todo?(completed_futures, job_queue, slots)
-        completed_futures.size == 0 && (job_queue.size == 0 || slots.available == 0)
+        completed_futures.size == 0 && (job_queue.size == 0 || slots.available == 0 || max_failures_reached)
       end
 
       def ready_to_queue(successors)
@@ -70,36 +70,13 @@ module Jobrnr
               stats.queue(successors_to_queue)
             end
           end
-          break if options.max_failures > 0 && stats.failed >= options.max_failures
 
           completed_instances.each { |job_instance| slots.deallocate(job_instance.slot, !job_instance.success?) }
-          futures = futures.reject { |future| completed_futures.any? { |completed_future| future == completed_future } }
+          futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
           # launch new job instances
-          num_jobs_queued = [*job_queue.map(&:state).map(&:to_be_scheduled), 0].reduce(&:+)
-          num_to_schedule = [num_jobs_queued, slots.available].min
-          new_instances = []
-
-          num_to_schedule.times do
-            slot = slots.allocate
-            job_instance = Jobrnr::Job::Instance.new(
-              job: job_queue.first,
-              slot: slot,
-              log: File.join(options.output_directory, '%s%02d' % [File.basename(options.output_directory), slot])
-            )
-            job_queue.shift if job_instance.job.state.scheduled?
-
-            plugins.pre_instance(Jobrnr::PreInstanceMessage.new(job_instance, options))
-            message(job_instance)
-            stats.collect(job_instance)
-
-            new_instances.push(job_instance)
-          end
-
-          new_futures = new_instances.map do |instance|
-            Concurrent::Future.execute { instance.execute }
-          end
-          futures.push(*new_futures)
+          new_instances = max_failures_reached ? [] : process_queue(job_queue)
+          futures.concat(create_futures(new_instances))
 
           Jobrnr::Log.info stats.to_s
           plugins.post_interval(Jobrnr::PostIntervalMessage.new(completed_instances, new_instances, stats, options))
@@ -111,6 +88,45 @@ module Jobrnr
         plugins.post_application(Jobrnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
 
         status_code
+      end
+
+      def max_failures_reached
+        options.max_failures > 0 && stats.failed >= options.max_failures
+      end
+
+      def create_futures(instances)
+        instances.map { |instance| Concurrent::Future.execute { instance.execute } }
+      end
+
+      def process_queue(job_queue)
+        num_jobs_queued = [*job_queue.map(&:state).map(&:to_be_scheduled), 0].reduce(&:+)
+        num_to_schedule = [num_jobs_queued, slots.available].min
+        new_instances = []
+
+        num_to_schedule.times do
+          slot = slots.allocate
+          job_instance = Jobrnr::Job::Instance.new(
+            job: job_queue.first,
+            slot: slot,
+            log: log_filename(slot)
+          )
+          job_queue.shift if job_instance.job.state.scheduled?
+
+          plugins.pre_instance(Jobrnr::PreInstanceMessage.new(job_instance, options))
+          message(job_instance)
+          stats.collect(job_instance)
+
+          new_instances.push(job_instance)
+        end
+
+        new_instances
+      end
+
+      def log_filename(slot)
+        File.join(
+          options.output_directory,
+          '%s%02d' % [File.basename(options.output_directory), slot]
+        )
       end
 
       def message(job_instance)

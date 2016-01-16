@@ -30,7 +30,8 @@ General options:
     Default: $PWD.
 
   * `-f`, `--max-failures` <failures>:
-    The number of failures to allow before terminating.  Value of `0`
+    The number of failures to allow before disabling execution of new jobs.
+    All running jobs will be allowed to finish before terminating. Value of `0`
     effectively disables this setting.  Overrides the JOBRNR_MAX_FAILURES
     environment variable.  Default: 0 (disabled)
 

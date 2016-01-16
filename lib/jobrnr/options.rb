@@ -19,7 +19,7 @@ module Jobrnr
         op.on('-d', '--output-directory <directory>', 'Directory to place results.') do |arg|
           options.output_directory = arg
         end
-        op.on('-f', '--max-failures <failures>', 'Maximum number of failures before termination') do |arg|
+        op.on('-f', '--max-failures <failures>', 'Maximum number of failures before disabling execution of new jobs') do |arg|
           options.max_failures = Integer(arg)
         end
         op.on('-j', '--max-jobs <jobs>', 'Maximum number of jobs to run simultaneously') do |arg|
