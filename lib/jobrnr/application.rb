@@ -10,16 +10,16 @@ module Jobrnr
       options = Jobrnr::Options.new.parse(@argv)
       filename = @argv[0]
 
-      if options.dot
-        Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
-        exit
-      end
-
       # load plugins
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
       user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, nil, filename, options)
       merged_options = merge_options(options, user_script.options, filename)
+
+      if options.dot
+        Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
+        exit
+      end
 
       Jobrnr::Job::Dispatch.new(
         options: merged_options,
