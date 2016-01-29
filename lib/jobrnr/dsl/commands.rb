@@ -3,10 +3,10 @@ module Jobrnr
     class Commands
       require 'docile'
 
-      attr_reader :options
+      attr_reader :jobrnr_options
 
       def initialize(options)
-        @options = options.clone
+        @jobrnr_options = options.clone
       end
 
       def job(id, predecessor_ids = nil, &block)
@@ -36,7 +36,7 @@ module Jobrnr
           end
 
         jobs_before_import = Jobrnr::Graph.instance.ids.clone
-        Jobrnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename, options)
+        Jobrnr::DSL::Loader.instance.evaluate(prefix, import_jobs, load_filename, jobrnr_options)
         jobs_after_import = Jobrnr::Graph.instance.ids
         imported_jobs = jobs_after_import.reject { |job| jobs_before_import.include?(job) }
 

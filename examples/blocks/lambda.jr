@@ -8,6 +8,6 @@ job :run do
   end
 end
 
-options.output_directory = 'results'
+jobrnr_options.output_directory = 'results'
 
 # vim: ft=ruby sw=2

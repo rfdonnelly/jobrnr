@@ -3,6 +3,6 @@ job :repeat do
   repeat 50
 end
 
-options.output_directory = 'results'
+jobrnr_options.output_directory = 'results'
 
 # vim: ft=ruby
