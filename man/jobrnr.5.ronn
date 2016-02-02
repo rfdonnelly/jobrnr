@@ -26,7 +26,7 @@ The Jobrnr job description file format is an internal [DSL][1] writen in
   * job::`repeat <Fixnum>`:
     Define the number of times a job should be repated.
 
-  * `import <prefix>, <jobs>, <filename>`:
+  * `import <prefix>, <filename>`:
     Imports jobs from another job description (*.jr) file.
 
 ## EXAMPLES
@@ -92,23 +92,16 @@ job :run, :compile do
 end
 ```
 
-Import job 'b' from 'c.jr' as 'a_b':
+Import jobs from 'b.jr' with prefix 'a'.  If 'b.jr' has job 'c', it will be imported as 'a_c'.
 
 ```ruby
-import 'a', ['b'], 'c.jr'
+import 'a', 'b.jr'
 ```
 
-Import jobs 'compile' and 'run' from 'imports.jr' as 'import_compile' and
-'import_run' respectively:
+Prerequisite from an import (assumes 'imports.jr' contains a 'compile' job):
 
 ```ruby
-import 'import', ['compile', 'run'], 'imports.jr'
-```
-
-Prerequisite from an import:
-
-```ruby
-import 'import', ['compile'], 'imports.jr'
+import 'import', 'imports.jr'
 
 job :run, :import_compile do
   execute 'make run'

@@ -13,7 +13,7 @@ module Jobrnr
       # load plugins
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
-      user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, nil, filename, options)
+      user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options)
       merged_options = merge_options(options, user_script.jobrnr_options, filename)
 
       if options.dot

@@ -14,7 +14,7 @@ job :run_random, :compile do
   repeat 10
 end
 
-import 'child', [:compile, :run_random], "child.jr"
+import 'child', "child.jr"
 
 jobrnr_options.output_directory = 'results'
 

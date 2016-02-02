@@ -1,5 +1,5 @@
-import 'def', [:run], 'def.jr'
-import 'lambda', [:run], 'lambda.jr'
+import 'def', 'def.jr'
+import 'lambda', 'lambda.jr'
 
 jobrnr_options.output_directory = 'results'
 
