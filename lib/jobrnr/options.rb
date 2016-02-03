@@ -22,7 +22,8 @@ module Jobrnr
           options.output_directory = arg
         end
         op.on('-f', '--max-failures <failures>',
-              'Maximum number of failures before disabling execution of new jobs',
+              'Maximum number of failures before disabling execution of new' \
+              ' jobs',
               Integer) do |arg|
           options.max_failures = arg
         end
@@ -63,7 +64,13 @@ module Jobrnr
     end
 
     def initialize_options
-      Struct.new(:dot, :max_failures, :max_jobs, :output_directory, :plugin_paths).new
+      Struct.new(
+        :dot,
+        :max_failures,
+        :max_jobs,
+        :output_directory,
+        :plugin_paths
+      ).new
     end
 
     def default_options(options)

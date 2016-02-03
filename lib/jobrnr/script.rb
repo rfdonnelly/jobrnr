@@ -19,8 +19,6 @@ module Jobrnr
     # param filename [String] filename to load
     # param opts [Hash]
     def self.load(filename, opts = {})
-      base_class = opts[:base_class]
-      init_args = opts[:init_args] || []
       opts[:filename] = filename
 
       code = IO.read(filename)

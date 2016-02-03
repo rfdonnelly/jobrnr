@@ -30,7 +30,11 @@ module Jobrnr
       end
 
       def nothing_todo?(completed_futures, job_queue, slots)
-        completed_futures.size == 0 && (job_queue.size == 0 || slots.available == 0 || max_failures_reached)
+        completed_futures.size == 0 && (
+          job_queue.size == 0 ||
+          slots.available == 0 ||
+          max_failures_reached
+        )
       end
 
       def ready_to_queue(successors)

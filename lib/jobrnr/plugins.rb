@@ -11,7 +11,7 @@ module Jobrnr
     ]
 
     PLUGIN_METHODS.each do |meth|
-      define_method(meth) { |*args|}
+      define_method(meth) { |*args| }
     end
   end
 
@@ -83,7 +83,7 @@ module Jobrnr
     #
     # Returns array of plugin class instances
     def create_plugin_instances(classes)
-      classes.map { |c| c.new }
+      classes.map(&:new)
         .each { |o| o.class.send(:include, Jobrnr::PluginMethodStubs) }
     end
   end
