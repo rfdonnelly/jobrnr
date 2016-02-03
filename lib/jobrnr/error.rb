@@ -4,4 +4,5 @@ module Jobrnr
   class Error < StandardError; end
   class OptionsError < Error; end
   class ImportError < Error; end
+  class ArgumentError < Error; end
 end
