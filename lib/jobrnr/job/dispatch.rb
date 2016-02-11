@@ -114,7 +114,14 @@ module Jobrnr
             slot: slot,
             log: log_filename(slot)
           )
-          job_queue.shift if job_instance.job.state.scheduled?
+
+          # remove job from queue if all instances scheduled otherwise send to
+          # the back of the queue to play fair with other jobs
+          if job_instance.job.state.scheduled?
+            job_queue.shift
+          else
+            job_queue.rotate!
+          end
 
           plugins.pre_instance(Jobrnr::PreInstanceMessage.new(job_instance, options))
           message(job_instance)
