@@ -12,6 +12,8 @@ module Jobrnr
     end
 
     def parse(argv)
+      options.argv = argv
+
       OptionParser.new do |op|
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
@@ -65,6 +67,7 @@ module Jobrnr
 
     def initialize_options
       Struct.new(
+        :argv,
         :dot,
         :max_failures,
         :max_jobs,

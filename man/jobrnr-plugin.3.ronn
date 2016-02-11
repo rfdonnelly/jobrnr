@@ -61,6 +61,7 @@ for the given event.
   * `options`:
 
     `output_directory`: absolute path to output directory <br/>
+    `argv`: the contents of `ARGV` jobrnr was invoked with <br/>
 
   * `definition`:
 
