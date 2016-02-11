@@ -5,4 +5,5 @@ module Jobrnr
   class OptionsError < Error; end
   class ImportError < Error; end
   class ArgumentError < Error; end
+  class TypeError < Error; end
 end

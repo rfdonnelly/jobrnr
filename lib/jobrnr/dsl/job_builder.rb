@@ -7,13 +7,13 @@ module Jobrnr
 
       def execute(command = nil, &block)
         if command.nil? && block.nil?
-          raise Jobrnr::ArgumentError, "'execute' expects a String or block" \
+          raise Jobrnr::TypeError, "'execute' expects a String or block" \
             " @ #{source}"
         elsif !command.nil? && !block.nil?
-          raise Jobrnr::ArgumentError, "'execute' expects a String or block" \
+          raise Jobrnr::TypeError, "'execute' expects a String or block" \
             " not both @ #{source}"
         elsif !command.nil? && !command.is_a?(String)
-          raise Jobrnr::ArgumentError, "'execute' expects a String or block" \
+          raise Jobrnr::TypeError, "'execute' expects a String or block" \
             " but was given value of '#{command}' of type" \
             " '#{command.class.name}' @ #{source}"
         end
