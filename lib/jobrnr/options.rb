@@ -12,7 +12,7 @@ module Jobrnr
     end
 
     def parse(argv)
-      options.argv = argv
+      options.argv = argv.clone
 
       OptionParser.new do |op|
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
