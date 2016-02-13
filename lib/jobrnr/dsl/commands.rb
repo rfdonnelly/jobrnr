@@ -4,9 +4,11 @@ module Jobrnr
       require 'docile'
 
       attr_reader :jobrnr_options
+      attr_reader :argv
 
-      def initialize(options)
+      def initialize(options, argv)
         @jobrnr_options = options.clone
+        @argv = argv
       end
 
       def job(id, predecessor_ids = nil, &block)

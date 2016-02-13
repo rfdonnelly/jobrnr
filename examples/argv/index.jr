@@ -1,0 +1,16 @@
+# override defaults: bin/jobrnr examples/argv/index.jr +full +full-iter=2 +quote='quoted string'
+# try defaults: bin/jobrnr examples/argv/index.jr
+
+puts argv.to_s
+
+default_options = {
+  full: false,
+  full_iter: 1,
+  quote: 'hello world',
+}
+options = default_options.merge(Jobrnr::ScriptOptionParser.new.parse(argv))
+
+puts options.to_s
+puts argv.to_s
+
+# vim: ft=ruby sw=2
