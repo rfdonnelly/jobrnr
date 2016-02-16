@@ -8,9 +8,23 @@ default_options = {
   full_iter: 1,
   quote: 'hello world',
 }
-options = default_options.merge(Jobrnr::ScriptOptionParser.new.parse(argv))
+
+options_spec = {
+  long: {
+    doc: 'Long regression.',
+  },
+  long_iter: {
+    default: 1,
+    doc: 'Number of long job iterations.',
+  },
+  quote: {
+    default: 'hello world',
+    doc: 'A quoted string.',
+  },
+}
+
+options = Jobrnr::ScriptOptionParser.new.parse(options_spec, argv)
 
 puts options.to_s
-puts argv.to_s
 
 # vim: ft=ruby sw=2
