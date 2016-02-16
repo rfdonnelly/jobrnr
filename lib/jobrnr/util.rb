@@ -17,5 +17,10 @@ module Jobrnr
     def self.relative_to_file(from_file, to_file)
       File.expand_path(File.join(File.dirname(to_file), from_file))
     end
+
+    # Determines if Array a is a subset of Array b.  Order doesn't matter.
+    def self.array_subset_of?(a, b)
+      (a & b) == a
+    end
   end
 end
