@@ -16,7 +16,7 @@ module Jobrnr
   # * `+string_option=string`
   # * `+integer_option=5`
   # * `+boolean_option`
-  class ScriptOptionParser
+  class OptionParser
     def self.parse(specs, argv)
       full_specs = process_specs(specs.clone)
       default_options = get_defaults(full_specs)

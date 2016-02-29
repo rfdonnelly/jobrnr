@@ -1,15 +1,7 @@
 # override defaults: bin/jobrnr examples/argv/index.jr +full +full-iter=2 +quote='quoted string'
 # try defaults: bin/jobrnr examples/argv/index.jr
 
-puts argv.to_s
-
-default_options = {
-  full: false,
-  full_iter: 1,
-  quote: 'hello world',
-}
-
-options_spec = {
+option_specs = {
   long: {
     doc: 'Long regression.',
   },
@@ -23,7 +15,7 @@ options_spec = {
   },
 }
 
-options = Jobrnr::ScriptOptionParser.parse(options_spec, argv)
+options = Jobrnr::OptionParser.parse(option_specs, argv)
 
 puts options.to_s
 
