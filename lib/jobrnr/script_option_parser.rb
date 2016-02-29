@@ -44,12 +44,11 @@ module Jobrnr
 
       [
         'OPTIONS',
-        '',
         specs.map { |option, spec| help_format_option(option, spec, defaults[option]) }
       ].join("\n\n")
     end
 
-    def help_format_option(option, spec, defaults)
+    def help_format_option(option, spec, default)
       [
         "  +#{help_format_name(option, spec)}",
         "    #{spec[:doc]} Default: #{default}"
