@@ -23,7 +23,7 @@ options_spec = {
   },
 }
 
-options = Jobrnr::ScriptOptionParser.new.parse(options_spec, argv)
+options = Jobrnr::ScriptOptionParser.parse(options_spec, argv)
 
 puts options.to_s
 
