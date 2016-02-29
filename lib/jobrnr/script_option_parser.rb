@@ -17,68 +17,116 @@ module Jobrnr
   # * `+integer_option=5`
   # * `+boolean_option`
   class ScriptOptionParser
-    def parse(spec, argv)
-      spec = process_spec(spec.clone)
-
-      default_options = get_defaults(spec)
+    def parse(specs, argv)
+      full_specs = process_specs(specs.clone)
+      default_options = get_defaults(full_specs)
 
       options = parse_options(argv)
 
       if !Jobrnr::Util.array_subset_of?(options.keys, default_options.keys)
-        common_options = options.keys & default_options.keys
-        unsupported_options = options.keys - common_options
-        unsupported_options_s = unsupported_options.map { |option| "+#{option}" }.join(', ')
-
-        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options_s}\nValid options:\n#{help(spec)}"
+        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(options, default_options)}\n\n#{help(full_specs)}"
       end
 
-      default_options.merge(options)
+      typed_options = type_cast_options(options, full_specs)
+
+      default_options.merge(typed_options)
     end
 
-    def help(spec)
-      defaults = get_defaults(spec)
-      spec.map do |k, v|
-        "+#{k.to_s} - #{v[:doc]} Default: #{defaults[k]}"
-      end.join("\n")
+    def unsupported_options(options, default_options)
+      common_options = options.keys & default_options.keys
+
+      (options.keys - common_options)
+        .map { |option| "+#{option}" }.join(', ')
     end
 
-    def get_defaults(spec)
-      spec.each_with_object({}) do |(option_name, option_spec), default_options|
-        default_options[option_name] = option_spec.key?(:default) ? option_spec[:default] : false
+    def help(specs)
+      defaults = get_defaults(specs)
+
+      [
+        'OPTIONS',
+        '',
+        specs.map { |option, spec| help_format_option(option, spec, defaults[option]) }
+      ].join("\n\n")
+    end
+
+    def help_format_option(option, spec, defaults)
+      [
+        "  +#{help_format_name(option, spec)}",
+        "    #{spec[:doc]} Default: #{default}"
+      ].join("\n")
+    end
+
+    def help_format_name(option, spec)
+      sym_to_s(option) + ((spec[:type] == TrueClass) ? '' : '=<value>')
+    end
+
+    def get_defaults(specs)
+      specs.each_with_object({}) do |(option, spec), default_options|
+        default_options[option] = spec.key?(:default) ? spec[:default] : false
       end
+    end
+
+    def process_specs(specs)
+      specs.each { |option, spec| process_spec(spec) }
     end
 
     def process_spec(spec)
-      spec.each { |option_name, option_spec| process_option_spec(option_spec) }
-    end
-
-    def process_option_spec(option_spec)
-      if !option_spec[:type]
-        option_spec[:type] =
-          if !option_spec[:default]
-            TrueClass
+      if !spec[:type]
+        spec[:type] =
+          if !spec[:default]
+            FalseClass
           else
-            option_spec[:default].class
+            spec[:default].class
           end
       end
 
-      if !option_spec[:default]
-        option_spec[:default] = false
+      if !spec[:default]
+        spec[:default] = false
       end
     end
 
     def parse_options(argv)
       argv.each_with_object({}) do |arg, args|
         if md = arg.match(/^\+(.*?)=(.*)/)
-          args[transform_key(md.captures.first)] = md.captures.last
-        elsif md = arg.match(/^\+(\w+)$/)
-          args[transform_key(md.captures.first)] = true
+          args[s_to_sym(md.captures.first)] = md.captures.last
+        elsif md = arg.match(/^\+((\w|-)+)$/)
+          args[s_to_sym(md.captures.first)] = :noarg
         end
       end
     end
 
-    def transform_key(key)
-      key.tr('-', '_').to_sym
+    def type_cast_options(options, specs)
+      options.keys.each_with_object({}) do |option, typed_options|
+        typed_options[option] = type_cast_option(option, options[option], specs[option])
+      end
+    end
+
+    def type_cast_option(option, value, spec)
+      if spec[:type] == TrueClass || spec[:type] == FalseClass
+        if value == :noarg
+          true
+        elsif value.match(/^(true|t|yes|y|1)$/)
+          true
+        elsif value.match(/^(false|f|no|n|0)$/)
+          false
+        else
+          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean type for the '+#{sym_to_s(option)} option"
+        end
+      elsif value == :noarg
+        raise Jobrnr::ArgumentError, "No argument given for '+#{sym_to_s(option)}' option"
+      elsif spec[:type] == Fixnum
+        Integer(value) # TODO catch exception and rethrow as Jobrnr::ArgumentError
+      else
+        value
+      end
+    end
+
+    def s_to_sym(s)
+      s.tr('-', '_').to_sym
+    end
+
+    def sym_to_s(sym)
+      sym.to_s.tr('_', '-')
     end
   end
 end
