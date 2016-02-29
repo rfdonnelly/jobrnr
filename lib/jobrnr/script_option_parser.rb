@@ -1,4 +1,21 @@
 module Jobrnr
+  # Parses plusargs
+  #
+  # Specifying options:
+  #
+  # * Option type is inferred by the options default value.
+  # * Absence of default value infers a default of false.
+  #
+  # Options on the command line:
+  #
+  # * Options are in the form of `+<name>=<value>`
+  # * Absence of `=<value>' infers true for Boolean options
+  #
+  # Examples of plusargs:
+  #
+  # * `+string_option=string`
+  # * `+integer_option=5`
+  # * `+boolean_option`
   class ScriptOptionParser
     def parse(spec, argv)
       spec = process_spec(spec.clone)
