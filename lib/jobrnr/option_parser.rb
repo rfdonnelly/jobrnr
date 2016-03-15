@@ -36,7 +36,7 @@ module Jobrnr
       common_options = options.keys & default_options.keys
 
       (options.keys - common_options)
-        .map { |option| "+#{option}" }.join(', ')
+        .map { |option| "+#{sym_to_s(option)}" }.join(', ')
     end
 
     def self.help(specs)
