@@ -109,12 +109,16 @@ module Jobrnr
         elsif value.match(/^(false|f|no|n|0)$/)
           false
         else
-          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean type for the '+#{sym_to_s(option)} option"
+          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean type for the '+#{sym_to_s(option)}' option"
         end
       elsif value == :noarg
         raise Jobrnr::ArgumentError, "No argument given for '+#{sym_to_s(option)}' option"
       elsif spec[:type] == Fixnum
-        Integer(value) # TODO catch exception and rethrow as Jobrnr::ArgumentError
+        begin
+          Integer(value)
+        rescue StandardError => e
+          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Integer type for the '+#{sym_to_s(option)}' option"
+        end
       else
         value
       end
