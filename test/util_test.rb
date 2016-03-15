@@ -1,5 +1,4 @@
-require 'minitest/autorun'
-require 'jobrnr'
+require 'test_helper'
 
 describe Jobrnr::Util do
   before do
