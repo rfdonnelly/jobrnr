@@ -1,0 +1,20 @@
+option_specs = {
+  name: {
+    default: 'parent',
+    doc: 'name',
+  },
+  child_name: {
+    default: 'child-name',
+    doc: 'child-name',
+  },
+  present: {
+    doc: 'boolean type',
+  },
+}
+
+options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
+puts "parent: #{options.to_s}"
+
+import 'child', 'child.jr', "+name=#{options[:child_name]}", "+present=#{options[:present]}"
+
+# vim: ft=ruby sw=2

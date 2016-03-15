@@ -1,0 +1,22 @@
+# override defaults: bin/jobrnr examples/plus_options/index.jr +full +full-iter=2 +quote='quoted string'
+# try defaults: bin/jobrnr examples/plus_options/index.jr
+
+option_specs = {
+  long: {
+    doc: 'Long regression.',
+  },
+  long_iter: {
+    default: 1,
+    doc: 'Number of long job iterations.',
+  },
+  quote: {
+    default: 'hello world',
+    doc: 'A quoted string.',
+  },
+}
+
+options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
+
+puts options.to_s
+
+# vim: ft=ruby sw=2
