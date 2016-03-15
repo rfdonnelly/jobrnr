@@ -18,6 +18,10 @@ module Jobrnr
   # * `+boolean_option`
   class PlusOptionParser
     def self.parse(specs, plus_options)
+      self.new.parse(specs, plus_options)
+    end
+
+    def parse(specs, plus_options)
       full_specs = process_specs(specs.clone)
       default_options = get_defaults(full_specs)
 
@@ -32,14 +36,14 @@ module Jobrnr
       default_options.merge(typed_options)
     end
 
-    def self.unsupported_options(options, default_options)
+    def unsupported_options(options, default_options)
       common_options = options.keys & default_options.keys
 
       (options.keys - common_options)
         .map { |option| "+#{sym_to_s(option)}" }.join(', ')
     end
 
-    def self.help(specs)
+    def help(specs)
       defaults = get_defaults(specs)
 
       [
@@ -48,28 +52,28 @@ module Jobrnr
       ].join("\n\n")
     end
 
-    def self.help_format_option(option, spec, default)
+    def help_format_option(option, spec, default)
       [
         "  +#{help_format_name(option, spec)}",
         "    #{spec[:doc]} Default: #{default}"
       ].join("\n")
     end
 
-    def self.help_format_name(option, spec)
+    def help_format_name(option, spec)
       sym_to_s(option) + ((spec[:type] == TrueClass) ? '' : '=<value>')
     end
 
-    def self.get_defaults(specs)
+    def get_defaults(specs)
       specs.each_with_object({}) do |(option, spec), default_options|
         default_options[option] = spec.key?(:default) ? spec[:default] : false
       end
     end
 
-    def self.process_specs(specs)
+    def process_specs(specs)
       specs.each { |option, spec| process_spec(spec) }
     end
 
-    def self.process_spec(spec)
+    def process_spec(spec)
       if !spec[:type]
         spec[:type] =
           if !spec[:default]
@@ -84,7 +88,7 @@ module Jobrnr
       end
     end
 
-    def self.parse_options(plus_options)
+    def parse_options(plus_options)
       plus_options.each_with_object({}) do |option, options|
         if md = option.match(/^\+(.*?)=(.*)/)
           options[s_to_sym(md.captures.first)] = md.captures.last
@@ -94,13 +98,13 @@ module Jobrnr
       end
     end
 
-    def self.type_cast_options(options, specs)
+    def type_cast_options(options, specs)
       options.keys.each_with_object({}) do |option, typed_options|
         typed_options[option] = type_cast_option(option, options[option], specs[option])
       end
     end
 
-    def self.type_cast_option(option, value, spec)
+    def type_cast_option(option, value, spec)
       if spec[:type] == TrueClass || spec[:type] == FalseClass
         if value == :noarg
           true
@@ -124,11 +128,11 @@ module Jobrnr
       end
     end
 
-    def self.s_to_sym(s)
+    def s_to_sym(s)
       s.tr('-', '_').to_sym
     end
 
-    def self.sym_to_s(sym)
+    def sym_to_s(sym)
       sym.to_s.tr('_', '-')
     end
   end
