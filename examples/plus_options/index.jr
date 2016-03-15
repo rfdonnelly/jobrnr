@@ -1,5 +1,5 @@
-# override defaults: bin/jobrnr examples/argv/index.jr +full +full-iter=2 +quote='quoted string'
-# try defaults: bin/jobrnr examples/argv/index.jr
+# override defaults: bin/jobrnr examples/plus_options/index.jr +full +full-iter=2 +quote='quoted string'
+# try defaults: bin/jobrnr examples/plus_options/index.jr
 
 option_specs = {
   long: {
@@ -15,7 +15,7 @@ option_specs = {
   },
 }
 
-options = Jobrnr::OptionParser.parse(option_specs, argv)
+options = Jobrnr::OptionParser.parse(option_specs, plus_options)
 
 puts options.to_s
 

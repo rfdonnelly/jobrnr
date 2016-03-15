@@ -17,11 +17,11 @@ module Jobrnr
   # * `+integer_option=5`
   # * `+boolean_option`
   class OptionParser
-    def self.parse(specs, argv)
+    def self.parse(specs, plus_options)
       full_specs = process_specs(specs.clone)
       default_options = get_defaults(full_specs)
 
-      options = parse_options(argv)
+      options = parse_options(plus_options)
 
       unless Jobrnr::Util.array_subset_of?(options.keys, default_options.keys)
         raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(options, default_options)}\n\n#{help(full_specs)}"
@@ -84,12 +84,12 @@ module Jobrnr
       end
     end
 
-    def self.parse_options(argv)
-      argv.each_with_object({}) do |arg, args|
-        if md = arg.match(/^\+(.*?)=(.*)/)
-          args[s_to_sym(md.captures.first)] = md.captures.last
-        elsif md = arg.match(/^\+((\w|-)+)$/)
-          args[s_to_sym(md.captures.first)] = :noarg
+    def self.parse_options(plus_options)
+      plus_options.each_with_object({}) do |option, options|
+        if md = option.match(/^\+(.*?)=(.*)/)
+          options[s_to_sym(md.captures.first)] = md.captures.last
+        elsif md = option.match(/^\+((\w|-)+)$/)
+          options[s_to_sym(md.captures.first)] = :noarg
         end
       end
     end

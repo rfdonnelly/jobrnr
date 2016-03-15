@@ -22,7 +22,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
-          system 'bin/jobrnr examples/argv/index.jr'
+          system 'bin/jobrnr examples/plus_options/index.jr'
         end
       end
 
@@ -32,7 +32,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
-          system 'bin/jobrnr examples/argv/index.jr +long +long-iter=2 +quote="hello jobrnr" --max-jobs 2'
+          system 'bin/jobrnr examples/plus_options/index.jr +long +long-iter=2 +quote="hello jobrnr" --max-jobs 2'
         end
       end
 
@@ -42,7 +42,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
-          system 'bin/jobrnr examples/argv/index.jr +long +long-iter=2 +quote="hello jobrnr" --max-jobs 2 +long=false +long-iter=3 +quote=yo'
+          system 'bin/jobrnr examples/plus_options/index.jr +long +long-iter=2 +quote="hello jobrnr" --max-jobs 2 +long=false +long-iter=3 +quote=yo'
         end
       end
 
@@ -52,7 +52,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
-          system 'bin/jobrnr examples/argv/index.jr +quote='
+          system 'bin/jobrnr examples/plus_options/index.jr +quote='
         end
       end
     end
@@ -75,7 +75,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches('', exp_err) do
-          system 'bin/jobrnr examples/argv/index.jr +does-not-exist'
+          system 'bin/jobrnr examples/plus_options/index.jr +does-not-exist'
         end
       end
 
@@ -85,7 +85,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches('', exp_err) do
-          system 'bin/jobrnr examples/argv/index.jr +long-iter= +long'
+          system 'bin/jobrnr examples/plus_options/index.jr +long-iter= +long'
         end
       end
 
@@ -95,7 +95,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches('', exp_err) do
-          system 'bin/jobrnr examples/argv/index.jr +long-iter 2'
+          system 'bin/jobrnr examples/plus_options/index.jr +long-iter 2'
         end
       end
 
@@ -105,7 +105,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches('', exp_err) do
-          system 'bin/jobrnr examples/argv/index.jr +long-iter=five'
+          system 'bin/jobrnr examples/plus_options/index.jr +long-iter=five'
         end
       end
 
@@ -115,7 +115,7 @@ describe Jobrnr::Util do
         EOF
 
         assert_subprocess_io_matches('', exp_err) do
-          system 'bin/jobrnr examples/argv/index.jr +long=five'
+          system 'bin/jobrnr examples/plus_options/index.jr +long=five'
         end
       end
     end
@@ -129,7 +129,7 @@ describe Jobrnr::Util do
       EOF
 
       assert_subprocess_io_matches(exp_out, '') do
-        system 'bin/jobrnr examples/argv_import/index.jr'
+        system 'bin/jobrnr examples/plus_options_import/index.jr'
       end
     end
 
@@ -140,7 +140,7 @@ describe Jobrnr::Util do
       EOF
 
       assert_subprocess_io_matches(exp_out, '') do
-        system 'bin/jobrnr examples/argv_import/index.jr +name=foo +child-name=bar +present'
+        system 'bin/jobrnr examples/plus_options_import/index.jr +name=foo +child-name=bar +present'
       end
     end
   end

@@ -4,11 +4,11 @@ module Jobrnr
       require 'docile'
 
       attr_reader :jobrnr_options
-      attr_reader :argv
+      attr_reader :plus_options
 
-      def initialize(options, argv)
+      def initialize(options, plus_options)
         @jobrnr_options = options.clone
-        @argv = argv
+        @plus_options = plus_options
       end
 
       def job(id, predecessor_ids = nil, &block)
@@ -24,7 +24,7 @@ module Jobrnr
         Jobrnr::Graph.instance.add_job(job)
       end
 
-      def import(prefix, filename, *argv)
+      def import(prefix, filename, *plus_options)
         expanded_filename = Jobrnr::Util.expand_envars(filename)
         importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
@@ -35,7 +35,7 @@ module Jobrnr
             expanded_filename
           end
 
-        Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, argv)
+        Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
       end
 
       def prefix_id(prefix, id)
