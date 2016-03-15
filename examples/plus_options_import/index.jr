@@ -12,7 +12,7 @@ option_specs = {
   },
 }
 
-options = Jobrnr::OptionParser.parse(option_specs, plus_options)
+options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
 puts "parent: #{options.to_s}"
 
 import 'child', 'child.jr', "+name=#{options[:child_name]}", "+present=#{options[:present]}"

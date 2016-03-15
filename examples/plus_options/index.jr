@@ -15,7 +15,7 @@ option_specs = {
   },
 }
 
-options = Jobrnr::OptionParser.parse(option_specs, plus_options)
+options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
 
 puts options.to_s
 

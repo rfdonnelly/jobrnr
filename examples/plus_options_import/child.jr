@@ -8,7 +8,7 @@ option_specs = {
   },
 }
 
-options = Jobrnr::OptionParser.parse(option_specs, plus_options)
+options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
 puts "child: #{options.to_s}"
 
 # vim: ft=ruby sw=2
