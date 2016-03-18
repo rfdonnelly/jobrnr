@@ -22,8 +22,7 @@ module Jobrnr
 
         raise Jobrnr::ArgumentError,
           "job ':#{id}' references undefined predecessor job(s) " \
-          "#{pids_not_found.join(', ')} @ #{caller_source}"
-          unless pids_not_found.empty?
+          "#{pids_not_found.join(', ')} @ #{caller_source}" unless pids_not_found.empty?
 
         predecessors = pids.map { |pid| graph[pid] }
         builder = Jobrnr::DSL::JobBuilder.new(
