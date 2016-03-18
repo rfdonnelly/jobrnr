@@ -14,7 +14,7 @@ module Jobrnr
       def job(id, predecessor_ids = nil, &block)
         prefix = Jobrnr::DSL::Loader.instance.prefix
 
-        pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, id) }
+        pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }
         pids_not_found = pids
           .map { |pid| [pid, graph.id?(pid)] }
           .select { |pid, exists| exists == false }
