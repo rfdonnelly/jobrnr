@@ -14,14 +14,25 @@ module Jobrnr
       def job(id, predecessor_ids = nil, &block)
         prefix = Jobrnr::DSL::Loader.instance.prefix
 
-        predecessors = Array(predecessor_ids).map { |id| Jobrnr::Graph.instance[prefix_id(prefix, id)] }
+        pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, id) }
+        pids_not_found = pids
+          .map { |pid| [pid, graph.id?(pid)] }
+          .select { |pid, exists| exists == false }
+          .map { |pid, exists| "':#{pid}'" }
+
+        raise Jobrnr::ArgumentError,
+          "job ':#{id}' references undefined predecessor job(s) " \
+          "#{pids_not_found.join(', ')} @ #{caller_source}"
+          unless pids_not_found.empty?
+
+        predecessors = pids.map { |pid| graph[pid] }
         builder = Jobrnr::DSL::JobBuilder.new(
           id: prefix_id(prefix, id),
           predecessors: predecessors
         )
         job = Docile.dsl_eval(builder, &block).build
         Jobrnr::Plugins.instance.post_definition(job)
-        Jobrnr::Graph.instance.add_job(job)
+        graph.add_job(job)
       end
 
       def import(prefix, filename, *plus_options)
@@ -48,6 +59,14 @@ module Jobrnr
 
       def importer_filename
         caller(2)[0].split(/:/).first
+      end
+
+      def caller_source
+        Jobrnr::Util.caller_source(1)
+      end
+
+      def graph
+        Jobrnr::Graph.instance
       end
     end
   end

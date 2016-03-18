@@ -20,6 +20,10 @@ module Jobrnr
       @jobs.keys
     end
 
+    def id?(id)
+      @jobs.key?(id)
+    end
+
     def [](id)
       @jobs[id]
     end

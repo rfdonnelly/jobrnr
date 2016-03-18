@@ -22,5 +22,10 @@ module Jobrnr
     def self.array_subset_of?(a, b)
       (a & b) == a
     end
+
+    # Returns filename and line number of caller.
+    def self.caller_source(additional_levels = 0)
+      caller[2 + additional_levels].split(/:/)[0..1].join(':')
+    end
   end
 end
