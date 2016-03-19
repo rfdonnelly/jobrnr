@@ -12,19 +12,43 @@ module Jobrnr
       end
 
       def job(id, predecessor_ids = nil, &block)
+        raise Jobrnr::ArgumentError, Jobrnr::Util.strip_heredoc(<<-EOF) unless block_given?
+          job ':#{id}' definition is incomplete @ #{caller_source}
+
+            Example:
+
+              job :#{id}[, ...] do
+                ...
+              end
+        EOF
+
         prefix = Jobrnr::DSL::Loader.instance.prefix
 
-        predecessors = Array(predecessor_ids).map { |id| Jobrnr::Graph.instance[prefix_id(prefix, id)] }
+        pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }
+        pids_not_found = pids
+          .map { |pid| [pid, graph.id?(pid)] }
+          .select { |pid, exists| exists == false }
+          .map { |pid, exists| "':#{pid}'" }
+
+        raise Jobrnr::ArgumentError,
+          "job ':#{id}' references undefined predecessor job(s) " \
+          "#{pids_not_found.join(', ')} @ #{caller_source}" unless pids_not_found.empty?
+
+        predecessors = pids.map { |pid| graph[pid] }
         builder = Jobrnr::DSL::JobBuilder.new(
           id: prefix_id(prefix, id),
           predecessors: predecessors
         )
         job = Docile.dsl_eval(builder, &block).build
         Jobrnr::Plugins.instance.post_definition(job)
-        Jobrnr::Graph.instance.add_job(job)
+        graph.add_job(job)
       end
 
       def import(prefix, filename, *plus_options)
+        raise Jobrnr::ArgumentError,
+          "import prefix argument must be a non-blank string " \
+          "@ #{caller_source}" unless prefix.is_a?(String) && !prefix.strip.empty?
+
         expanded_filename = Jobrnr::Util.expand_envars(filename)
         importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
@@ -34,6 +58,10 @@ module Jobrnr
           else
             expanded_filename
           end
+
+        raise Jobrnr::ArgumentError,
+          "file '#{filename}' not found " \
+          "@ #{caller_source}" unless File.exists?(load_filename)
 
         Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
       end
@@ -48,6 +76,14 @@ module Jobrnr
 
       def importer_filename
         caller(2)[0].split(/:/).first
+      end
+
+      def caller_source
+        Jobrnr::Util.caller_source(1)
+      end
+
+      def graph
+        Jobrnr::Graph.instance
       end
     end
   end
