@@ -17,95 +17,31 @@ module Jobrnr
   # * `+integer_option=5`
   # * `+boolean_option`
   class PlusOptionParser
-    def self.parse(specs, plus_options)
-      self.new.parse(specs, plus_options)
-    end
+    class Option
+      attr_reader :id
+      attr_reader :name
+      attr_reader :default
+      attr_reader :doc
+      attr_reader :value
 
-    def parse(specs, plus_options)
-      full_specs = process_specs(specs.clone)
-      default_options = get_defaults(full_specs)
-
-      options = parse_options(plus_options)
-
-      unless Jobrnr::Util.array_subset_of?(options.keys, default_options.keys)
-        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(options, default_options)}\n\n#{help(full_specs)}"
+      def initialize(id, name, default, doc)
+        @name = name
+        @id = id
+        @default = default
+        @doc = doc
+        @value = default
       end
 
-      typed_options = type_cast_options(options, full_specs)
+      def value=(value)
+        @value = parse_value(value)
+      end
 
-      default_options.merge(typed_options)
-    end
-
-    def unsupported_options(options, default_options)
-      common_options = options.keys & default_options.keys
-
-      (options.keys - common_options)
-        .map { |option| "+#{sym_to_s(option)}" }.join(', ')
-    end
-
-    def help(specs)
-      defaults = get_defaults(specs)
-
-      [
-        'OPTIONS',
-        specs.map { |option, spec| help_format_option(option, spec, defaults[option]) }
-      ].join("\n\n")
-    end
-
-    def help_format_option(option, spec, default)
-      [
-        "  +#{help_format_name(option, spec)}",
-        "    #{spec[:doc]} Default: #{default}"
-      ].join("\n")
-    end
-
-    def help_format_name(option, spec)
-      sym_to_s(option) + ((spec[:type] == TrueClass) ? '' : '=<value>')
-    end
-
-    def get_defaults(specs)
-      specs.each_with_object({}) do |(option, spec), default_options|
-        default_options[option] = spec.key?(:default) ? spec[:default] : false
+      def parse_value(value)
       end
     end
 
-    def process_specs(specs)
-      specs.each { |option, spec| process_spec(spec) }
-    end
-
-    def process_spec(spec)
-      if !spec[:type]
-        spec[:type] =
-          if !spec[:default]
-            FalseClass
-          else
-            spec[:default].class
-          end
-      end
-
-      if !spec[:default]
-        spec[:default] = false
-      end
-    end
-
-    def parse_options(plus_options)
-      plus_options.each_with_object({}) do |option, options|
-        if md = option.match(/^\+(.*?)=(.*)/)
-          options[s_to_sym(md.captures.first)] = md.captures.last
-        elsif md = option.match(/^\+((\w|-)+)$/)
-          options[s_to_sym(md.captures.first)] = :noarg
-        end
-      end
-    end
-
-    def type_cast_options(options, specs)
-      options.keys.each_with_object({}) do |option, typed_options|
-        typed_options[option] = type_cast_option(option, options[option], specs[option])
-      end
-    end
-
-    def type_cast_option(option, value, spec)
-      if spec[:type] == TrueClass || spec[:type] == FalseClass
+    class BooleanOption < Option
+      def parse_value(value)
         if value == :noarg
           true
         elsif value.match(/^(true|t|yes|y|1)$/)
@@ -113,18 +49,109 @@ module Jobrnr
         elsif value.match(/^(false|f|no|n|0)$/)
           false
         else
-          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean type for the '+#{sym_to_s(option)}' option"
+          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean " \
+            "type for the '+#{name}' option"
         end
-      elsif value == :noarg
-        raise Jobrnr::ArgumentError, "No argument given for '+#{sym_to_s(option)}' option"
-      elsif spec[:type] == Fixnum
+      end
+    end
+
+    class StringOption < Option
+      def parse_value(value)
+        raise Jobrnr::ArgumentError, "No argument given for " \
+          "'+#{name}' option" if value == :noarg
+
+        value
+      end
+    end
+
+    class FixnumOption < Option
+      def parse_value(value)
+        raise Jobrnr::ArgumentError, "No argument given for " \
+          "'+#{name}' option" if value == :noarg
+
         begin
           Integer(value)
         rescue StandardError => e
-          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Integer type for the '+#{sym_to_s(option)}' option"
+          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as " \
+            "Integer type for the '+#{name}' option"
         end
-      else
-        value
+      end
+    end
+
+    def self.parse(specs, plus_option_strings)
+      self.new.parse(specs, plus_option_strings)
+    end
+
+    def parse(specs, plus_option_strings)
+      option_definitions = transform_specs(specs.clone)
+      plus_options = plus_options_to_hash(plus_option_strings)
+
+      unless Jobrnr::Util.array_subset_of?(plus_options.keys, option_definitions.keys)
+        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(plus_options, option_definitions)}\n\n#{help(option_definitions)}"
+      end
+
+      plus_options.each { |option_name, option_value| option_definitions[option_name].value = option_value }
+
+      Hash[option_definitions.map { |option_name, option_definition| [option_name, option_definition.value] }]
+    end
+
+    def unsupported_options(options, option_definitions)
+      common_options = options.keys & option_definitions.keys
+
+      (options.keys - common_options)
+        .map { |option| "+#{sym_to_s(option)}" }.join(', ')
+    end
+
+    def help(option_definitions)
+      [
+        'OPTIONS',
+        option_definitions.map { |option_name, option_definition| help_format_option(option_definition) }
+      ].join("\n\n")
+    end
+
+    def help_format_option(option_definition)
+      [
+        "  +#{help_format_name(option_definition)}",
+        "    #{option_definition.doc} Default: #{option_definition.default}"
+      ].join("\n")
+    end
+
+    def help_format_name(option_definition)
+      option_definition.name + (option_definition.is_a?(BooleanOption) ? '[=<value>]' : '=<value>')
+    end
+
+    def transform_specs(specs)
+      Hash[specs.map { |id, spec| [id, transform_spec(id, spec)] }]
+    end
+
+    def transform_spec(id, spec)
+      spec[:default] ||= false
+      klass = spec[:default].class
+
+      type =
+        if klass == String
+          StringOption
+        elsif klass == Fixnum
+          FixnumOption
+        elsif klass == TrueClass
+          BooleanOption
+        elsif klass == FalseClass
+          BooleanOption
+        end
+
+      raise Jobrnr::TypeError, "Could not infer type from default value of " \
+        "'#{spec[:default]}' for option '#{sym_to_s(id)}'" if type.nil?
+
+      type.new(id, sym_to_s(id), spec[:default], spec[:doc])
+    end
+
+    def plus_options_to_hash(plus_option_strings)
+      plus_option_strings.each_with_object({}) do |plus_option_string, plus_options|
+        if md = plus_option_string.match(/^\+(.*?)=(.*)/)
+          plus_options[s_to_sym(md.captures.first)] = md.captures.last
+        elsif md = plus_option_string.match(/^\+((\w|-)+)$/)
+          plus_options[s_to_sym(md.captures.first)] = :noarg
+        end
       end
     end
 

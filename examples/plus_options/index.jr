@@ -2,6 +2,10 @@
 # try defaults: bin/jobrnr examples/plus_options/index.jr
 
 option_specs = {
+  default_true: {
+    default: true,
+    doc: 'A default true option.',
+  },
   long: {
     doc: 'Long regression.',
   },
