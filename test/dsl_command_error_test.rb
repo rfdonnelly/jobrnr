@@ -36,6 +36,35 @@ describe 'DSL command usage errors' do
       end
     end
   end
+
+  describe 'import command' do
+    it 'requires string prefix' do
+      @obj.stub :caller_source, 'file:line' do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(5, 'fixtures/empty.jr') }
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          import prefix argument must be a non-blank string @ file:line
+        EOF
+      end
+    end
+
+    it 'requires non-empty' do
+      @obj.stub :caller_source, 'file:line' do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(' ', 'fixtures/empty.jr') }
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          import prefix argument must be a non-blank string @ file:line
+        EOF
+      end
+    end
+
+    it 'requires file existence' do
+      @obj.stub :caller_source, 'file:line' do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import('prefix', 'invalid.jr') }
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          file 'invalid.jr' not found @ file:line
+        EOF
+      end
+    end
+  end
 end
 
 

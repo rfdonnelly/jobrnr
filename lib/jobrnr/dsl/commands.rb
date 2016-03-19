@@ -45,6 +45,10 @@ module Jobrnr
       end
 
       def import(prefix, filename, *plus_options)
+        raise Jobrnr::ArgumentError,
+          "import prefix argument must be a non-blank string " \
+          "@ #{caller_source}" unless prefix.is_a?(String) && !prefix.strip.empty?
+
         expanded_filename = Jobrnr::Util.expand_envars(filename)
         importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
@@ -54,6 +58,10 @@ module Jobrnr
           else
             expanded_filename
           end
+
+        raise Jobrnr::ArgumentError,
+          "file '#{filename}' not found " \
+          "@ #{caller_source}" unless File.exists?(load_filename)
 
         Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
       end
