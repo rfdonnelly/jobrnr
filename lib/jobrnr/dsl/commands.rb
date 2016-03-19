@@ -12,6 +12,16 @@ module Jobrnr
       end
 
       def job(id, predecessor_ids = nil, &block)
+        raise Jobrnr::ArgumentError, Jobrnr::Util.strip_heredoc(<<-EOF) unless block_given?
+          job ':#{id}' definition is incomplete @ #{caller_source}
+
+            Example:
+
+              job :#{id}[, ...] do
+                ...
+              end
+        EOF
+
         prefix = Jobrnr::DSL::Loader.instance.prefix
 
         pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }

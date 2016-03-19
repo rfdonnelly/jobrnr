@@ -27,5 +27,10 @@ module Jobrnr
     def self.caller_source(additional_levels = 0)
       caller[2 + additional_levels].split(/:/)[0..1].join(':')
     end
+
+    def self.strip_heredoc(s)
+      indent = s.scan(/^[ \t]*(?=\S)/).min.size || 0
+      s.gsub(/^[ \t]{#{indent}}/, '')
+    end
   end
 end
