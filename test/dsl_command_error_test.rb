@@ -16,14 +16,16 @@ describe 'DSL command usage errors' do
     it 'errors on predecessor not found' do
       @obj.stub :caller_source, 'file:line' do
         e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job1, :job0) {} }
-        assert_equal(%q|job ':job1' references undefined predecessor job(s) ':job0' @ file:line|, e.message)
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          job ':job1' references undefined predecessor job(s) ':job0' @ file:line
+        EOF
       end
     end
 
     it 'errors on absence of block' do
       @obj.stub :caller_source, 'file:line' do
         e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job0) }
-        exp = Jobrnr::Util.strip_heredoc(<<-EOF)
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF), e.message)
           job ':job0' definition is incomplete @ file:line
 
             Example:
@@ -32,7 +34,6 @@ describe 'DSL command usage errors' do
                 ...
               end
         EOF
-        assert_equal(exp, e.message)
       end
     end
   end
