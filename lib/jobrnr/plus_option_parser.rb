@@ -78,15 +78,15 @@ module Jobrnr
       end
     end
 
-    def self.parse(specs, plus_option_strings)
+    def self.parse(specs, plus_option_strings, help_info = nil)
       self.new.parse(specs, plus_option_strings)
     end
 
-    def parse(specs, plus_option_strings)
+    def parse(specs, plus_option_strings, help_info = nil)
       option_definitions = transform_specs(specs.clone)
       plus_options = plus_options_to_hash(plus_option_strings)
 
-      raise Jobrnr::HelpException, help(option_definitions) if plus_options.keys.include?(:help)
+      raise Jobrnr::HelpException, help(option_definitions, help_info) if plus_options.keys.include?(:help)
 
       unless Jobrnr::Util.array_subset_of?(plus_options.keys, option_definitions.keys)
         raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(plus_options, option_definitions)}\n\n#{help(option_definitions)}"
@@ -104,11 +104,34 @@ module Jobrnr
         .map { |option| "+#{sym_to_s(option)}" }.join(', ')
     end
 
-    def help(option_definitions)
-      [
+    def help(option_definitions, help_info = nil)
+      lines = []
+
+      lines << [
+        'NAME',
+        "  #{help_info[:name]}",
+      ] if help_info && help_info[:name]
+
+      lines << [
+        'SYNOPSIS',
+        "  #{help_info[:synopsis]}",
+      ] if help_info && help_info[:synopsis]
+
+      lines << [
+        'DESCRIPTION',
+        "  #{help_info[:description]}",
+      ] if help_info && help_info[:description]
+
+      lines << [
         'OPTIONS',
         option_definitions.map { |option_name, option_definition| help_format_option(option_definition) }
-      ].join("\n\n")
+      ]
+
+      lines << [
+        help_info[:extra]
+      ] if help_info && help_info[:extra]
+
+      lines.join("\n\n")
     end
 
     def help_format_option(option_definition)

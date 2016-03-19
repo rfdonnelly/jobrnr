@@ -113,24 +113,73 @@ describe Jobrnr::PlusOptionParser do
         assert_equal(exp, act)
       end
 
-      it 'supports +help' do
-        e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w(+help)) }
+      describe '+help' do
+        it 'general' do
+          e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w(+help)) }
 
-        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          OPTIONS
+          assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+            OPTIONS
 
-            +default-true[=<value>]
-              An option with a default true value. Default: true
+              +default-true[=<value>]
+                An option with a default true value. Default: true
 
-            +default-inferred[=<value>]
-              An option with an inferred default value. Default: false
+              +default-inferred[=<value>]
+                An option with an inferred default value. Default: false
 
-            +fix-num=<value>
-              A fixnum option. Default: 1
+              +fix-num=<value>
+                A fixnum option. Default: 1
 
-            +string=<value>
-              A string option. Default: hello world
-        EOF
+              +string=<value>
+                A string option. Default: hello world
+          EOF
+        end
+
+        it 'supports a synopsis' do
+          e = assert_raises(Jobrnr::HelpException) do
+              @obj.parse(@specs, %w(+help), {
+                  name: 'file',
+                  synopsis: 'jobrnr file.jr',
+                  description: 'description',
+                  extra: Jobrnr::Util.strip_heredoc(<<-EOF).strip
+                    EXAMPLES
+
+                      blah
+                  EOF
+              })
+          end
+
+          assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+            NAME
+
+              file
+
+            SYNOPSIS
+
+              jobrnr file.jr
+
+            DESCRIPTION
+
+              description
+
+            OPTIONS
+
+              +default-true[=<value>]
+                An option with a default true value. Default: true
+
+              +default-inferred[=<value>]
+                An option with an inferred default value. Default: false
+
+              +fix-num=<value>
+                A fixnum option. Default: 1
+
+              +string=<value>
+                A string option. Default: hello world
+
+            EXAMPLES
+
+              blah
+          EOF
+        end
       end
     end
 
