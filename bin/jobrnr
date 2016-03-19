@@ -6,6 +6,9 @@ require_relative '../lib/jobrnr'
 
 begin
   exit Jobrnr::Application.new(ARGV).run
+rescue Jobrnr::HelpException => e
+  puts e.message
+  exit 0
 rescue Jobrnr::Error => e
   Jobrnr::Log.error e
 end

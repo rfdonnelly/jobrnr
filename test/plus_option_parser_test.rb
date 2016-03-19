@@ -112,6 +112,26 @@ describe Jobrnr::PlusOptionParser do
                          ))
         assert_equal(exp, act)
       end
+
+      it 'supports +help' do
+        e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w(+help)) }
+
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          OPTIONS
+
+            +default-true[=<value>]
+              An option with a default true value. Default: true
+
+            +default-inferred[=<value>]
+              An option with an inferred default value. Default: false
+
+            +fix-num=<value>
+              A fixnum option. Default: 1
+
+            +string=<value>
+              A string option. Default: hello world
+        EOF
+      end
     end
 
     describe 'errors' do

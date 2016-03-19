@@ -86,6 +86,8 @@ module Jobrnr
       option_definitions = transform_specs(specs.clone)
       plus_options = plus_options_to_hash(plus_option_strings)
 
+      raise Jobrnr::HelpException, help(option_definitions) if plus_options.keys.include?(:help)
+
       unless Jobrnr::Util.array_subset_of?(plus_options.keys, option_definitions.keys)
         raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(plus_options, option_definitions)}\n\n#{help(option_definitions)}"
       end
