@@ -14,9 +14,10 @@ describe 'DSL command usage errors' do
 
   describe 'job command' do
     it 'errors on predecessor not found' do
-      @obj.job(:job0) {}
-      e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job2, :job1) {} }
-      assert_match(%q|job ':job2' references undefined predecessor job(s) ':job1' @ |, e.message)
+      @obj.stub :caller_source, 'file:line' do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job1, :job0) {} }
+        assert_equal(%q|job ':job1' references undefined predecessor job(s) ':job0' @ file:line|, e.message)
+      end
     end
   end
 end
