@@ -60,7 +60,7 @@ module Jobrnr
     end
 
     def help_format_name(option, spec)
-      sym_to_s(option) + ((spec[:type] == TrueClass) ? '' : '=<value>')
+      sym_to_s(option) + ((spec[:type] == FalseClass || spec[:type] == TrueClass) ? '[=<value>]' : '=<value>')
     end
 
     def get_defaults(specs)

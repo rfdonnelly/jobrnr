@@ -6,19 +6,15 @@ describe Jobrnr::Util do
       yield
     end
 
-    assert_match exp_out, out
-    assert_match exp_err, err
-  end
-
-  def strip_heredoc(s)
-    s.gsub(/^#{s.scan(/^\s*/).min_by{ |l| l.length} }/, "")
+    assert_equal exp_out, out
+    assert_equal exp_err, err
   end
 
   describe 'basic' do
     describe 'success' do
       it 'takes defaults' do
-        exp_out = <<-EOF.strip
-          {:long=>false, :long_iter=>1, :quote=>"hello world"}
+        exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
+          {:default_true=>true, :long=>false, :long_iter=>1, :quote=>"hello world"}
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
@@ -27,8 +23,8 @@ describe Jobrnr::Util do
       end
 
       it 'overrides defaults' do
-        exp_out = <<-EOF.strip
-          {:long=>true, :long_iter=>2, :quote=>"hello jobrnr"}
+        exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
+          {:default_true=>true, :long=>true, :long_iter=>2, :quote=>"hello jobrnr"}
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
@@ -37,8 +33,8 @@ describe Jobrnr::Util do
       end
 
       it 'overrides previous' do
-        exp_out = <<-EOF.strip
-          {:long=>false, :long_iter=>3, :quote=>"yo"}
+        exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
+          {:default_true=>true, :long=>false, :long_iter=>3, :quote=>"yo"}
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
@@ -47,8 +43,8 @@ describe Jobrnr::Util do
       end
 
       it 'accepts blank strings' do
-        exp_out = <<-EOF.strip
-          {:long=>false, :long_iter=>1, :quote=>""}
+        exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
+          {:default_true=>true, :long=>false, :long_iter=>1, :quote=>""}
         EOF
 
         assert_subprocess_io_matches(exp_out, '') do
@@ -59,12 +55,15 @@ describe Jobrnr::Util do
 
     describe 'errors' do
       it 'errors on unrecognized option' do
-        exp_err = strip_heredoc(<<-EOF)
+        exp_err = Jobrnr::Util.strip_heredoc(<<-EOF)
           jobrnr: ERROR: The following options are not valid options: +does-not-exist
 
           OPTIONS
 
-            +long=<value>
+            +default-true[=<value>]
+              A default true option. Default: true
+
+            +long[=<value>]
               Long regression. Default: false
 
             +long-iter=<value>
@@ -80,7 +79,7 @@ describe Jobrnr::Util do
       end
 
       it 'errors on missing Integer argument' do
-        exp_err = strip_heredoc(<<-EOF)
+        exp_err = Jobrnr::Util.strip_heredoc(<<-EOF)
           jobrnr: ERROR: Could not parse '' as Integer type for the '+long-iter' option
         EOF
 
@@ -90,7 +89,7 @@ describe Jobrnr::Util do
       end
 
       it 'errors on bad argument syntax' do
-        exp_err = strip_heredoc(<<-EOF)
+        exp_err = Jobrnr::Util.strip_heredoc(<<-EOF)
           jobrnr: ERROR: No argument given for '+long-iter' option
         EOF
 
@@ -100,7 +99,7 @@ describe Jobrnr::Util do
       end
 
       it 'errors on bad Integer format' do
-        exp_err = strip_heredoc(<<-EOF)
+        exp_err = Jobrnr::Util.strip_heredoc(<<-EOF)
           jobrnr: ERROR: Could not parse 'five' as Integer type for the '+long-iter' option
         EOF
 
@@ -110,7 +109,7 @@ describe Jobrnr::Util do
       end
 
       it 'errors on bad Boolean format' do
-        exp_err = strip_heredoc(<<-EOF)
+        exp_err = Jobrnr::Util.strip_heredoc(<<-EOF)
           jobrnr: ERROR: Could not parse 'five' as Boolean type for the '+long' option
         EOF
 
@@ -123,7 +122,7 @@ describe Jobrnr::Util do
 
   describe 'import' do
     it 'defaults' do
-      exp_out = strip_heredoc(<<-EOF)
+      exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
         parent: {:name=>"parent", :child_name=>"child-name", :present=>false}
         child: {:name=>"child-name", :present=>false}
       EOF
@@ -134,7 +133,7 @@ describe Jobrnr::Util do
     end
 
     it 'passes options on import' do
-      exp_out = strip_heredoc(<<-EOF)
+      exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
         parent: {:name=>"foo", :child_name=>"bar", :present=>true}
         child: {:name=>"bar", :present=>true}
       EOF
