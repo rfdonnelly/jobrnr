@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Jobrnr::Util do
+describe 'CLI Plus Options' do
   def assert_subprocess_io_matches(exp_out, exp_err)
     out, err = capture_subprocess_io do
       yield
