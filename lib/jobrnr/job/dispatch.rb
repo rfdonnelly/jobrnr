@@ -91,6 +91,8 @@ module Jobrnr
         status_code = stats.failed
         plugins.post_application(Jobrnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
 
+        Jobrnr::Log.info 'Early termination due to reaching maximum failures' if max_failures_reached && !job_queue.empty?
+
         status_code
       end
 
