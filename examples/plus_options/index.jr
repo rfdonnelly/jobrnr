@@ -1,25 +1,41 @@
 # override defaults: bin/jobrnr examples/plus_options/index.jr +full +full-iter=2 +quote='quoted string'
 # try defaults: bin/jobrnr examples/plus_options/index.jr
 
-option_specs = {
-  default_true: {
-    default: true,
-    doc: 'A default true option.',
+help_spec = {
+  name: 'plus_options/index.jr',
+  synopsis: 'jobrnr examples/plus_options/index.jr [plus-options]',
+  description: 'An example job description demonstrating plus options.',
+  options: {
+    default_true: {
+      default: true,
+      description: 'A default true option.',
+    },
+    long: {
+      description: 'Long regression.',
+    },
+    long_iter: {
+      default: 1,
+      description: 'Number of long job iterations.',
+    },
+    quote: {
+      default: 'hello world',
+      description: 'A quoted string.',
+    },
   },
-  long: {
-    doc: 'Long regression.',
-  },
-  long_iter: {
-    default: 1,
-    doc: 'Number of long job iterations.',
-  },
-  quote: {
-    default: 'hello world',
-    doc: 'A quoted string.',
-  },
+  extra: <<-EOF
+  EXAMPLES
+
+    jobrnr examples/plus_options/index.jr
+
+    jobrnr examples/plus_options/index.jr +default-true=false
+
+    jobrnr examples/plus_options/index.jr +long +long-iter=10
+
+    jobrnr examples/plus_options/index.jr +quote='a string'
+  EOF
 }
 
-options = Jobrnr::PlusOptionParser.parse(option_specs, plus_options)
+options = Jobrnr::PlusOptionParser.parse(help_spec, plus_options)
 
 puts options.to_s
 

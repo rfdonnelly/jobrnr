@@ -112,6 +112,8 @@ module Jobrnr
     #
     # Examples:
     #
+    # Help specification input
+    #
     # ```ruby
     # parse({
     #   name: 'example',
@@ -143,6 +145,8 @@ module Jobrnr
     #   EOF
     # }, %w(+fix-num=5 +string=test))
     # ```
+    #
+    # Option specification input only
     #
     # ```ruby
     # parse({
