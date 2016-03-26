@@ -1,0 +1,27 @@
+help_spec = {
+  options: {
+    fail: {
+      default: 2,
+      description: 'Number of failures to generate.',
+    },
+    pass: {
+      default: 10,
+      description: 'Number of passes to generate.',
+    },
+  },
+}
+
+options = Jobrnr::PlusOptionParser.parse(help_spec, plus_options)
+
+job :fail do
+  execute 'false'
+  repeat options[:fail]
+end
+
+job :pass do
+  execute 'sleep #{rand(10)}; true'
+  repeat options[:pass]
+end
+
+# vim: ft=ruby sw=2
+
