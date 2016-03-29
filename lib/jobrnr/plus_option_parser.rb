@@ -207,7 +207,8 @@ module Jobrnr
 
       lines << [
         'OPTIONS',
-        option_definitions.map { |option_name, option_definition| help_format_option(option_definition) }
+        option_definitions.map { |option_name, option_definition| help_format_option(option_definition) },
+        "  +help\n    Show this help and exit."
       ]
 
       lines << [

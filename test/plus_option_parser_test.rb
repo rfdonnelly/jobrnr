@@ -132,6 +132,9 @@ describe Jobrnr::PlusOptionParser do
 
               +string=<value>
                 A string option. Default: hello world
+
+              +help
+                Show this help and exit.
           EOF
         end
 
@@ -177,6 +180,9 @@ describe Jobrnr::PlusOptionParser do
               +string=<value>
                 A string option. Default: hello world
 
+              +help
+                Show this help and exit.
+
             EXAMPLES
 
               blah
@@ -205,6 +211,9 @@ describe Jobrnr::PlusOptionParser do
 
             +string=<value>
               A string option. Default: hello world
+
+            +help
+              Show this help and exit.
         EOF
       end
 
