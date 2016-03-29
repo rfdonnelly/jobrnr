@@ -36,6 +36,47 @@ describe 'DSL command usage errors' do
         EOF
       end
     end
+
+    describe 'job.execute command' do
+      it 'requires a String or block' do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, 'file:line' do
+              execute
+            end
+          end
+        end
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          'execute' expects a String or block @ file:line
+        EOF
+      end
+
+      it 'requires a String or block, not both' do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, 'file:line' do
+              execute("true") {}
+            end
+          end
+        end
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          'execute' expects a String or block not both @ file:line
+        EOF
+      end
+
+      it 'requires a String' do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, 'file:line' do
+              execute 5
+            end
+          end
+        end
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          'execute' expects a String or block but was given value of '5' of type 'Fixnum' @ file:line
+        EOF
+      end
+    end
   end
 
   describe 'import command' do
