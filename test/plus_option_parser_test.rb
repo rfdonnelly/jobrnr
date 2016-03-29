@@ -143,7 +143,7 @@ describe Jobrnr::PlusOptionParser do
               @obj.parse({
                   name: 'file',
                   synopsis: 'jobrnr file.jr',
-                  description: 'description',
+                  description: "line1\nline2",
                   options: @specs,
                   extra: Jobrnr::Util.strip_heredoc(<<-EOF).strip
                     EXAMPLES
@@ -164,7 +164,8 @@ describe Jobrnr::PlusOptionParser do
 
             DESCRIPTION
 
-              description
+              line1
+              line2
 
             OPTIONS
 

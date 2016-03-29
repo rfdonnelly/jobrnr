@@ -202,7 +202,7 @@ module Jobrnr
 
       lines << [
         'DESCRIPTION',
-        "  #{doc_params[:description]}",
+        doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
       ] if doc_params[:description]
 
       lines << [
