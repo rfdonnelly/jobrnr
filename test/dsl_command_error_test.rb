@@ -77,6 +77,34 @@ describe 'DSL command usage errors' do
         EOF
       end
     end
+
+    describe 'job.repeat command' do
+      it 'requires an Integer' do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, 'file:line' do
+              repeat '5'
+            end
+          end
+        end
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          'repeat' expects a positive Integer but was given value of '5' of type 'String' @ file:line
+        EOF
+      end
+
+      it 'requires a positive Integer' do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, 'file:line' do
+              repeat -1
+            end
+          end
+        end
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          'repeat' expects a positive Integer but was given value of '-1' of type 'Fixnum' @ file:line
+        EOF
+      end
+    end
   end
 
   describe 'import command' do
