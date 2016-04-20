@@ -42,6 +42,8 @@ module Jobrnr
             lines << "#{j.id} -> #{s.id}"
           end
         end
+
+        lines << '%s -> %s [ label = "%d" ]' % [j.id, j.id, j.iterations] if j.iterations > 1
       end
 
       [
