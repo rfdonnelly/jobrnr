@@ -22,7 +22,7 @@ module Jobrnr
       end
 
       def prerequisites_met?(job)
-        job.predecessors.all? { |predecessor| predecessor.state.finished? }
+        job.predecessors.all? { |predecessor| predecessor.state.finished? && predecessor.state.passed? }
       end
 
       def done?(job_queue, futures)

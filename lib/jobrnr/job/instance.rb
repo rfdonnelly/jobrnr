@@ -14,7 +14,7 @@ module Jobrnr
         @log = log
         @command = job.generate_command
         @iteration = job.state.num_scheduled
-        @status = nil
+        @exit_status = nil
         @state = :pending
 
         @start_time = Time.new
@@ -26,11 +26,11 @@ module Jobrnr
       def execute
         @start_time = Time.now
         @state = :dispatched
-        @status = system("#{@command} > #{log} 2>&1")
+        @exit_status = system("#{@command} > #{log} 2>&1")
         @state = :finished
         @end_time = Time.now
 
-        job.state.complete
+        job.state.complete(@exit_status)
 
         self
       end
@@ -40,7 +40,7 @@ module Jobrnr
       end
 
       def success?
-        @status
+        @exit_status
       end
 
       def to_s

@@ -1,0 +1,21 @@
+job :passing_parent do
+  execute 'true'
+end
+
+job :passing_parent2 do
+  execute 'true'
+end
+
+job :failing_parent do
+  execute 'false'
+end
+
+job :failing_child, [:passing_parent, :failing_parent] do
+  execute 'ERROR: this job should not run'
+end
+
+job :passing_child, [:passing_parent, :passing_parent2] do
+  execute 'true'
+end
+
+# vim: ft=ruby sw=2

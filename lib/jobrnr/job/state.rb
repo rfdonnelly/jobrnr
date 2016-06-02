@@ -10,6 +10,7 @@ module Jobrnr
         @job = job
         @state = :pending
         @queued = false
+        @failed = false
         @num_scheduled = 0
         @num_completed = 0
       end
@@ -26,7 +27,9 @@ module Jobrnr
         @state = :scheduled if @num_scheduled == @job.iterations
       end
 
-      def complete
+      def complete(exit_status)
+        @failed = true unless exit_status
+
         @num_completed += 1
         @state = :finished if @num_completed == @job.iterations
       end
@@ -41,6 +44,10 @@ module Jobrnr
 
       def finished?
         @state == :finished
+      end
+
+      def passed?
+        !@failed
       end
 
       def to_be_scheduled
