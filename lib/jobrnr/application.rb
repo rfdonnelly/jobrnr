@@ -7,6 +7,17 @@ module Jobrnr
     end
 
     def run
+      begin
+        run_with_exceptions
+      rescue Jobrnr::HelpException => e
+        puts e.message
+        exit 0
+      rescue Jobrnr::Error => e
+        Jobrnr::Log.error e
+      end
+    end
+
+    def run_with_exceptions
       options = Jobrnr::Options.new.parse(@argv)
       filename = @argv.shift
       plus_options = @argv
