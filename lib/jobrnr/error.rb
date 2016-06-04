@@ -7,6 +7,7 @@ module Jobrnr
   class ImportError < Error; end
   class ArgumentError < Error; end
   class TypeError < Error; end
+  class SyntaxError < Error; end
 
   class HelpException < StandardError; end
 end

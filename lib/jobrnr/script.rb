@@ -11,7 +11,12 @@ module Jobrnr
 
       class_obj = Class.new(base_class)
       obj = class_obj.new(*init_args)
-      obj.instance_eval(code, filename)
+
+      begin
+        obj.instance_eval(code, filename)
+      rescue ::SyntaxError => e
+        raise Jobrnr::SyntaxError.new(e)
+      end
 
       obj
     end
