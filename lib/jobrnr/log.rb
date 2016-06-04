@@ -1,7 +1,7 @@
 module Jobrnr
   class Log
-    def self.error(exception)
-      abort "jobrnr: ERROR: #{exception.message}"
+    def self.error(message)
+      abort "jobrnr: ERROR: #{message}"
     end
 
     def self.info(message)
