@@ -1,5 +1,7 @@
 # Jobrnr
 
+[![Build Status](https://travis-ci.org/rfdonnelly/jobrnr.svg?branch=master)](https://travis-ci.org/rfdonnelly/jobrnr)
+
 Jobrnr runs jobs.
 
 * A job can have prerequisite jobs.
