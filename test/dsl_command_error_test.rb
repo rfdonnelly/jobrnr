@@ -37,6 +37,15 @@ describe 'DSL command usage errors' do
       end
     end
 
+    it 'errors on absence of execute command' do
+      Jobrnr::Util.stub :caller_source, 'file:line' do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job0) {} }
+        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
+          job 'job0' is missing required 'execute' command @ file:line
+        EOF
+      end
+    end
+
     describe 'job.execute command' do
       it 'requires a String or block' do
         e = assert_raises(Jobrnr::TypeError) do
