@@ -48,13 +48,15 @@ module Jobrnr
     end
 
     def classify_arguments(argv)
-      argv.group_by do |arg|
+      hash = argv.group_by do |arg|
         if arg[0] == '+'
-          :plus_option
+          :plus_options
         else
-          :filename
+          :filenames
         end
-      end.values
+      end
+
+      [:filenames, :plus_options].map { |key| Array(hash[key]) }
     end
 
     def merge_options(global_options, user_script_options, user_script_filename)
