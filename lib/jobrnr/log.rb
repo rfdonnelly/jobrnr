@@ -1,15 +1,22 @@
 module Jobrnr
   class Log
+    def self.report(severity, message)
+      out = (severity == :ERROR) ? STDERR : STDOUT
+      prefix = (severity == :INFO) ? '' : "#{severity}: jobrnr: "
+      out.puts [prefix, message].join
+    end
+
     def self.error(message)
-      abort "jobrnr: ERROR: #{message}"
+      report(:ERROR, message)
+      exit 1
     end
 
     def self.info(message)
-      puts "#{message}"
+      report(:INFO, message)
     end
 
     def self.debug(message)
-      puts "jobrnr: DEBUG: #{message}"
+      report(:DEBUG, message)
     end
   end
 end
