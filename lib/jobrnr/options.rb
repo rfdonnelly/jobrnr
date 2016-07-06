@@ -18,6 +18,9 @@ module Jobrnr
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
         op.separator('GENERAL OPTIONS')
+        op.on('-v', '--vebose', 'Enable debug output.') do |arg|
+          options.verbosity += 1
+        end
         op.on('-d', '--output-directory <directory>',
               'Directory to place results.',
               String) do |arg|
@@ -72,7 +75,8 @@ module Jobrnr
         :max_failures,
         :max_jobs,
         :output_directory,
-        :plugin_paths
+        :plugin_paths,
+        :verbosity,
       ).new
     end
 
@@ -82,6 +86,7 @@ module Jobrnr
       options.max_jobs = 8
       options.output_directory = Dir.pwd
       options.plugin_paths = []
+      options.verbosity = 1
     end
 
     def load_environment(options)

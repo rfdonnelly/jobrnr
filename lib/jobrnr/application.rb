@@ -21,6 +21,7 @@ module Jobrnr
 
     def run_with_exceptions
       options = Jobrnr::Options.new.parse(@argv)
+      Log.verbosity = options.verbosity
       filenames, plus_options = classify_arguments(@argv)
 
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil?

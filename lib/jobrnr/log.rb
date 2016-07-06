@@ -1,6 +1,18 @@
 module Jobrnr
   class Log
+    VERBOSITY_SEVERITY_MAP = {
+      ERROR: -999,
+      INFO: 1,
+      DEBUG: 2,
+    }
+
+    def self.verbosity=(verbosity)
+      @@verbosity = verbosity
+    end
+
     def self.report(severity, message)
+      return unless @@verbosity >= VERBOSITY_SEVERITY_MAP[severity]
+
       out = (severity == :ERROR) ? STDERR : STDOUT
       prefix = (severity == :INFO) ? '' : "#{severity}: jobrnr: "
       out.puts [prefix, message].join
