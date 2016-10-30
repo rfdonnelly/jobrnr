@@ -6,6 +6,8 @@ module Jobrnr
       DEBUG: 2,
     }
 
+    @@verbosity = 0
+
     def self.verbosity=(verbosity)
       @@verbosity = verbosity
     end
