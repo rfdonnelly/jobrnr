@@ -18,7 +18,7 @@ module Jobrnr
         op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
 
         op.separator('GENERAL OPTIONS')
-        op.on('-v', '--vebose', 'Enable debug output.') do |arg|
+        op.on('-v', '--vebose', 'Enable debug output.') do
           options.verbosity += 1
         end
         op.on('-d', '--output-directory <directory>',

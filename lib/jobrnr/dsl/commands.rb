@@ -27,8 +27,8 @@ module Jobrnr
         pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }
         pids_not_found = pids
           .map { |pid| [pid, graph.id?(pid)] }
-          .select { |pid, exists| exists == false }
-          .map { |pid, exists| "':#{pid}'" }
+          .select { |_, exists| exists == false }
+          .map { |pid, _| "':#{pid}'" }
 
         raise Jobrnr::ArgumentError,
           "job ':#{id}' references undefined predecessor job(s) " \

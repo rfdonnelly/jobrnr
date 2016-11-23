@@ -28,7 +28,7 @@ module Jobrnr
       raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..-1].join(' ')}" if filenames.size > 1
 
       filename = filenames.first
-      raise Jobrnr::Error, "file does not exist: #{filename}" unless File.exists?(filename)
+      raise Jobrnr::Error, "file does not exist: #{filename}" unless File.exist?(filename)
 
       # load plugins
       Jobrnr::Plugins.instance.load(options.plugin_paths)
