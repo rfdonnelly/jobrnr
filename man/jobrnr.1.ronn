@@ -42,6 +42,19 @@ General options:
     The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS
     environment variable.  Default: 8
 
+  * `--max-time` <duration>:
+    The duration for job submission.  When the total run time has exceeded the
+    duration, jobs will stopped being submitted.  Running jobs will be allowed
+    to finish.  Exit status is not affected.  Default: 0 (disabled)
+
+  * `--until` <date|time>:
+    Similar to `--max-time` but takes a date|time instead of a duration.
+    Default: (disabled)
+
+  * `--max-job-time` <duration>:
+    A per job timeout.  If an individual job exceeds this duration, it will be
+    terminated and counted as a failure.  Default: 0 (disabled)
+
 Debug options:
 
   * `--dot`:

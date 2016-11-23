@@ -37,6 +37,19 @@ module Jobrnr
               Integer) do |arg|
           options.max_jobs = arg
         end
+        op.on('--until <time>', 'Run jobs until time.', String) do |arg|
+          options.max_time = Util::TimeParser.new(arg).duration
+        end
+	op.on('--max-time <duration>',
+              'Maximum time to run jobs',
+              String) do |arg|
+          options.max_time = Util::DurationParser.new(arg).duration
+        end
+        op.on('--max-job-time <duration>',
+              'Maximum time a single job is allowed to run before terminating',
+              String) do |arg|
+          options.max_job_time = Util::DurationParser.new(arg).duration
+        end
         op.separator('')
 
         op.separator('DEBUG OPTIONS')
@@ -74,6 +87,8 @@ module Jobrnr
         :dot,
         :max_failures,
         :max_jobs,
+        :max_time,
+        :max_job_time,
         :output_directory,
         :plugin_paths,
         :verbosity,
@@ -84,6 +99,8 @@ module Jobrnr
       options.dot = false
       options.max_failures = 0
       options.max_jobs = 8
+      options.max_time = 0
+      options.max_job_time = 0
       options.output_directory = Dir.pwd
       options.plugin_paths = []
       options.verbosity = 1
@@ -92,6 +109,8 @@ module Jobrnr
     def load_environment(options)
       options.max_failures = Integer(ENV['JOBRNR_MAX_FAILURES']) if ENV.key?('JOBRNR_MAX_FAILURES')
       options.max_jobs = Integer(ENV['JOBRNR_MAX_JOBS']) if ENV.key?('JOBRNR_MAX_JOBS')
+      options.max_time = parse_time_duration(ENV['JOBRNR_MAX_TIME']) if ENV.key?('JOBRNR_MAX_TIME')
+      options.max_job_time = parse_duration(ENV['JOBRNR_MAX_JOB_TIME']) if ENV.key?('JOBRNR_MAX_JOB_TIME')
       options.plugin_paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/) if ENV.key?('JOBRNR_PLUGIN_PATH')
       options.output_directory = ENV['JOBRNR_OUTPUT_DIRECTORY'] if ENV.key?('JOBRNR_OUTPUT_DIRECTORY')
     end
