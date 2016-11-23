@@ -61,7 +61,7 @@ module Jobrnr
 
         raise Jobrnr::ArgumentError,
           "file '#{filename}' not found " \
-          "@ #{caller_source}" unless File.exists?(load_filename)
+          "@ #{caller_source}" unless File.exist?(load_filename)
 
         Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
       end

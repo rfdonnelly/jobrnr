@@ -105,7 +105,7 @@ describe 'DSL command usage errors' do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
             stub :caller_source, 'file:line' do
-              repeat -1
+              repeat(-1)
             end
           end
         end

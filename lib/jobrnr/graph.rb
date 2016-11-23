@@ -34,21 +34,19 @@ module Jobrnr
 
     # Generates GraphViz dot format
     def to_dot
-      lines = jobs.each_with_object([]) do |j, lines|
+      relations = jobs.each_with_object([]) do |j, array|
         if j.successors.empty? && j.predecessors.empty?
-          lines << "#{j.id}"
+          array << "#{j.id}"
         else
-          j.successors.each do |s|
-            lines << "#{j.id} -> #{s.id}"
-          end
+          j.successors.each { |s| array << "#{j.id} -> #{s.id}" }
         end
 
-        lines << '%s -> %s [ label = "%d" ]' % [j.id, j.id, j.iterations] if j.iterations > 1
+        array << '%s -> %s [ label = "%d" ]' % [j.id, j.id, j.iterations] if j.iterations > 1
       end
 
       [
         'digraph DependencyGraph {',
-        *lines.map { |line| "  #{line};" },
+        *relations.map { |line| "  #{line};" },
         '}',
       ].join("\n")
     end

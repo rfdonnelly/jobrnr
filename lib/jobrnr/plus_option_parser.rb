@@ -71,7 +71,7 @@ module Jobrnr
 
         begin
           Integer(value)
-        rescue StandardError => e
+        rescue StandardError
           raise Jobrnr::ArgumentError, "Could not parse '#{value}' as " \
             "Integer type for the '+#{name}' option"
         end
