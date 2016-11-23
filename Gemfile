@@ -7,3 +7,4 @@ gem 'ronn'
 
 gem 'rake', group: 'development'
 gem 'minitest', group: 'development'
+gem 'rubocop', group: 'development'
