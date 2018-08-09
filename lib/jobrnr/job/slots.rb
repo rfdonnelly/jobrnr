@@ -19,12 +19,12 @@ module Jobrnr
         @slots.size
       end
 
-      def deallocate(slot, retire)
-        if retire
+      def deallocate(slot, recycle)
+        if recycle
+          @slots.push(slot)
+        else
           @slots.push(@next_slot)
           @next_slot += 1
-        else
-          @slots.push(slot)
         end
       end
     end
