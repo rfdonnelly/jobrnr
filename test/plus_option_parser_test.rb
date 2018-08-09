@@ -17,10 +17,10 @@ describe Jobrnr::PlusOptionParser do
       assert_equal('description', definition.description)
     end
 
-    it 'infers FixNum' do
-      definition = @obj.spec_to_def(:fixnum_option, {default: 5, description: 'doc'})
+    it 'infers Integer' do
+      definition = @obj.spec_to_def(:integer_option, {default: 5, description: 'doc'})
 
-      assert_instance_of(Jobrnr::PlusOptionParser::FixnumOption, definition)
+      assert_instance_of(Jobrnr::PlusOptionParser::IntegerOption, definition)
       assert_equal(5, definition.default)
       assert_equal('doc', definition.description)
     end
@@ -49,9 +49,9 @@ describe Jobrnr::PlusOptionParser do
         default_inferred: {
           description: 'An option with an inferred default value.',
         },
-        fix_num: {
+        integer: {
           default: 1,
-          doc: 'A fixnum option.',
+          doc: 'An integer option.',
         },
         string: {
           default: 'hello world',
@@ -65,7 +65,7 @@ describe Jobrnr::PlusOptionParser do
         exp = {
           default_true: true,
           default_inferred: false,
-          fix_num: 1,
+          integer: 1,
           string: 'hello world',
         }
         assert_equal(exp, @obj.parse(@specs, []))
@@ -75,27 +75,27 @@ describe Jobrnr::PlusOptionParser do
         exp = {
           default_true: false,
           default_inferred: true,
-          fix_num: 3,
+          integer: 3,
           string: 'hi',
         }
-        assert_equal(exp, @obj.parse(@specs, %w(+default-inferred +default-true=false +fix-num=3 +string=hi)))
+        assert_equal(exp, @obj.parse(@specs, %w(+default-inferred +default-true=false +integer=3 +string=hi)))
       end
 
       it 'overrides previous' do
         exp = {
           default_true: true,
           default_inferred: false,
-          fix_num: 5,
+          integer: 5,
           string: 'hello',
         }
         act = @obj.parse(@specs, %w(
                          +default-inferred
                          +default-true=false
-                         +fix-num=3
+                         +integer=3
                          +string=hi
                          +default-inferred=false
                          +default-true
-                         +fix-num=5
+                         +integer=5
                          +string=hello
                          ))
         assert_equal(exp, act)
@@ -105,7 +105,7 @@ describe Jobrnr::PlusOptionParser do
         exp = {
           default_true: true,
           default_inferred: false,
-          fix_num: 1,
+          integer: 1,
           string: '',
         }
         act = @obj.parse(@specs, %w(
@@ -127,8 +127,8 @@ describe Jobrnr::PlusOptionParser do
               +default-inferred[=<value>]
                 An option with an inferred default value. Default: false
 
-              +fix-num=<value>
-                A fixnum option. Default: 1
+              +integer=<value>
+                An integer option. Default: 1
 
               +string=<value>
                 A string option. Default: hello world
@@ -175,8 +175,8 @@ describe Jobrnr::PlusOptionParser do
               +default-inferred[=<value>]
                 An option with an inferred default value. Default: false
 
-              +fix-num=<value>
-                A fixnum option. Default: 1
+              +integer=<value>
+                An integer option. Default: 1
 
               +string=<value>
                 A string option. Default: hello world
@@ -207,8 +207,8 @@ describe Jobrnr::PlusOptionParser do
             +default-inferred[=<value>]
               An option with an inferred default value. Default: false
 
-            +fix-num=<value>
-              A fixnum option. Default: 1
+            +integer=<value>
+              An integer option. Default: 1
 
             +string=<value>
               A string option. Default: hello world
@@ -219,23 +219,23 @@ describe Jobrnr::PlusOptionParser do
       end
 
       it 'errors on missing Integer argument' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+fix-num= +default-inferred)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer= +default-inferred)) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          Could not parse '' as Integer type for the '+fix-num' option
+          Could not parse '' as Integer type for the '+integer' option
         EOF
       end
 
       it 'errors on bad argument syntax' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+fix-num 2)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer 2)) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          No argument given for '+fix-num' option
+          No argument given for '+integer' option
         EOF
       end
 
       it 'errors on bad Integer format' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+fix-num=five)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer=five)) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          Could not parse 'five' as Integer type for the '+fix-num' option
+          Could not parse 'five' as Integer type for the '+integer' option
         EOF
       end
 

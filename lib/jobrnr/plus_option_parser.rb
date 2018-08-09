@@ -64,7 +64,7 @@ module Jobrnr
       end
     end
 
-    class FixnumOption < Option
+    class IntegerOption < Option
       def parse_value(value)
         raise Jobrnr::ArgumentError, "No argument given for " \
           "'+#{name}' option" if value == :noarg
@@ -106,7 +106,7 @@ module Jobrnr
     #
     # * :default - The default value of the option.  If omitted, the default
     #   value is inferred as `false`.  The option data type is inferred from
-    #   the default value.  Supported types are Fixnum, Boolean, and String.
+    #   the default value.  Supported types are Integer, Boolean, and String.
     # * :doc|:desciption - A description of the option.  Displayed when `+help`
     #   plus option is present.
     #
@@ -129,7 +129,7 @@ module Jobrnr
     #     },
     #     fix_num: {
     #       default: 1,
-    #       description: 'A Fixnum option.',
+    #       description: 'An Integer option.',
     #     },
     #     string: {
     #       default: 'hello world',
@@ -240,12 +240,12 @@ module Jobrnr
       type =
         if klass == String
           StringOption
-        elsif klass == Fixnum
-          FixnumOption
         elsif klass == TrueClass
           BooleanOption
         elsif klass == FalseClass
           BooleanOption
+        elsif spec[:default].is_a? Integer
+          IntegerOption
         end
 
       raise Jobrnr::TypeError, "Could not infer type from default value of " \

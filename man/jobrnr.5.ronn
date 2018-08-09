@@ -23,7 +23,7 @@ The Jobrnr job description file format is an internal [DSL][1] writen in
   * job::`execute <String | Proc>`:
     Define the command a job will execute.
 
-  * job::`repeat <Fixnum>`:
+  * job::`repeat <Integer>`:
     Define the number of times a job should be repated.
 
   * `import <prefix>, <filename>`:

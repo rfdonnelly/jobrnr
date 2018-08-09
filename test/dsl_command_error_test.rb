@@ -81,9 +81,7 @@ describe 'DSL command usage errors' do
             end
           end
         end
-        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          'execute' expects a String or block but was given value of '5' of type 'Fixnum' @ file:line
-        EOF
+        assert_match(/^'execute' expects a String or block but was given value of '5' of type '\w+' @ file:line$/, e.message)
       end
     end
 
@@ -109,9 +107,7 @@ describe 'DSL command usage errors' do
             end
           end
         end
-        assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          'repeat' expects a positive Integer but was given value of '-1' of type 'Fixnum' @ file:line
-        EOF
+        assert_match(/'repeat' expects a positive Integer but was given value of '-1' of type '\w+' @ file:line$/, e.message)
       end
     end
   end
