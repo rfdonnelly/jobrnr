@@ -37,6 +37,9 @@ module Jobrnr
               Integer) do |arg|
           options.max_jobs = arg
         end
+        op.on('--no-recycle', 'Prevents recycling of job slots') do
+          options.recycle = false
+        end
         op.separator('')
 
         op.separator('DEBUG OPTIONS')
@@ -76,6 +79,7 @@ module Jobrnr
         :max_jobs,
         :output_directory,
         :plugin_paths,
+        :recycle,
         :verbosity,
       ).new
     end
@@ -87,6 +91,7 @@ module Jobrnr
       options.output_directory = Dir.pwd
       options.plugin_paths = []
       options.verbosity = 1
+      options.recycle = true
     end
 
     def load_environment(options)

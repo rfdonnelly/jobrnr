@@ -42,6 +42,12 @@ General options:
     The number of jobs to run simultaneously.  Overrides the JOBRNR_MAX_JOBS
     environment variable.  Default: 8
 
+  * `--no-recycle`:
+    Prevents recycling of job slots.  By default, slots for passing jobs are
+    recycled for future jobs while slots for failing jobs are not recycled.
+    The --no-recycle option changes the default to prevent recycling of job
+    slots for passing jobs as well as failing jobs.
+
 Debug options:
 
   * `--dot`:

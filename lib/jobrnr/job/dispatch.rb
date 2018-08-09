@@ -75,7 +75,7 @@ module Jobrnr
             end
           end
 
-          completed_instances.each { |job_instance| slots.deallocate(job_instance.slot, job_instance.success?) }
+          completed_instances.each { |job_instance| slots.deallocate(job_instance.slot, options.recycle && job_instance.success?) }
           futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
           # launch new job instances
