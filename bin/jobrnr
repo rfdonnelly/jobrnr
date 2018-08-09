@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'bundler/setup'
-
 require_relative '../lib/jobrnr'
 
 exit Jobrnr::Application.new(ARGV).run
