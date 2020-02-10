@@ -4,6 +4,7 @@
 image::https://travis-ci.org/rfdonnelly/jobrnr.svg?branch=master[Build Status]
 
 Jobrnr runs jobs.
+Jobrnr is designed for use as a test runner for ASIC/FPGA development but it can run any command.
 
 * A job can have prerequisite jobs.
 * A job can be repeated many times.
@@ -33,3 +34,22 @@ The simulation job will not be executed until the compilation job completes succ
 After the compile job completes successfully, 50 instances of the simulation job will be executed.
 Each instance will execute with a random value for SEED.
 The simulation job instances will be run simultaneously.
+
+== Comparison to GNU Make
+
+Jobrnr is similar to GNU Make in many ways but also differs in a few key ways.
+
+* Targets -- GNU Make has the concept of targets.
+The Jobrnr equivalent is job definitions.
+
+* Dependencies -- Like Make targets, job definitions can depend on other job definitions.
+
+* Top-level -- Unlike Make where one or more top-level targets are run, Jobrnr runs all top-level targets.
+
+* Repitition -- Unlike Make, Jobrnr job definitions can be repeated.
+This allows a job definition to be run multiple times, usually with command variation.
+
+* Input -- Unlike Make, the Jobrnr input is Ruby.
+This makes the job graph highly programmable.
+
+* Parallelism -- Like Make, Jobrnr parallelizes jobs where possible.
