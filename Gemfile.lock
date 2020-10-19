@@ -46,6 +46,3 @@ DEPENDENCIES
   rake
   ronn
   rubocop
-
-BUNDLED WITH
-   1.16.1
