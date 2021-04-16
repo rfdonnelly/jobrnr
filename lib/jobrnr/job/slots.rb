@@ -4,10 +4,12 @@ module Jobrnr
   module Job
     # Manages the maximum number of concurrent jobs
     class Slots
-      def initialize(num_slots)
-        @num_slots = num_slots
-        @next_slot = num_slots
-        @slots = *(0..(num_slots - 1))
+      attr_reader :size
+
+      def initialize(size)
+        @size = size
+        @next_slot = size
+        @slots = *(0..(size - 1))
       end
 
       def allocate
@@ -15,10 +17,6 @@ module Jobrnr
           "allocate called when no slots available" unless available > 0
 
         @slots.shift
-      end
-
-      def size
-        @num_slots
       end
 
       def available
