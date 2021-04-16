@@ -26,14 +26,18 @@ module Jobrnr
       end
 
       def done?(job_queue, futures)
-        (job_queue.empty? || max_failures_reached) && futures.empty?
+        (job_queue.empty? || stop_submission?) && futures.empty?
+      end
+
+      def stop_submission?
+        max_failures_reached
       end
 
       def nothing_todo?(completed_futures, job_queue, slots)
         completed_futures.size == 0 && (
           job_queue.size == 0 ||
           slots.available == 0 ||
-          max_failures_reached
+          stop_submission?
         )
       end
 
@@ -79,7 +83,7 @@ module Jobrnr
           futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
 
           # launch new job instances
-          new_instances = max_failures_reached ? [] : process_queue(job_queue)
+          new_instances = stop_submission? ? [] : process_queue(job_queue)
           futures.concat(create_futures(new_instances))
 
           Jobrnr::Log.info stats.to_s
