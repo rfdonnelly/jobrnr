@@ -146,6 +146,13 @@ describe Jobrnr::Job::Slots do
           .to_a
         expect(actual).must_equal [2, 3, 4, 5, 6, 1]
       end
+
+      it "shrinks to negative available" do
+        4.times { @obj.allocate }
+
+        @obj.resize(2)
+        expect(@obj.available).must_equal(-2)
+      end
     end
   end
 end

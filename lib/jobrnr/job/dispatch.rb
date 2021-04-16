@@ -68,7 +68,7 @@ module Jobrnr
       def nothing_todo?(completed, job_queue, slots)
         completed.empty? && (
           job_queue.empty? ||
-          slots.available.zero? ||
+          slots.available <= 0 ||
           stop_submission?
         )
       end
