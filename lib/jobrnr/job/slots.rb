@@ -9,7 +9,7 @@ module Jobrnr
       def initialize(size)
         @size = size
         @next_slot = size
-        @slots = *(0..(size - 1))
+        @free_slots = *(0..(size - 1))
       end
 
       def allocate
@@ -17,18 +17,18 @@ module Jobrnr
           raise Jobrnr::Error, "allocate called when no slots available"
         end
 
-        @slots.shift
+        @free_slots.shift
       end
 
       def available
-        @slots.size
+        @free_slots.size
       end
 
       def deallocate(slot, recycle)
         if recycle
-          @slots.push(slot)
+          @free_slots.push(slot)
         else
-          @slots.push(@next_slot)
+          @free_slots.push(@next_slot)
           @next_slot += 1
         end
       end
