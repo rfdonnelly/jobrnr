@@ -61,6 +61,13 @@ describe Jobrnr::Job::Slots do
           .to_a
         expect(actual).must_equal [3, 2, 1, 0]
       end
+
+      it "raises on over-allocate" do
+        @size.times { @obj.allocate }
+        expect { @obj.allocate }.must_raise(Jobrnr::Error) do |e|
+          expect(e.message).must_equal "allocate called when no slots available"
+        end
+      end
     end
 
     describe "deallocate" do

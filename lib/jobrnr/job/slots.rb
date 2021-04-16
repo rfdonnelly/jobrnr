@@ -11,6 +11,10 @@ module Jobrnr
       end
 
       def allocate
+        unless available > 0
+          raise Jobrnr::Error, "allocate called when no slots available"
+        end
+
         @slots.shift
       end
 
