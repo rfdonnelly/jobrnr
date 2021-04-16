@@ -55,6 +55,13 @@ describe Jobrnr::Job::Slots do
           .map { @obj.allocate }
           .to_a.must_equal [3, 2, 1, 0]
       end
+
+      it "raises on over-allocate" do
+        @size.times { @obj.allocate }
+        proc { @obj.allocate }.must_raise(Jobrnr::Error) do |e|
+          e.message.must_equal "allocate called when no slots available"
+        end
+      end
     end
 
     describe "deallocate" do
