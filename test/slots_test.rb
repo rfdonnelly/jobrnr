@@ -83,5 +83,60 @@ describe Jobrnr::Job::Slots do
         end
       end
     end
+
+    describe "resize" do
+      it "shrinks" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(2)
+        @obj.size.must_equal 2
+        @obj.available.must_equal 0
+
+        slots.each { |slot| @obj.deallocate(slot, true) }
+        @obj.available.must_equal 2
+
+        2.times
+          .map { @obj.allocate }
+          .to_a
+          .must_equal [2, 3]
+      end
+
+      it "grows" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(6)
+        @obj.size.must_equal 6
+        @obj.available.must_equal 4
+
+        slots.each { |slot| @obj.deallocate(slot, true) }
+        @obj.available.must_equal 6
+
+        6.times
+          .map { @obj.allocate }
+          .to_a
+          .must_equal [2, 3, 4, 5, 0, 1]
+      end
+
+      it "shrinks and grows" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(2)
+        @obj.available.must_equal 0
+
+        @obj.deallocate(slots[0], true)
+        @obj.available.must_equal 1
+
+        @obj.resize(6)
+        @obj.available.must_equal 5
+
+        @obj.deallocate(slots[1], true)
+        @obj.available.must_equal 6
+
+        6.times
+          .map { @obj.allocate }
+          .to_a
+          .must_equal [2, 3, 4, 5, 6, 1]
+      end
+    end
   end
 end
