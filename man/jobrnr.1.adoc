@@ -56,6 +56,9 @@ Prevents recycling of job slots.
 By default, slots for passing jobs are recycled for future jobs while slots for failing jobs are not recycled.
 The *--no-recycle* option changes the default to prevent recycling of job slots for passing jobs as well as failing jobs.
 
+*--no-server*::
+Disables the HTTP server that provides dynamic modification of the *--max-jobs* option.
+
 === Debug options
 
 :dot: http://www.graphviz.org/content/dot-language
