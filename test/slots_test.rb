@@ -89,5 +89,63 @@ describe Jobrnr::Job::Slots do
         end
       end
     end
+
+    describe "resize" do
+      it "shrinks" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(2)
+        expect(@obj.size).must_equal 2
+        expect(@obj.available).must_equal 0
+
+        slots.each { |slot| @obj.deallocate(slot, true) }
+        expect(@obj.available).must_equal 2
+
+        actual =
+          2.times
+          .map { @obj.allocate }
+          .to_a
+        expect(actual).must_equal [2, 3]
+      end
+
+      it "grows" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(6)
+        expect(@obj.size).must_equal 6
+        expect(@obj.available).must_equal 4
+
+        slots.each { |slot| @obj.deallocate(slot, true) }
+        expect(@obj.available).must_equal 6
+
+        actual =
+          6.times
+          .map { @obj.allocate }
+          .to_a
+        expect(actual).must_equal [2, 3, 4, 5, 0, 1]
+      end
+
+      it "shrinks and grows" do
+        slots = 2.times.map { @obj.allocate }
+
+        @obj.resize(2)
+        expect(@obj.available).must_equal 0
+
+        @obj.deallocate(slots[0], true)
+        expect(@obj.available).must_equal 1
+
+        @obj.resize(6)
+        expect(@obj.available).must_equal 5
+
+        @obj.deallocate(slots[1], true)
+        expect(@obj.available).must_equal 6
+
+        actual =
+          6.times
+          .map { @obj.allocate }
+          .to_a
+        expect(actual).must_equal [2, 3, 4, 5, 6, 1]
+      end
+    end
   end
 end
