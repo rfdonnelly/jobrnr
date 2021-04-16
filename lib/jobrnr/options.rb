@@ -43,6 +43,9 @@ module Jobrnr
         op.on("--no-recycle", "Prevents recycling of job slots") do
           options.recycle = false
         end
+        op.on("--no-server", "Disables the HTTP server") do
+          options.server = false
+        end
         op.separator("")
 
         op.separator("DEBUG OPTIONS")
@@ -88,6 +91,7 @@ module Jobrnr
         :plugin_paths,
         :recycle,
         :verbosity,
+        :server,
       ).new
     end
 
@@ -99,6 +103,7 @@ module Jobrnr
       options.plugin_paths = []
       options.verbosity = 1
       options.recycle = true
+      options.server = true
     end
 
     def load_environment(options)

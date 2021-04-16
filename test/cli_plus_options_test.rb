@@ -20,7 +20,7 @@ describe "CLI Plus Options" do
       EOF
 
       assert_subprocess_io_matches(exp_out, "") do
-        system "bin/jobrnr examples/plus_options_import/index.jr"
+        system "bin/jobrnr --no-server examples/plus_options_import/index.jr"
       end
     end
 
@@ -31,7 +31,7 @@ describe "CLI Plus Options" do
       EOF
 
       assert_subprocess_io_matches(exp_out, "") do
-        system "bin/jobrnr examples/plus_options_import/index.jr +name=foo +child-name=bar +present"
+        system "bin/jobrnr --no-server examples/plus_options_import/index.jr +name=foo +child-name=bar +present"
       end
     end
   end
