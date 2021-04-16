@@ -49,9 +49,11 @@ module Jobrnr
       end
 
       def grow(delta)
+        # Grow by first taking from discards_pending
         take_from_discards_pending = [delta, @discards_pending].min
         @discards_pending -= take_from_discards_pending
 
+        # Then grow by adding slots
         remainder = delta - take_from_discards_pending
         remainder.times { add_new_slot }
 
@@ -59,8 +61,12 @@ module Jobrnr
       end
 
       def shrink(delta)
+        # We don't shrink immediately. Instead, we shrink by
+        # discarding slots as they are deallocated. This tracks how
+        # many we should discard on deallocate.
         @discards_pending += delta
 
+        # However, we do reduce the advertised size immediately
         @size -= delta
       end
 
