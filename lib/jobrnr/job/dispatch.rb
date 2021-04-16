@@ -13,12 +13,15 @@ module Jobrnr
       attr_reader :stats
       attr_reader :plugins
 
+      attr_reader :ctrl_c
+
       def initialize(options:, graph:, num_slots:)
         @options = options
         @graph = graph
         @slots = Jobrnr::Job::Slots.new(num_slots)
         @stats = Jobrnr::Stats.new(graph.roots)
         @plugins = Jobrnr::Plugins.instance
+        @ctrl_c = false
       end
 
       def prerequisites_met?(job)
@@ -30,7 +33,7 @@ module Jobrnr
       end
 
       def stop_submission?
-        max_failures_reached
+        max_failures_reached || ctrl_c
       end
 
       def nothing_todo?(completed_futures, job_queue, slots)
@@ -52,6 +55,23 @@ module Jobrnr
         job_queue = graph.roots
 
         FileUtils.mkdir_p(options.output_directory)
+
+        # Handle Ctrl-C
+        #
+        # On first Ctrl-C, stop submitting new jobs and allow current jobs to
+        # finish. On second Ctrl-C, terminate immediately.
+        trap "SIGINT" do
+          if !ctrl_c
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
+            Jobrnr::Log.info "Ctrl-C again to terminate immediately."
+            @ctrl_c = true
+          else
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Terminating"
+            exit 130
+          end
+        end
 
         until done?(job_queue, futures)
           completed_futures = futures.select(&:fulfilled?)
