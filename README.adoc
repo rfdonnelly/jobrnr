@@ -46,7 +46,7 @@ The Jobrnr equivalent is job definitions.
 
 * Top-level -- Unlike Make where one or more top-level targets are run, Jobrnr runs all top-level targets.
 
-* Repitition -- Unlike Make, Jobrnr job definitions can be repeated.
+* Repetition -- Unlike Make, Jobrnr job definitions can be repeated.
 This allows a job definition to be run multiple times, usually with command variation.
 
 * Input -- Unlike Make, the Jobrnr input is Ruby.
