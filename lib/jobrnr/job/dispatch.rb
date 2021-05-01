@@ -70,7 +70,7 @@ module Jobrnr
           else
             Jobrnr::Log.info ""
             Jobrnr::Log.info "Terminating"
-            exit 130
+            pool.sigkill
           end
         end
 
