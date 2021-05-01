@@ -26,6 +26,33 @@ module Jobrnr
         @pool = Jobrnr::Job::Pool.new
       end
 
+      # Handle Ctrl-C
+      #
+      # On first Ctrl-C, stop submitting new jobs and allow current jobs to
+      # finish. On second Ctrl-C, send Ctrl-C to jobs. On third (and beyond)
+      # Ctrl-C, send SIGKILL to jobs.
+      def trap_ctrl_c
+        trap "SIGINT" do
+          case ctrl_c
+          when 0
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
+            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
+          when 1
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Terminating active jobs gracefully."
+            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
+            pool.sigint
+          else
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Terminating active jobs immediately."
+            pool.sigkill
+          end
+
+          @ctrl_c += 1
+        end
+      end
+
       def prerequisites_met?(job)
         job.predecessors.all? { |predecessor| predecessor.state.finished? && predecessor.state.passed? }
       end
@@ -51,35 +78,13 @@ module Jobrnr
       end
 
       def run
+        trap_ctrl_c
+
         cummulative_completed_instances = []
 
         job_queue = graph.roots
 
         FileUtils.mkdir_p(options.output_directory)
-
-        # Handle Ctrl-C
-        #
-        # On first Ctrl-C, stop submitting new jobs and allow current jobs to
-        # finish. On second Ctrl-C, terminate immediately.
-        trap "SIGINT" do
-          case ctrl_c
-          when 0
-            Jobrnr::Log.info ""
-            Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
-            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
-          when 1
-            Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating active jobs gracefully."
-            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
-            pool.sigint
-          when 2
-            Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating active jobs immediately."
-            pool.sigkill
-          end
-
-          @ctrl_c += 1
-        end
 
         until done?(job_queue, pool)
           completed = pool.remove_completed
