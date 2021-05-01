@@ -41,6 +41,12 @@ module Jobrnr
         self
       end
 
+      def sigint
+        if state == :dispatched && pid > 0
+          Process.kill("INT", pid)
+        end
+      end
+
       def sigkill
         if state == :dispatched && pid > 0
           Process.kill("KILL", pid)

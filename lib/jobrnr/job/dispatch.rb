@@ -21,7 +21,7 @@ module Jobrnr
         @slots = Jobrnr::Job::Slots.new(num_slots)
         @stats = Jobrnr::Stats.new(graph.roots)
         @plugins = Jobrnr::Plugins.instance
-        @ctrl_c = false
+        @ctrl_c = 0
 
         @pool = Jobrnr::Job::Pool.new
       end
@@ -35,7 +35,7 @@ module Jobrnr
       end
 
       def stop_submission?
-        max_failures_reached || ctrl_c
+        max_failures_reached || ctrl_c > 0
       end
 
       def nothing_todo?(completed, job_queue, slots)
@@ -62,16 +62,23 @@ module Jobrnr
         # On first Ctrl-C, stop submitting new jobs and allow current jobs to
         # finish. On second Ctrl-C, terminate immediately.
         trap "SIGINT" do
-          if !ctrl_c
+          case ctrl_c
+          when 0
             Jobrnr::Log.info ""
             Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
-            Jobrnr::Log.info "Ctrl-C again to terminate immediately."
-            @ctrl_c = true
-          else
+            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
+          when 1
             Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating"
+            Jobrnr::Log.info "Terminating active jobs gracefully."
+            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
+            pool.sigint
+          when 2
+            Jobrnr::Log.info ""
+            Jobrnr::Log.info "Terminating active jobs immediately."
             pool.sigkill
           end
+
+          @ctrl_c += 1
         end
 
         until done?(job_queue, pool)
