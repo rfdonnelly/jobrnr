@@ -1,7 +1,6 @@
 module Jobrnr
   module Job
     class Dispatch
-      require 'concurrent'
       require 'fileutils'
       require 'pastel'
 
@@ -10,6 +9,7 @@ module Jobrnr
       attr_reader :options
       attr_reader :graph
       attr_reader :slots
+      attr_reader :pool
       attr_reader :stats
       attr_reader :plugins
 
@@ -22,22 +22,24 @@ module Jobrnr
         @stats = Jobrnr::Stats.new(graph.roots)
         @plugins = Jobrnr::Plugins.instance
         @ctrl_c = false
+
+        @pool = Jobrnr::Job::Pool.new
       end
 
       def prerequisites_met?(job)
         job.predecessors.all? { |predecessor| predecessor.state.finished? && predecessor.state.passed? }
       end
 
-      def done?(job_queue, futures)
-        (job_queue.empty? || stop_submission?) && futures.empty?
+      def done?(job_queue, job_pool)
+        (job_queue.empty? || stop_submission?) && job_pool.empty?
       end
 
       def stop_submission?
         max_failures_reached || ctrl_c
       end
 
-      def nothing_todo?(completed_futures, job_queue, slots)
-        completed_futures.size == 0 && (
+      def nothing_todo?(completed, job_queue, slots)
+        completed.size == 0 && (
           job_queue.size == 0 ||
           slots.available == 0 ||
           stop_submission?
@@ -49,7 +51,6 @@ module Jobrnr
       end
 
       def run
-        futures = []
         cummulative_completed_instances = []
 
         job_queue = graph.roots
@@ -73,19 +74,18 @@ module Jobrnr
           end
         end
 
-        until done?(job_queue, futures)
-          completed_futures = futures.select(&:fulfilled?)
+        until done?(job_queue, pool)
+          completed = pool.remove_completed
 
-          if nothing_todo?(completed_futures, job_queue, slots)
+          if nothing_todo?(completed, job_queue, slots)
             # skip this interval
             sleep TIME_SLICE_INTERVAL
             next
           end
 
           # process completed job instances
-          completed_instances = completed_futures.map(&:value)
-          cummulative_completed_instances.push(*completed_instances)
-          completed_instances.each do |job_instance|
+          cummulative_completed_instances.push(*completed)
+          completed.each do |job_instance|
             message(job_instance)
             stats.collect(job_instance)
             plugins.post_instance(Jobrnr::PostInstanceMessage.new(job_instance, options))
@@ -97,17 +97,16 @@ module Jobrnr
               job_queue.push(*successors_to_queue)
               stats.queue(successors_to_queue)
             end
-          end
 
-          completed_instances.each { |job_instance| slots.deallocate(job_instance.slot, options.recycle && job_instance.success?) }
-          futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
+            slots.deallocate(job_instance.slot, options.recycle && job_instance.success?)
+          end
 
           # launch new job instances
           new_instances = stop_submission? ? [] : process_queue(job_queue)
-          futures.concat(create_futures(new_instances))
+          pool.add_and_start(new_instances)
 
           Jobrnr::Log.info stats.to_s
-          plugins.post_interval(Jobrnr::PostIntervalMessage.new(completed_instances, new_instances, stats, options))
+          plugins.post_interval(Jobrnr::PostIntervalMessage.new(completed, new_instances, stats, options))
 
           sleep TIME_SLICE_INTERVAL
         end
@@ -122,10 +121,6 @@ module Jobrnr
 
       def max_failures_reached
         options.max_failures > 0 && stats.failed >= options.max_failures
-      end
-
-      def create_futures(instances)
-        instances.map { |instance| Concurrent::Future.execute { instance.execute } }
       end
 
       def process_queue(job_queue)
