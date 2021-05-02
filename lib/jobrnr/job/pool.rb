@@ -45,7 +45,7 @@ module Jobrnr
       end
 
       def create_futures(instances)
-        instances.map { |instance| Concurrent::Future.execute { instance.execute } }
+        instances.map { |instance| Concurrent::Promises.future { instance.execute } }
       end
     end
   end
