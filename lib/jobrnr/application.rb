@@ -2,6 +2,8 @@
 
 module Jobrnr
   class Application
+    require "pathname"
+
     attr_reader :argv
 
     def initialize(argv)
@@ -75,10 +77,10 @@ module Jobrnr
         global_options.output_directory
       else
         expanded_directory = Jobrnr::Util.expand_envars(user_script_options.output_directory)
-        if expanded_directory[0] != '/'
-          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
-        else
+        if Pathname.new(expanded_directory).absolute?
           expanded_directory
+        else
+          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
         end
       end
     end
