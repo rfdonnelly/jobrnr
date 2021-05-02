@@ -31,10 +31,6 @@ module Jobrnr
         self.instances.each(&:sigint)
       end
 
-      def sigkill
-        self.instances.each(&:sigkill)
-      end
-
       private
 
       attr_accessor :futures

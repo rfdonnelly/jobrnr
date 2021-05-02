@@ -47,12 +47,6 @@ module Jobrnr
         end
       end
 
-      def sigkill
-        if state == :dispatched && pid > 0
-          Process.kill("KILL", pid)
-        end
-      end
-
       def duration
         @end_time - @start_time
       end

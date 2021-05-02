@@ -29,8 +29,7 @@ module Jobrnr
       # Handle Ctrl-C
       #
       # On first Ctrl-C, stop submitting new jobs and allow current jobs to
-      # finish. On second Ctrl-C, send Ctrl-C to jobs. On third (and beyond)
-      # Ctrl-C, send SIGKILL to jobs.
+      # finish. On second Ctrl-C (and beyond), send Ctrl-C to jobs.
       def trap_ctrl_c
         trap "SIGINT" do
           case ctrl_c
@@ -38,15 +37,11 @@ module Jobrnr
             Jobrnr::Log.info ""
             Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
             Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
-          when 1
-            Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating active jobs gracefully."
-            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
-            pool.sigint
           else
             Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating active jobs immediately."
-            pool.sigkill
+            Jobrnr::Log.info "Terminating by sending SIGINT to jobs."
+            Jobrnr::Log.info "Ctrl-C again to send SIGINT again."
+            pool.sigint
           end
 
           @ctrl_c += 1
