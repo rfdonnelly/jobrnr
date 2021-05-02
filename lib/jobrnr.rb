@@ -1,3 +1,5 @@
+require_relative 'jobrnr/version'
+
 require_relative 'jobrnr/application'
 require_relative 'jobrnr/dsl/commands'
 require_relative 'jobrnr/dsl/job_builder'

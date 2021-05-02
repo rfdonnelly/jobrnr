@@ -62,6 +62,10 @@ module Jobrnr
         op.on('--help-plugin', 'Display plugin API help and exit.') do
           exec "ronn --man #{man_path('jobrnr-plugin.3.ronn')}"
         end
+        op.on('--version', 'Display version') do
+          puts "Jobrnr version #{Jobrnr::version}"
+          exit
+        end
       end.parse!(argv)
 
       options
