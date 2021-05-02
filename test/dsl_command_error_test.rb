@@ -143,6 +143,3 @@ describe 'DSL command usage errors' do
     end
   end
 end
-
-
-
