@@ -39,8 +39,8 @@ module Jobrnr
             Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
           else
             Jobrnr::Log.info ""
-            Jobrnr::Log.info "Terminating by sending SIGINT to jobs."
-            Jobrnr::Log.info "Ctrl-C again to send SIGINT again."
+            Jobrnr::Log.info "Terminating by sending Ctrl-C (SIGINT) to jobs."
+            Jobrnr::Log.info "Ctrl-C again to send Ctrl-C (SIGINT) again."
             pool.sigint
           end
 
