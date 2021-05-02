@@ -8,7 +8,7 @@ end
 
 require 'rubocop/rake_task'
 RuboCop::RakeTask.new do |t|
-  t.options = %w(--fail-level W)
+  t.options = %w[--fail-level W]
 end
 
 task :man do
