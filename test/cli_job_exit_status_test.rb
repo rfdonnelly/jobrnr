@@ -6,8 +6,8 @@ describe "CLI Job Exit Status" do
       yield
     end
 
-    out.must_match exp_out
-    err.must_match exp_err
+    expect(out).must_match exp_out
+    expect(err).must_match exp_err
   end
 
   it "fails" do
@@ -29,8 +29,8 @@ describe "CLI Job Exit Status" do
       system "bin/jobrnr test/fixtures/job_exit_status/pass_and_fail.rb"
     end
 
-    out.must_match(/PASSED: 'true'/)
-    out.must_match(/FAILED: 'false'/)
-    err.must_equal ""
+    expect(out).must_match(/PASSED: 'true'/)
+    expect(out).must_match(/FAILED: 'false'/)
+    expect(err).must_equal ""
   end
 end
