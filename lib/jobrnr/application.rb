@@ -27,7 +27,7 @@ module Jobrnr
       filenames, plus_options = classify_arguments(@argv)
 
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil? || filenames.empty?
-      raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..-1].join(' ')}" if filenames.size > 1
+      raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..].join(' ')}" if filenames.size > 1
 
       filename = filenames.first
       raise Jobrnr::Error, "file does not exist: #{filename}" unless File.exist?(filename)
