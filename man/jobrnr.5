@@ -1,0 +1,187 @@
+'\" t
+.\"     Title: jobrnr
+.\"    Author: Rob Donnelly
+.\" Generator: Asciidoctor 2.0.15
+.\"      Date: 2021-05-02
+.\"    Manual: Jobrnr Manual
+.\"    Source: Jobrnr v1.1.0
+.\"  Language: English
+.\"
+.TH "JOBRNR" "5" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+jobrnr \- job description file format
+.SH "SYNOPSIS"
+.sp
+The Jobrnr job description file format is an internal \c
+.URL "http://martinfowler.com/bliki/DomainSpecificLanguage.html" "DSL" ""
+writen in
+.URL "https://www.ruby\-lang.org" "Ruby" ""
+used to describe a
+.URL "https://en.wikipedia.org/wiki/Directed_acyclic_graph" "DAG" ""
+of jobs.
+.SH "KEYWORDS"
+.sp
+\fBjob\fP \fIid\fP, [\fIprerequisite(s)\fP], \fI&block\fP
+.RS 4
+Defines a job.
+.RE
+.sp
+\fBjob::execute\fP \fIString\fP | \fIProc\fP
+.RS 4
+Define the command a job will execute.
+.RE
+.sp
+\fBjob::repeat\fP \fIInteger\fP
+.RS 4
+Define the number of times a job should be repated.
+.RE
+.sp
+\fBimport\fP \fIprefix\fP, \fIfilename\fP
+.RS 4
+Imports jobs from another job description (*.jr) file.
+.RE
+.SH "EXAMPLES"
+.SS "A simple job"
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :simple do
+  execute "sleep 1"
+end
+.fam
+.fi
+.if n .RE
+.SS "A repeating job"
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :repeat do
+  execute "sleep 1"
+  repeat 5
+end
+.fam
+.fi
+.if n .RE
+.SS "A block command"
+.sp
+The examples prior to this passed a command string to \fBexecute\fP.
+This example passes a block.
+The block returns a command string.
+.sp
+The block is evaluated at job execution time instead of at job definition time.
+This allows dynamic control of the command string.
+.sp
+In this example, each repition will execute a different command.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :block do
+  execute do
+    "sleep " + rand(10)
+  end
+  repeat 5
+end
+.fam
+.fi
+.if n .RE
+.SS "An immediate interpolation command"
+.sp
+The command string interpolated at job definition time so all 5 repitions will execute the same command.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :immediate_evaluation do
+  execute "sleep #{rand(10)}"
+  repeat 5
+end
+.fam
+.fi
+.if n .RE
+.SS "A delayed interpolation command"
+.sp
+The string is interpolated at job execution time so each repition will execute a different command.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :delayed_evaluation do
+  execute \(aqsleep #{rand(10)}\(aq
+  repeat 5
+end
+.fam
+.fi
+.if n .RE
+.SS "Prerequisites"
+.sp
+The compile job is a prerequisite of the run job.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :compile do
+  execute \(aqmake compile\(aq
+end
+
+job :run, :compile do
+  execute \(aqmake run\(aq
+end
+.fam
+.fi
+.if n .RE
+.SS "Import"
+.sp
+Import jobs from \(aqb.jr\(aq with prefix \(aqa\(aq.  If \(aqb.jr\(aq has job \(aqc\(aq, it will be imported as \(aqa_c\(aq.
+.sp
+.if n .RS 4
+.nf
+.fam C
+import \(aqa\(aq, \(aqb.jr\(aq
+.fam
+.fi
+.if n .RE
+.SS "Imported Jobs"
+.sp
+Imported jobs can be referenced in the form of <import\-prefix>_<job\-id>.
+.sp
+This example assumes \(aqimports.jr\(aq contains a \(aqcompile\(aq job.
+.sp
+.if n .RS 4
+.nf
+.fam C
+import \(aqimport\(aq, \(aqimports.jr\(aq
+
+job :run, :import_compile do
+  execute \(aqmake run\(aq
+end
+.fam
+.fi
+.if n .RE
+.SH "SEE ALSO"
+.sp
+\fBjobrnr\fP(1)
+.SH "AUTHOR"
+.sp
+Rob Donnelly

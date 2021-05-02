@@ -1,0 +1,200 @@
+'\" t
+.\"     Title: jobrnr
+.\"    Author: Rob Donnelly
+.\" Generator: Asciidoctor 2.0.15
+.\"      Date: 2021-05-02
+.\"    Manual: Jobrnr Manual
+.\"    Source: Jobrnr v1.1.0
+.\"  Language: English
+.\"
+.TH "JOBRNR" "1" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+jobrnr \- runs jobs
+.SH "SYNOPSIS"
+.sp
+\fBjobrnr\fP [\fIOPTION\fP]... \fIFILE\fP
+.SH "DESCRIPTION"
+.sp
+Jobrnr runs jobs.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+A job can have prerequisite jobs.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+A job can be repeated many times.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+A job can be passed a random seed.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Jobs are run simultaneously where possible.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Additional functionality can be added via plug\-ins.
+.RE
+.SH "FILES"
+.sp
+The input file should be a valid \fBjobrnr\fP(5) source file.
+Source files are typically named <name>.jr (e.g. example.jr).
+.SH "OPTIONS"
+.SS "General options"
+.sp
+\fB\-d, \-\-output\-directory\fP=\fIdirectory\fP
+.RS 4
+The directory where results will be placed.
+Will be created if it does not already exist.
+Overrides the \fBJOBRNR_OUTPUT_DIRECTORY\fP environment variable.
+Default: \fB$PWD\fP.
+.RE
+.sp
+\fB\-f, \-\-max\-failures\fP=\fIfailures\fP
+.RS 4
+The number of failures to allow before disabling execution of new jobs.
+All running jobs will be allowed to finish before terminating.
+Value of \f(CR0\fP effectively disables this setting.
+Overrides the \fBJOBRNR_MAX_FAILURES\fP environment variable.
+Default: 0 (disabled)
+.RE
+.sp
+\fB\-j, \-\-max\-jobs\fP=\fIjobs\fP
+.RS 4
+The number of jobs to run simultaneously.
+Overrides the \fBJOBRNR_MAX_JOBS\fP environment variable.
+Default: 8
+.RE
+.sp
+\fB\-\-no\-recycle\fP
+.RS 4
+Prevents recycling of job slots.
+By default, slots for passing jobs are recycled for future jobs while slots for failing jobs are not recycled.
+The \fB\-\-no\-recycle\fP option changes the default to prevent recycling of job slots for passing jobs as well as failing jobs.
+.RE
+.SS "Debug options"
+.sp
+\fB\-\-dot\fP
+.RS 4
+Display the job graph to \f(CRSTDOUT\fP in Graphviz \c
+.URL "http://www.graphviz.org/content/dot\-language" "DOT" ""
+format and exit.
+.RE
+.sp
+\fB\-v, \-\-verbose\fP
+.RS 4
+Enable debug output.
+.RE
+.SS "Help options"
+.sp
+\fB\-h\fP
+.RS 4
+Display short help and exit.
+.RE
+.sp
+\fB\-\-help\fP
+.RS 4
+Display long help and exit.
+.RE
+.sp
+\fB\-\-help\-format\fP
+.RS 4
+Display job description file format help and exit.
+.RE
+.sp
+\fB\-\-help\-plugin\fP
+.RS 4
+Display plugin API help and exit.
+.RE
+.SH "ENVIRONMENT"
+.sp
+\fBJOBRNR_PLUGIN_PATH\fP
+.RS 4
+A semicolon separated list of absolute path(s) to Jobrnr plug\-ins.
+.RE
+.sp
+\fBJOBRNR_OUTPUT_DIRECTORY\fP
+.RS 4
+The directory where results will be placed.
+Will be created if it does not exist.
+The \fB\-d\fP option takes precendence over this value.
+Default: \fB$PWD\fP
+.RE
+.sp
+\fBJOBRNR_MAX_FAILURES\fP
+.RS 4
+The number of failures to allow before terminating.
+The \fB\-f\fP option takes precendence over this value.
+Default: 0 (disabled)
+.RE
+.sp
+\fBJOBRNR_MAX_JOBS\fP
+.RS 4
+The number of jobs to run simultaneously.
+The \fB\-j\fP option takes precendence over this value.
+Default: 8
+.RE
+.SH "COPYRIGHT"
+.sp
+Jobrnr is Copyright \(co 2021 Rob Donnelly
+.SH "SEE ALSO"
+.sp
+\fBjobrnr\fP(5)
+.SH "AUTHOR"
+.sp
+Rob Donnelly

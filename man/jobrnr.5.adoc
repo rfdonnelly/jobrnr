@@ -1,0 +1,141 @@
+= jobrnr(5)
+Rob Donnelly
+:version: v1.1.0
+:doctype: manpage
+:manmanual: Jobrnr Manual
+:mansource: Jobrnr {version}
+
+== Name
+
+jobrnr - job description file format
+
+== Synopsis
+
+:dsl: http://martinfowler.com/bliki/DomainSpecificLanguage.html
+:ruby: https://www.ruby-lang.org
+:dag: https://en.wikipedia.org/wiki/Directed_acyclic_graph
+
+The Jobrnr job description file format is an internal {dsl}[DSL] writen in {ruby}[Ruby] used to describe a {dag}[DAG] of jobs.
+
+== Keywords
+
+*job* _id_, [_prerequisite(s)_], _&block_::
+Defines a job.
+
+*job::execute* _String_ | _Proc_::
+Define the command a job will execute.
+
+*job::repeat* _Integer_::
+Define the number of times a job should be repated.
+
+*import* _prefix_, _filename_::
+Imports jobs from another job description (*.jr) file.
+
+== Examples
+
+=== A simple job
+
+[source,ruby]
+----
+job :simple do
+  execute "sleep 1"
+end
+----
+
+=== A repeating job
+
+[source,ruby]
+----
+job :repeat do
+  execute "sleep 1"
+  repeat 5
+end
+----
+
+=== A block command
+
+The examples prior to this passed a command string to *execute*.
+This example passes a block.
+The block returns a command string.
+
+The block is evaluated at job execution time instead of at job definition time.
+This allows dynamic control of the command string.
+
+In this example, each repition will execute a different command.
+
+[source,ruby]
+----
+job :block do
+  execute do
+    "sleep " + rand(10)
+  end
+  repeat 5
+end
+----
+
+=== An immediate interpolation command
+
+The command string interpolated at job definition time so all 5 repitions will execute the same command.
+
+[source,ruby]
+----
+job :immediate_evaluation do
+  execute "sleep #{rand(10)}"
+  repeat 5
+end
+----
+
+=== A delayed interpolation command
+
+The string is interpolated at job execution time so each repition will execute a different command.
+
+[source,ruby]
+----
+job :delayed_evaluation do
+  execute 'sleep #{rand(10)}'
+  repeat 5
+end
+----
+
+=== Prerequisites
+
+The compile job is a prerequisite of the run job.
+
+[source,ruby]
+----
+job :compile do
+  execute 'make compile'
+end
+
+job :run, :compile do
+  execute 'make run'
+end
+----
+
+=== Import
+
+Import jobs from 'b.jr' with prefix 'a'.  If 'b.jr' has job 'c', it will be imported as 'a_c'.
+
+[source,ruby]
+----
+import 'a', 'b.jr'
+----
+
+=== Imported Jobs
+
+Imported jobs can be referenced in the form of <import-prefix>_<job-id>.
+
+This example assumes 'imports.jr' contains a 'compile' job.
+
+[source,ruby]
+----
+import 'import', 'imports.jr'
+
+job :run, :import_compile do
+  execute 'make run'
+end
+----
+
+== See Also
+
+*jobrnr*(1)
