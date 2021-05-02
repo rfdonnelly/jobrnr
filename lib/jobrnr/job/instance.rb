@@ -7,6 +7,7 @@ module Jobrnr
       attr_reader :iteration
       attr_reader :log
       attr_reader :state
+      attr_reader :pid
 
       def initialize(job:, slot:, log:)
         @job = job
@@ -14,6 +15,7 @@ module Jobrnr
         @log = log
         @command = job.generate_command
         @iteration = job.state.num_scheduled
+        @pid = nil
         @exit_status = nil
         @state = :pending
 
@@ -26,13 +28,23 @@ module Jobrnr
       def execute
         @start_time = Time.now
         @state = :dispatched
-        @exit_status = system("#{@command} > #{log} 2>&1")
+        # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
+        # affecting the command
+        @pid = spawn(@command, [:out, :err] => log, :pgroup=>true)
+        @pid, status = Process.waitpid2(pid)
+        @exit_status = status.exitstatus == 0
         @state = :finished
         @end_time = Time.now
 
         job.state.complete(@exit_status)
 
         self
+      end
+
+      def sigint
+        if state == :dispatched && pid > 0
+          Process.kill("INT", pid)
+        end
       end
 
       def duration
