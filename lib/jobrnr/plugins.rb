@@ -4,12 +4,12 @@ module Jobrnr
   require 'singleton'
 
   module PluginMethodStubs
-    PLUGIN_METHODS = [
-      :post_definition,
-      :pre_instance,
-      :post_instance,
-      :post_interval,
-      :post_application
+    PLUGIN_METHODS = %i[
+      post_definition
+      pre_instance
+      post_instance
+      post_interval
+      post_application
     ]
 
     PLUGIN_METHODS.each do |meth|

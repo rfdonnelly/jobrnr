@@ -59,7 +59,7 @@ module Jobrnr
         end
       end
 
-      [:filenames, :plus_options].map { |key| Array(hash[key]) }
+      %i[filenames plus_options].map { |key| Array(hash[key]) }
     end
 
     def merge_options(global_options, user_script_options, user_script_filename)
