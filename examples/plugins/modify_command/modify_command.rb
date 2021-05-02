@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr::Plugin
   class ModifyCommand
     def pre_instance(message)

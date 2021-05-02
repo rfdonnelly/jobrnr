@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   class Log
     VERBOSITY_SEVERITY_MAP = {

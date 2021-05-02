@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   def self.in_git?
     git_top_level = %x{cd #{__dir__} && git rev-parse --show-toplevel}.chomp

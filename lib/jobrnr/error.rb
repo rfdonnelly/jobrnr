@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   # All errors raised by Jobrnr code shall be Jobrnr::Error or derived
   # from Jobrnr::Error

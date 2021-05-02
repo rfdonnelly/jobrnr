@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module DSL
     require 'singleton'
