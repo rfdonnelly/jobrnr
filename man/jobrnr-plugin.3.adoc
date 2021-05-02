@@ -1,0 +1,203 @@
+= jobrnr-plugin(3)
+Rob Donnelly
+:version: v1.1.0
+:doctype: manpage
+:manmanual: Jobrnr Manual
+:mansource: Jobrnr {version}
+
+== Name
+
+jobrnr-plugin - plugin API for Jobrnr
+
+== Synopsis
+
+The Jobrnr plugin API allows additional functionality to be added without changing the core.
+
+== DESCRIPTION
+
+Plug-ins may respond to an event buy defining an event method.
+If a plug-in does not want to take action on a given event, it does not need to define the method for the given event.
+
+=== Events
+
+*post_definition* _message_::
+Called after a job has been defined but before it has been added to the
+graph.
++
+_message_ structure members:
++
+** *definition* - the job definition object.
+See _Common Message Objects_ below for details.
+** *options* - the Jobrnr options structure.
+See _Common Message Objects_ below for details.
+
+*pre_instance* _message_::
+Called after a job instance has been created and before it has been logged
+or run.
++
+_message_ structure members:
++
+** *instance* - the job instance object.
+See _Common Message Objects_ below for details.
+** *options* - the Jobrnr options structure.
+See _Common Message Objects_ below for details.
+
+*post_instance* _message_::
+Called after a job instance has finished execution and after it has been
+logged.
++
+_message_ structure members:
++
+** *instance* - the job instance object.
+See _Common Message Objects_ below for details.
+** *options* - the Jobrnr options structure.
+See _Common Message Objects_ below for details.
+
+*post_interval* _message_::
+Called after a dispatch interval has completed.
++
+_message_ structure members:
++
+** *completed_instances* - array of job instances completed in this interval
+** *scheduled_instances* - array of job instances that have been scheduled in this interval
+** *stats* - statistics object
+** *options* - the Jobrnr options structure.
+See _Common Message Objects_ below for details.
+
+*post_application* _message_::
+Called before Jobrnr exits.
++
+_message_ structure members:
++
+** *status_code* - number of failed jobs
+** *completed_instances* - array of job instances completed
+** *stats* - statistics object
+** *options* - the Jobrnr options structure.
+See _Common Message Objects_ below for details.
+
+=== Common Message Objects
+
+*options*::
+
+** *output_directory*: absolute path to output directory
+** *argv*: the contents of *ARGV* jobrnr was invoked with
+
+*definition*::
+
+** *command*: String or Proc that returns String to be executed by *system*
+** *iterations*: Number of times the job should be executed
+** *predecessors*: Job definitions that need to succeed before this job will be executed
+** *successors*: Job definitions that will be executed after this job succeeds and any other predecessors succeed
+
+*instance*::
+
+** *definition*: the corresponding job definition for this job instance
+** *slot*: the job slot occupied by this job instance
+** *command*: String to be executed by *system*
+** *iteration*: Indicates which iteration this job instance is
+** *log*: Absolute path to log file
+** *state*: one of *:pending*, *:dispatched*, *:finished*
+** *success?*: only valid for *:finished* jobs
+** *duration*: time in seconds for the instance to be executed
+
+=== Template
+
+[source,ruby]
+----
+module Jobrnr::Plugin
+  class ExamplePlugin
+    def post_definition(message); end
+    def pre_instance(message); end
+    def post_instance(message); end
+    def post_interval(message); end
+    def post_application(message); end
+  end
+end
+----
+
+== EXAMPLES
+
+=== Log job definitions
+
+[source,ruby]
+----
+module Jobrnr::Plugin
+  class ExampleDefinitionLogger
+    def post_definition(message)
+      puts "JOB DEFINED: #{message.definition}"
+    end
+  end
+end
+----
+
+=== Report failure summary
+
+[source,ruby]
+----
+module Jobrnr::Plugin
+  class FailureSummary
+    def initialize
+      @failures = []
+    end
+
+    def post_instance(message)
+      @failures.push(message.instance) unless message.instance.success?
+    end
+
+    def post_application(message)
+      return if @failures.empty?
+      puts "FAILURES:"
+      puts @failures.map(&:to_s).join("\n")
+    end
+  end
+end
+----
+
+=== Write live status to a file
+
+[source,ruby]
+----
+module Jobrnr::Plugin
+  class StatusWriter
+    def initialize
+      @failures = []
+    end
+
+    def post_instance(message)
+      @failures.push(message.instance) unless message.instance.success?
+    end
+
+    def post_interval(message)
+      path = File.join(message.options.output_directory, 'status')
+      File.open(path, 'w') do |file|
+        file.write "#{message.stats.to_s}\n"
+
+        unless @failures.empty?
+          file.write "FAILURES:\n"
+          file.write @failures.map(&:to_s).join("\n")
+        end
+      end
+    end
+  end
+end
+----
+
+=== Archive results
+
+Incrementally `tar` results then `gzip` on `post_application`.
+
+[source,ruby]
+----
+module Jobrnr::Plugin
+  class ResultAccumulator
+    def post_instance(message)
+      @archive_path ||= File.join(message.options.output_directory, 'results.tar')
+      system("tar --append --file #{@archive_path} #{message.instance.log}")
+    end
+
+    def post_application(message)
+      system("gzip #{@archive_path}")
+    end
+  end
+end
+----

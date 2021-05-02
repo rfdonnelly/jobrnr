@@ -54,13 +54,13 @@ module Jobrnr
           exit
         end
         op.on('--help', 'Display long help') do
-          exec "ronn --man #{man_path('jobrnr.1.ronn')}"
+          exec "man #{man_path('jobrnr.1')}"
         end
         op.on('--help-format', 'Display job description file format help') do
-          exec "ronn --man #{man_path('jobrnr.5.ronn')}"
+          exec "man #{man_path('jobrnr.5')}"
         end
         op.on('--help-plugin', 'Display plugin API help and exit.') do
-          exec "ronn --man #{man_path('jobrnr-plugin.3.ronn')}"
+          exec "man #{man_path('jobrnr-plugin.3')}"
         end
         op.on('--version', 'Display version') do
           puts "Jobrnr version #{Jobrnr::version}"

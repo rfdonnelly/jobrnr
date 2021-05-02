@@ -1,0 +1,520 @@
+'\" t
+.\"     Title: jobrnr-plugin
+.\"    Author: Rob Donnelly
+.\" Generator: Asciidoctor 2.0.15
+.\"      Date: 2021-05-02
+.\"    Manual: Jobrnr Manual
+.\"    Source: Jobrnr v1.1.0
+.\"  Language: English
+.\"
+.TH "JOBRNR\-PLUGIN" "3" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+jobrnr-plugin \- plugin API for Jobrnr
+.SH "SYNOPSIS"
+.sp
+The Jobrnr plugin API allows additional functionality to be added without changing the core.
+.SH "DESCRIPTION"
+.sp
+Plug\-ins may respond to an event buy defining an event method.
+If a plug\-in does not want to take action on a given event, it does not need to define the method for the given event.
+.SS "Events"
+.sp
+\fBpost_definition\fP \fImessage\fP
+.RS 4
+Called after a job has been defined but before it has been added to the
+graph.
+.sp
+\fImessage\fP structure members:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBdefinition\fP \- the job definition object.
+See \fICommon Message Objects\fP below for details.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoptions\fP \- the Jobrnr options structure.
+See \fICommon Message Objects\fP below for details.
+.RE
+.RE
+.sp
+\fBpre_instance\fP \fImessage\fP
+.RS 4
+Called after a job instance has been created and before it has been logged
+or run.
+.sp
+\fImessage\fP structure members:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBinstance\fP \- the job instance object.
+See \fICommon Message Objects\fP below for details.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoptions\fP \- the Jobrnr options structure.
+See \fICommon Message Objects\fP below for details.
+.RE
+.RE
+.sp
+\fBpost_instance\fP \fImessage\fP
+.RS 4
+Called after a job instance has finished execution and after it has been
+logged.
+.sp
+\fImessage\fP structure members:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBinstance\fP \- the job instance object.
+See \fICommon Message Objects\fP below for details.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoptions\fP \- the Jobrnr options structure.
+See \fICommon Message Objects\fP below for details.
+.RE
+.RE
+.sp
+\fBpost_interval\fP \fImessage\fP
+.RS 4
+Called after a dispatch interval has completed.
+.sp
+\fImessage\fP structure members:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBcompleted_instances\fP \- array of job instances completed in this interval
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBscheduled_instances\fP \- array of job instances that have been scheduled in this interval
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBstats\fP \- statistics object
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoptions\fP \- the Jobrnr options structure.
+See \fICommon Message Objects\fP below for details.
+.RE
+.RE
+.sp
+\fBpost_application\fP \fImessage\fP
+.RS 4
+Called before Jobrnr exits.
+.sp
+\fImessage\fP structure members:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBstatus_code\fP \- number of failed jobs
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBcompleted_instances\fP \- array of job instances completed
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBstats\fP \- statistics object
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoptions\fP \- the Jobrnr options structure.
+See \fICommon Message Objects\fP below for details.
+.RE
+.RE
+.SS "Common Message Objects"
+.sp
+\fBoptions\fP
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoutput_directory\fP: absolute path to output directory
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBargv\fP: the contents of \fBARGV\fP jobrnr was invoked with
+.RE
+.RE
+.sp
+\fBdefinition\fP
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBcommand\fP: String or Proc that returns String to be executed by \fBsystem\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBiterations\fP: Number of times the job should be executed
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBpredecessors\fP: Job definitions that need to succeed before this job will be executed
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBsuccessors\fP: Job definitions that will be executed after this job succeeds and any other predecessors succeed
+.RE
+.RE
+.sp
+\fBinstance\fP
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBdefinition\fP: the corresponding job definition for this job instance
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBslot\fP: the job slot occupied by this job instance
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBcommand\fP: String to be executed by \fBsystem\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBiteration\fP: Indicates which iteration this job instance is
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBlog\fP: Absolute path to log file
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBstate\fP: one of \fB:pending\fP, \fB:dispatched\fP, \fB:finished\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBsuccess?\fP: only valid for \fB:finished\fP jobs
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBduration\fP: time in seconds for the instance to be executed
+.RE
+.RE
+.SS "Template"
+.sp
+.if n .RS 4
+.nf
+.fam C
+module Jobrnr::Plugin
+  class ExamplePlugin
+    def post_definition(message); end
+    def pre_instance(message); end
+    def post_instance(message); end
+    def post_interval(message); end
+    def post_application(message); end
+  end
+end
+.fam
+.fi
+.if n .RE
+.SH "EXAMPLES"
+.SS "Log job definitions"
+.sp
+.if n .RS 4
+.nf
+.fam C
+module Jobrnr::Plugin
+  class ExampleDefinitionLogger
+    def post_definition(message)
+      puts "JOB DEFINED: #{message.definition}"
+    end
+  end
+end
+.fam
+.fi
+.if n .RE
+.SS "Report failure summary"
+.sp
+.if n .RS 4
+.nf
+.fam C
+module Jobrnr::Plugin
+  class FailureSummary
+    def initialize
+      @failures = []
+    end
+
+    def post_instance(message)
+      @failures.push(message.instance) unless message.instance.success?
+    end
+
+    def post_application(message)
+      return if @failures.empty?
+      puts "FAILURES:"
+      puts @failures.map(&:to_s).join("\(rsn")
+    end
+  end
+end
+.fam
+.fi
+.if n .RE
+.SS "Write live status to a file"
+.sp
+.if n .RS 4
+.nf
+.fam C
+module Jobrnr::Plugin
+  class StatusWriter
+    def initialize
+      @failures = []
+    end
+
+    def post_instance(message)
+      @failures.push(message.instance) unless message.instance.success?
+    end
+
+    def post_interval(message)
+      path = File.join(message.options.output_directory, \(aqstatus\(aq)
+      File.open(path, \(aqw\(aq) do |file|
+        file.write "#{message.stats.to_s}\(rsn"
+
+        unless @failures.empty?
+          file.write "FAILURES:\(rsn"
+          file.write @failures.map(&:to_s).join("\(rsn")
+        end
+      end
+    end
+  end
+end
+.fam
+.fi
+.if n .RE
+.SS "Archive results"
+.sp
+Incrementally \f(CRtar\fP results then \f(CRgzip\fP on \f(CRpost_application\fP.
+.sp
+.if n .RS 4
+.nf
+.fam C
+module Jobrnr::Plugin
+  class ResultAccumulator
+    def post_instance(message)
+      @archive_path ||= File.join(message.options.output_directory, \(aqresults.tar\(aq)
+      system("tar \-\-append \-\-file #{@archive_path} #{message.instance.log}")
+    end
+
+    def post_application(message)
+      system("gzip #{@archive_path}")
+    end
+  end
+end
+.fam
+.fi
+.if n .RE
+.SH "AUTHOR"
+.sp
+Rob Donnelly
