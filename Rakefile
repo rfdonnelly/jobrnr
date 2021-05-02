@@ -23,4 +23,4 @@ task :man do
   end
 end
 
-task :default => [:man, :test]
+task default: [:man, :test]
