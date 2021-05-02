@@ -146,7 +146,8 @@ describe Jobrnr::PlusOptionParser do
 
         it 'supports man doc' do
           e = assert_raises(Jobrnr::HelpException) do
-              @obj.parse({
+              @obj.parse(
+                {
                   name: 'file',
                   synopsis: 'jobrnr file.jr',
                   description: "line1\nline2",
@@ -156,7 +157,9 @@ describe Jobrnr::PlusOptionParser do
 
                       blah
                   EOF
-              }, %w[+help])
+                },
+                %w[+help]
+              )
           end
 
           assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
