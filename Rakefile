@@ -15,9 +15,11 @@ task :man do
   require 'asciidoctor'
   files = FileList["man/*.adoc"]
   files.each do |file|
-    Asciidoctor.convert_file file,
+    Asciidoctor.convert_file(
+      file,
       safe: :unsafe,
-      backend: 'manpage'
+      backend: 'manpage',
+    )
   end
 end
 
