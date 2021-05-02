@@ -88,16 +88,19 @@ describe Jobrnr::PlusOptionParser do
           integer: 5,
           string: 'hello',
         }
-        act = @obj.parse(@specs, %w[
-                         +default-inferred
-                         +default-true=false
-                         +integer=3
-                         +string=hi
-                         +default-inferred=false
-                         +default-true
-                         +integer=5
-                         +string=hello
-                         ])
+        act = @obj.parse(
+          @specs,
+          %w[
+            +default-inferred
+            +default-true=false
+            +integer=3
+            +string=hi
+            +default-inferred=false
+            +default-true
+            +integer=5
+            +string=hello
+          ]
+        )
         assert_equal(exp, act)
       end
 
@@ -108,9 +111,12 @@ describe Jobrnr::PlusOptionParser do
           integer: 1,
           string: '',
         }
-        act = @obj.parse(@specs, %w[
-                         +string=
-                         ])
+        act = @obj.parse(
+          @specs,
+          %w[
+            +string=
+          ]
+        )
         assert_equal(exp, act)
       end
 
