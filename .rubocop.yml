@@ -1,6 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.7
   DisplayCopNames: true
+  NewCops: enable
 
 Metrics/LineLength:
   Max: 120
@@ -8,4 +9,7 @@ Metrics/LineLength:
 Style/TrailingCommaInArrayLiteral:
   Enabled: false
 Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Naming/HeredocDelimiterNaming:
   Enabled: false
