@@ -2,9 +2,11 @@
 
 require 'test_helper'
 
-class Jobrnr::Graph
-  def clear
-    @jobs = {}
+module Jobrnr
+  class Graph
+    def clear
+      @jobs = {}
+    end
   end
 end
 
