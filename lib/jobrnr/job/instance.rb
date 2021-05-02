@@ -44,9 +44,9 @@ module Jobrnr
       end
 
       def sigint
-        if state == :dispatched && pid > 0
-          Process.kill("INT", pid)
-        end
+        return unless state == :dispatched && pid > 0
+
+        Process.kill("INT", pid)
       end
 
       def duration
