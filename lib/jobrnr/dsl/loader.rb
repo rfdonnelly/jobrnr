@@ -18,7 +18,7 @@ module Jobrnr
         @prefixes.push(prefix) if prefix
         @import = { filename: filename, prefix: prefix }
         @script_objs.push(@script_obj) if @script_obj
-        @script_obj = Jobrnr::Script.load(filename, {init_args: init_args, base_class: Jobrnr::DSL::Commands})
+        @script_obj = Jobrnr::Script.load(filename, { init_args: init_args, base_class: Jobrnr::DSL::Commands })
         @script_obj = @script_objs.pop if @script_objs.size > 0
         @import = @imports.pop if @imports.size > 0
         @prefixes.pop

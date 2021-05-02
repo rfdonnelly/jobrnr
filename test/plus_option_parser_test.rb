@@ -7,7 +7,7 @@ describe Jobrnr::PlusOptionParser do
 
   describe 'spec_to_def' do
     it 'infers String' do
-      definition = @obj.spec_to_def(:string_option, {default: 'string', doc: 'description'})
+      definition = @obj.spec_to_def(:string_option, { default: 'string', doc: 'description' })
 
       assert_instance_of(Jobrnr::PlusOptionParser::StringOption, definition)
       assert_equal('string', definition.default)
@@ -18,7 +18,7 @@ describe Jobrnr::PlusOptionParser do
     end
 
     it 'infers Integer' do
-      definition = @obj.spec_to_def(:integer_option, {default: 5, description: 'doc'})
+      definition = @obj.spec_to_def(:integer_option, { default: 5, description: 'doc' })
 
       assert_instance_of(Jobrnr::PlusOptionParser::IntegerOption, definition)
       assert_equal(5, definition.default)
@@ -26,7 +26,7 @@ describe Jobrnr::PlusOptionParser do
     end
 
     it 'infers true as Boolean' do
-      definition = @obj.spec_to_def(:boolean_option, {default: true, doc: 'doc'})
+      definition = @obj.spec_to_def(:boolean_option, { default: true, doc: 'doc' })
 
       assert_instance_of(Jobrnr::PlusOptionParser::BooleanOption, definition)
       assert_equal(true, definition.default)
