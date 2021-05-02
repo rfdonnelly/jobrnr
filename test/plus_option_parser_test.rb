@@ -78,7 +78,7 @@ describe Jobrnr::PlusOptionParser do
           integer: 3,
           string: 'hi',
         }
-        assert_equal(exp, @obj.parse(@specs, %w(+default-inferred +default-true=false +integer=3 +string=hi)))
+        assert_equal(exp, @obj.parse(@specs, %w[+default-inferred +default-true=false +integer=3 +string=hi]))
       end
 
       it 'overrides previous' do
@@ -88,7 +88,7 @@ describe Jobrnr::PlusOptionParser do
           integer: 5,
           string: 'hello',
         }
-        act = @obj.parse(@specs, %w(
+        act = @obj.parse(@specs, %w[
                          +default-inferred
                          +default-true=false
                          +integer=3
@@ -97,7 +97,7 @@ describe Jobrnr::PlusOptionParser do
                          +default-true
                          +integer=5
                          +string=hello
-                         ))
+                         ])
         assert_equal(exp, act)
       end
 
@@ -108,15 +108,15 @@ describe Jobrnr::PlusOptionParser do
           integer: 1,
           string: '',
         }
-        act = @obj.parse(@specs, %w(
+        act = @obj.parse(@specs, %w[
                          +string=
-                         ))
+                         ])
         assert_equal(exp, act)
       end
 
       describe '+help' do
         it 'general' do
-          e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w(+help)) }
+          e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w[+help]) }
 
           assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
             OPTIONS
@@ -150,7 +150,7 @@ describe Jobrnr::PlusOptionParser do
 
                       blah
                   EOF
-              }, %w(+help))
+              }, %w[+help])
           end
 
           assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
@@ -194,7 +194,7 @@ describe Jobrnr::PlusOptionParser do
 
     describe 'errors' do
       it 'errors on unrecognized option' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+does-not-exist)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w[+does-not-exist]) }
 
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           The following options are not valid options: +does-not-exist
@@ -219,28 +219,28 @@ describe Jobrnr::PlusOptionParser do
       end
 
       it 'errors on missing Integer argument' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer= +default-inferred)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w[+integer= +default-inferred]) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           Could not parse '' as Integer type for the '+integer' option
         EOF
       end
 
       it 'errors on bad argument syntax' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer 2)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w[+integer 2]) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           No argument given for '+integer' option
         EOF
       end
 
       it 'errors on bad Integer format' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+integer=five)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w[+integer=five]) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           Could not parse 'five' as Integer type for the '+integer' option
         EOF
       end
 
       it 'errors on bad Boolean format' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w(+default-true=five)) }
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.parse(@specs, %w[+default-true=five]) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           Could not parse 'five' as Boolean type for the '+default-true' option
         EOF

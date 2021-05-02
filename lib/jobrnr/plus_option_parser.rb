@@ -143,7 +143,7 @@ module Jobrnr
     #
     #       jobrnr example.jr +string='test'
     #   EOF
-    # }, %w(+fix-num=5 +string=test))
+    # }, %w[+fix-num=5 +string=test])
     # ```
     #
     # Option specification input only
@@ -153,7 +153,7 @@ module Jobrnr
     #   some_option: {
     #     description: 'An option.'
     #   }
-    # }, %w(+some-option))
+    # }, %w[+some-option])
     # ```
     #
     # Returns Hash of options.
