@@ -1,6 +1,9 @@
-module Jobrnr
-  require 'singleton'
+# frozen_string_literal: true
 
+module Jobrnr
+  require "singleton"
+
+  # Tracks job dependencies
   class Graph
     include Singleton
 
@@ -29,25 +32,27 @@ module Jobrnr
     end
 
     def roots
-      jobs.select { |j| j.predecessors.size == 0 }
+      jobs.select { |j| j.predecessors.size.zero? }
     end
 
     # Generates GraphViz dot format
     def to_dot
       relations = jobs.each_with_object([]) do |j, array|
         if j.successors.empty? && j.predecessors.empty?
-          array << "#{j.id}"
+          array << j.id.to_s
         else
           j.successors.each { |s| array << "#{j.id} -> #{s.id}" }
         end
 
-        array << '%s -> %s [ label = "%d" ]' % [j.id, j.id, j.iterations] if j.iterations > 1
+        if j.iterations > 1
+          array << format('%<id>s -> %<id>s [ label = "%<iterations>d" ]', id: j.id, iterations: j.iterations)
+        end
       end
 
       [
-        'digraph DependencyGraph {',
+        "digraph DependencyGraph {",
         *relations.map { |line| "  #{line};" },
-        '}',
+        "}",
       ].join("\n")
     end
   end

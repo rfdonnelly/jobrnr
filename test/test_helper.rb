@@ -1,3 +1,5 @@
-require 'minitest/autorun'
+# frozen_string_literal: true
 
-require 'jobrnr'
+require "minitest/autorun"
+
+require "jobrnr"

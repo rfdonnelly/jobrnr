@@ -1,22 +1,26 @@
-require 'rake/testtask'
+# frozen_string_literal: true
+
+require "rake/testtask"
 Rake::TestTask.new do |t|
-  t.libs << 'test'
-  t.test_files = FileList['test/*_test.rb']
+  t.libs << "test"
+  t.test_files = FileList["test/*_test.rb"]
 end
 
-require 'rubocop/rake_task'
+require "rubocop/rake_task"
 RuboCop::RakeTask.new do |t|
-  t.options = %w(--fail-level W)
+  t.patterns = ["lib/**/*.rb"]
 end
 
 task :man do
-  require 'asciidoctor'
+  require "asciidoctor"
   files = FileList["man/*.adoc"]
   files.each do |file|
-    Asciidoctor.convert_file file,
+    Asciidoctor.convert_file(
+      file,
       safe: :unsafe,
-      backend: 'manpage'
+      backend: "manpage",
+    )
   end
 end
 
-task :default => [:man, :test]
+task default: %i[man test]

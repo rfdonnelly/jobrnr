@@ -1,7 +1,12 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module Job
+    # The job execution pool.
+    #
+    # Contains all active jobs.
     class Pool
-      require 'concurrent'
+      require "concurrent"
 
       def initialize
         self.futures = []
@@ -9,12 +14,12 @@ module Jobrnr
       end
 
       def empty?
-        self.futures.empty?
+        futures.empty?
       end
 
       # Removes completed job instances from the pool and returns them
       def remove_completed
-        completed_futures = self.futures.select(&:fulfilled?)
+        completed_futures = futures.select(&:fulfilled?)
         remove_futures(completed_futures)
         completed_instances = completed_futures.map(&:value)
         remove_instances(completed_instances)
@@ -24,11 +29,11 @@ module Jobrnr
       # Adds job instances to the pool and starts them
       def add_and_start(instances)
         self.instances.concat(instances)
-        self.futures.concat(create_futures(instances))
+        futures.concat(create_futures(instances))
       end
 
       def sigint
-        self.instances.each(&:sigint)
+        instances.each(&:sigint)
       end
 
       private
@@ -37,11 +42,19 @@ module Jobrnr
       attr_accessor :instances
 
       def remove_futures(completed_futures)
-        self.futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
+        futures.reject! do |future|
+          completed_futures.any? do |completed_future|
+            future == completed_future
+          end
+        end
       end
 
       def remove_instances(completed_instances)
-        self.instances.reject! { |instance| completed_instances.any? { |completed_instance| instance == completed_instance } }
+        instances.reject! do |instance|
+          completed_instances.any? do |completed_instance|
+            instance == completed_instance
+          end
+        end
       end
 
       def create_futures(instances)

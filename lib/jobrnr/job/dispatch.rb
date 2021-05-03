@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module Job
+    # Contains the main event loop
+    #
+    # Runs all jobs in the graph to completion.
     class Dispatch
-      require 'fileutils'
-      require 'pastel'
+      require "fileutils"
+      require "pastel"
 
       TIME_SLICE_INTERVAL = 1
 
@@ -32,13 +37,13 @@ module Jobrnr
       # finish. On second Ctrl-C (and beyond), send Ctrl-C to jobs.
       def trap_ctrl_c
         trap "SIGINT" do
+          Jobrnr::Log.info ""
+
           case ctrl_c
           when 0
-            Jobrnr::Log.info ""
             Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
             Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
           else
-            Jobrnr::Log.info ""
             Jobrnr::Log.info "Terminating by sending Ctrl-C (SIGINT) to jobs."
             Jobrnr::Log.info "Ctrl-C again to send Ctrl-C (SIGINT) again."
             pool.sigint
@@ -57,13 +62,13 @@ module Jobrnr
       end
 
       def stop_submission?
-        max_failures_reached || ctrl_c > 0
+        max_failures_reached || ctrl_c.positive?
       end
 
       def nothing_todo?(completed, job_queue, slots)
-        completed.size == 0 && (
-          job_queue.size == 0 ||
-          slots.available == 0 ||
+        completed.empty? && (
+          job_queue.empty? ||
+          slots.available.zero? ||
           stop_submission?
         )
       end
@@ -119,15 +124,24 @@ module Jobrnr
         end
 
         status_code = stats.failed
-        plugins.post_application(Jobrnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
+        plugins.post_application(
+          Jobrnr::PostApplicationMessage.new(
+            status_code,
+            cummulative_completed_instances,
+            stats,
+            options
+          )
+        )
 
-        Jobrnr::Log.info 'Early termination due to reaching maximum failures' if max_failures_reached && !job_queue.empty?
+        if max_failures_reached && !job_queue.empty?
+          Jobrnr::Log.info "Early termination due to reaching maximum failures"
+        end
 
         status_code
       end
 
       def max_failures_reached
-        options.max_failures > 0 && stats.failed >= options.max_failures
+        options.max_failures.positive? && stats.failed >= options.max_failures
       end
 
       def process_queue(job_queue)
@@ -164,7 +178,7 @@ module Jobrnr
       def log_filename(slot)
         File.join(
           options.output_directory,
-          '%s%02d' % [File.basename(options.output_directory), slot]
+          format("%<dirname>s%<slot_id>02d", dirname: File.basename(options.output_directory), slot_id: slot)
         )
       end
 
@@ -172,13 +186,20 @@ module Jobrnr
         pastel = Pastel.new
 
         s = []
-        s << 'Running:' if job_instance.state == :pending
-        s << (job_instance.success? ? pastel.green('PASSED:') : pastel.red('FAILED:')) if job_instance.state == :finished
+        s << "Running:" if job_instance.state == :pending
+        if job_instance.state == :finished
+          s <<
+            if job_instance.success?
+              pastel.green("PASSED:")
+            else
+              pastel.red("FAILED:")
+            end
+        end
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-        s << 'in %#.2fs' % job_instance.duration if job_instance.state == :finished
-        Jobrnr::Log.info s.join(' ')
+        s << format("in %#.2fs", job_instance.duration) if job_instance.state == :finished
+        Jobrnr::Log.info s.join(" ")
       end
     end
   end

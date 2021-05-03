@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module Jobrnr
+  # Central logging class
   class Log
     VERBOSITY_SEVERITY_MAP = {
       ERROR: -999,
       INFO: 1,
       DEBUG: 2,
-    }
+    }.freeze
 
     @@verbosity = 0
 
@@ -15,8 +18,8 @@ module Jobrnr
     def self.report(severity, message)
       return unless @@verbosity >= VERBOSITY_SEVERITY_MAP[severity]
 
-      out = (severity == :ERROR) ? STDERR : STDOUT
-      prefix = (severity == :INFO) ? '' : "#{severity}: jobrnr: "
+      out = severity == :ERROR ? $stderr : $stdout
+      prefix = severity == :INFO ? "" : "#{severity}: jobrnr: "
       out.puts [prefix, message].join
     end
 

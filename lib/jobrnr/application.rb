@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 module Jobrnr
+  # Provides the entry point of the application
   class Application
+    require "pathname"
+
     attr_reader :argv
 
     def initialize(argv)
@@ -10,7 +15,7 @@ module Jobrnr
       begin
         run_with_exceptions
       rescue OptionParser::ParseError, Jobrnr::UsageError => e
-        Jobrnr::Log.error [e.message, 'See `jobrnr --help`'].join("\n\n")
+        Jobrnr::Log.error [e.message, "See `jobrnr --help`"].join("\n\n")
       rescue Jobrnr::HelpException => e
         puts e.message
         exit 0
@@ -25,7 +30,7 @@ module Jobrnr
       filenames, plus_options = classify_arguments(@argv)
 
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil? || filenames.empty?
-      raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..-1].join(' ')}" if filenames.size > 1
+      raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..].join(' ')}" if filenames.size > 1
 
       filename = filenames.first
       raise Jobrnr::Error, "file does not exist: #{filename}" unless File.exist?(filename)
@@ -50,14 +55,14 @@ module Jobrnr
 
     def classify_arguments(argv)
       hash = argv.group_by do |arg|
-        if arg[0] == '+'
+        if arg[0] == "+"
           :plus_options
         else
           :filenames
         end
       end
 
-      [:filenames, :plus_options].map { |key| Array(hash[key]) }
+      %i[filenames plus_options].map { |key| Array(hash[key]) }
     end
 
     def merge_options(global_options, user_script_options, user_script_filename)
@@ -73,10 +78,10 @@ module Jobrnr
         global_options.output_directory
       else
         expanded_directory = Jobrnr::Util.expand_envars(user_script_options.output_directory)
-        if expanded_directory[0] != '/'
-          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
-        else
+        if Pathname.new(expanded_directory).absolute?
           expanded_directory
+        else
+          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
         end
       end
     end

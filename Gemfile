@@ -1,10 +1,12 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-gem 'concurrent-ruby', require: 'concurrent'
-gem 'docile'
-gem 'pastel'
+source "https://rubygems.org"
 
-gem 'rake', group: 'development'
-gem 'minitest', group: 'development'
-gem 'rubocop', group: 'development'
-gem 'asciidoctor', group: 'development'
+gem "concurrent-ruby", require: "concurrent"
+gem "docile"
+gem "pastel"
+
+gem "asciidoctor", group: "development"
+gem "minitest", group: "development"
+gem "rake", group: "development"
+gem "rubocop", group: "development"

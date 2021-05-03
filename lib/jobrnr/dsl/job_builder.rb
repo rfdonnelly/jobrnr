@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module DSL
+    # Defines the commands under the job command: execute and repeat
     class JobBuilder
       def initialize(id:, predecessors:)
         @obj = Jobrnr::Job::Definition.new(id: id, predecessors: predecessors)
@@ -22,7 +25,7 @@ module Jobrnr
       end
 
       def repeat(times)
-        if !times.is_a?(Integer) || times < 0
+        if !times.is_a?(Integer) || times.negative?
           raise Jobrnr::TypeError, "'repeat' expects a positive Integer" \
             " but was given value of '#{times}' of type" \
             " '#{times.class.name}' @ #{caller_source}"
@@ -36,8 +39,11 @@ module Jobrnr
       end
 
       def build
-        raise Jobrnr::ArgumentError, "job '#{@obj.id}' is missing required 'execute' command" \
-          " @ #{caller_source}" if @obj.command.nil?
+        if @obj.command.nil?
+          raise Jobrnr::ArgumentError,
+            "job '#{@obj.id}' is missing required 'execute' command" \
+            " @ #{caller_source}"
+        end
 
         @obj
       end

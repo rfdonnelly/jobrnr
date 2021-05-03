@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   # Parses plusargs
   #
@@ -17,7 +19,8 @@ module Jobrnr
   # * `+integer_option=5`
   # * `+boolean_option`
   class PlusOptionParser
-    class Option
+    # PlusOption base class
+    class PlusOption
       attr_reader :id
       attr_reader :name
       attr_reader :default
@@ -36,38 +39,46 @@ module Jobrnr
         @value = parse_value(value)
       end
 
-      def parse_value(value)
-      end
+      def parse_value(value); end
     end
 
-    class BooleanOption < Option
+    # An option that accepts true/false values
+    class BooleanOption < PlusOption
       def parse_value(value)
-        if value == :noarg
+        case value
+        when :noarg
           true
-        elsif value.match(/^(true|t|yes|y|1)$/)
+        when /^(true|t|yes|y|1)$/ # rubocop: disable Lint/DuplicateBranch
           true
-        elsif value.match(/^(false|f|no|n|0)$/)
+        when /^(false|f|no|n|0)$/
           false
         else
-          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean " \
+          raise Jobrnr::ArgumentError,
+            "Could not parse '#{value}' as Boolean " \
             "type for the '+#{name}' option"
         end
       end
     end
 
-    class StringOption < Option
+    # An option that accepts string values
+    class StringOption < PlusOption
       def parse_value(value)
-        raise Jobrnr::ArgumentError, "No argument given for " \
-          "'+#{name}' option" if value == :noarg
+        if value == :noarg
+          raise Jobrnr::ArgumentError,
+            "No argument given for '+#{name}' option"
+        end
 
         value
       end
     end
 
-    class IntegerOption < Option
+    # An option that accepts Integer values
+    class IntegerOption < PlusOption
       def parse_value(value)
-        raise Jobrnr::ArgumentError, "No argument given for " \
-          "'+#{name}' option" if value == :noarg
+        if value == :noarg
+          raise Jobrnr::ArgumentError,
+            "No argument given for '+#{name}' option"
+        end
 
         begin
           Integer(value)
@@ -78,8 +89,15 @@ module Jobrnr
       end
     end
 
+    VALUE_OPTION_TYPE_MAP = {
+      String => StringOption,
+      TrueClass => BooleanOption,
+      FalseClass => BooleanOption,
+      Integer => IntegerOption,
+    }.freeze
+
     def self.parse(help_spec, plus_options)
-      self.new.parse(help_spec, plus_options)
+      new.parse(help_spec, plus_options)
     end
 
     # Parses an array of plus options (+key=value pairs) given an option
@@ -143,7 +161,7 @@ module Jobrnr
     #
     #       jobrnr example.jr +string='test'
     #   EOF
-    # }, %w(+fix-num=5 +string=test))
+    # }, %w[+fix-num=5 +string=test])
     # ```
     #
     # Option specification input only
@@ -153,7 +171,7 @@ module Jobrnr
     #   some_option: {
     #     description: 'An option.'
     #   }
-    # }, %w(+some-option))
+    # }, %w[+some-option])
     # ```
     #
     # Returns Hash of options.
@@ -172,48 +190,61 @@ module Jobrnr
       raise Jobrnr::HelpException, help(option_definitions, doc_params) if plus_options_hash.keys.include?(:help)
 
       unless Jobrnr::Util.array_subset_of?(plus_options_hash.keys, option_definitions.keys)
-        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(plus_options_hash, option_definitions)}\n\n#{help(option_definitions)}"
+        raise Jobrnr::ArgumentError,
+          format(
+            "The following options are not valid options: %<invalid_options>s\n\n%<help>s",
+            invalid_options: unsupported_options(plus_options_hash, option_definitions),
+            help: help(option_definitions)
+          )
       end
 
       plus_options_hash.each { |option_name, option_value| option_definitions[option_name].value = option_value }
 
-      Hash[option_definitions.map { |option_name, option_definition| [option_name, option_definition.value] }]
+      option_definitions.transform_values(&:value)
     end
 
     def unsupported_options(options, option_definitions)
       common_options = options.keys & option_definitions.keys
 
       (options.keys - common_options)
-        .map { |option| "+#{sym_to_s(option)}" }.join(', ')
+        .map { |option| "+#{sym_to_s(option)}" }.join(", ")
     end
 
     def help(option_definitions, doc_params = {})
       lines = []
 
-      lines << [
-        'NAME',
-        "  #{doc_params[:name]}",
-      ] if doc_params[:name]
+      if doc_params[:name]
+        lines << [
+          "NAME",
+          "  #{doc_params[:name]}",
+        ]
+      end
+
+      if doc_params[:synopsis]
+        lines << [
+          "SYNOPSIS",
+          "  #{doc_params[:synopsis]}",
+        ]
+      end
+
+      if doc_params[:description]
+        lines << [
+          "DESCRIPTION",
+          doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
+        ]
+      end
 
       lines << [
-        'SYNOPSIS',
-        "  #{doc_params[:synopsis]}",
-      ] if doc_params[:synopsis]
-
-      lines << [
-        'DESCRIPTION',
-        doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
-      ] if doc_params[:description]
-
-      lines << [
-        'OPTIONS',
+        "OPTIONS",
         option_definitions.values.map { |option_definition| help_format_option(option_definition) },
         "  +help\n    Show this help and exit."
       ]
 
-      lines << [
-        doc_params[:extra]
-      ] if doc_params[:extra]
+      if doc_params[:extra]
+        lines << [
+          doc_params[:extra]
+        ]
+      end
 
       lines.join("\n\n")
     end
@@ -226,50 +257,49 @@ module Jobrnr
     end
 
     def help_format_name(option_definition)
-      option_definition.name + (option_definition.is_a?(BooleanOption) ? '[=<value>]' : '=<value>')
+      option_definition.name + (option_definition.is_a?(BooleanOption) ? "[=<value>]" : "=<value>")
     end
 
     def specs_to_defs(options_spec)
-      Hash[options_spec.map { |id, spec| [id, spec_to_def(id, spec)] }]
+      options_spec
+        .map { |id, spec| [id, spec_to_def(id, spec)] }
+        .to_h
     end
 
     def spec_to_def(id, spec)
       spec[:default] ||= false
-      klass = spec[:default].class
 
-      type =
-        if klass == String
-          StringOption
-        elsif klass == TrueClass
-          BooleanOption
-        elsif klass == FalseClass
-          BooleanOption
-        elsif spec[:default].is_a? Integer
-          IntegerOption
-        end
+      value_type = VALUE_OPTION_TYPE_MAP.keys.find { |value_type| spec[:default].is_a?(value_type) }
+      if value_type.nil?
+        raise Jobrnr::TypeError, "Could not infer type from default value of " \
+          "'#{spec[:default]}' for option '#{sym_to_s(id)}'"
+      end
 
-      raise Jobrnr::TypeError, "Could not infer type from default value of " \
-        "'#{spec[:default]}' for option '#{sym_to_s(id)}'" if type.nil?
-
-      type.new(id, sym_to_s(id), spec[:default], spec[:doc] || spec[:description])
+      option_type = VALUE_OPTION_TYPE_MAP[value_type]
+      option_type.new(
+        id,
+        sym_to_s(id),
+        spec[:default],
+        spec[:doc] || spec[:description]
+      )
     end
 
     def plus_options_to_hash(plus_options)
       plus_options.each_with_object({}) do |plus_option, plus_options_hash|
-        if md = plus_option.match(/^\+(.*?)=(.*)/)
+        if (md = plus_option.match(/^\+(.*?)=(.*)/))
           plus_options_hash[s_to_sym(md.captures.first)] = md.captures.last
-        elsif md = plus_option.match(/^\+((\w|-)+)$/)
+        elsif (md = plus_option.match(/^\+((\w|-)+)$/))
           plus_options_hash[s_to_sym(md.captures.first)] = :noarg
         end
       end
     end
 
     def s_to_sym(s)
-      s.tr('-', '_').to_sym
+      s.tr("-", "_").to_sym
     end
 
     def sym_to_s(sym)
-      sym.to_s.tr('_', '-')
+      sym.to_s.tr("_", "-")
     end
   end
 end

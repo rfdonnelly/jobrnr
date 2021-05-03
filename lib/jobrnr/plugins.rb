@@ -1,20 +1,24 @@
-module Jobrnr
-  require 'singleton'
+# frozen_string_literal: true
 
+module Jobrnr
+  require "singleton"
+
+  # Defines the plugin API
   module PluginMethodStubs
-    PLUGIN_METHODS = [
-      :post_definition,
-      :pre_instance,
-      :post_instance,
-      :post_interval,
-      :post_application
-    ]
+    PLUGIN_METHODS = %i[
+      post_definition
+      pre_instance
+      post_instance
+      post_interval
+      post_application
+    ].freeze
 
     PLUGIN_METHODS.each do |meth|
-      define_method(meth) { |*args| }
+      define_method(meth) { |*args| } # rubocop: disabled Lint/EmptyBlock
     end
   end
 
+  # Loads and dispatches events to plugins
   class Plugins
     include Singleton
     include Jobrnr::PluginMethodStubs
@@ -37,7 +41,7 @@ module Jobrnr
     # Raises LoadError [see Kernel::require]
     def load(paths)
       Array(paths).each do |path|
-        Dir.glob(File.join(path, '*.rb')) do |file|
+        Dir.glob(File.join(path, "*.rb")).sort.each do |file|
           # FIXME: require raises LoadError if it cannot find file.
           # Here we are only calling require on files we have found.
           # What about insufficient permissions?
@@ -67,7 +71,8 @@ module Jobrnr
     #
     # Returns Array of all Classes defined in Module mod
     def classes_in_module(mod)
-      mod.constants
+      mod
+        .constants
         .select { |c| Class === mod.const_get(c) }
         .map { |c| mod.const_get(c) }
     end
@@ -83,12 +88,15 @@ module Jobrnr
     #
     # Returns array of plugin class instances
     def create_plugin_instances(classes)
-      classes.map(&:new)
+      classes
+        .map(&:new)
         .each { |o| o.class.send(:include, Jobrnr::PluginMethodStubs) }
     end
   end
 end
 
 module Jobrnr
+  # Define an empty Plugin module here so Plugins can use the short form:
+  # Jobrnr::Plugin
   module Plugin; end
 end

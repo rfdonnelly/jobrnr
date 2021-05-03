@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module Job
+    # An instance of a job definition.
+    #
+    # Executes the job.
     class Instance
       attr_reader :job
       attr_reader :slot
@@ -30,9 +35,9 @@ module Jobrnr
         @state = :dispatched
         # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
         # affecting the command
-        @pid = spawn(@command, [:out, :err] => log, :pgroup=>true)
+        @pid = spawn(@command, %i[out err] => log, :pgroup => true)
         @pid, status = Process.waitpid2(pid)
-        @exit_status = status.exitstatus == 0
+        @exit_status = status.exitstatus.zero?
         @state = :finished
         @end_time = Time.now
 
@@ -42,9 +47,9 @@ module Jobrnr
       end
 
       def sigint
-        if state == :dispatched && pid > 0
-          Process.kill("INT", pid)
-        end
+        return unless state == :dispatched && pid.positive?
+
+        Process.kill("INT", pid)
       end
 
       def duration

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   PostDefinitionMessage = Struct.new(:definition, :options)
   PreInstanceMessage = Struct.new(:instance, :options)

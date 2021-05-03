@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module Job
+    # Defined by the DSL job command.
+    # Tracks job state.
+    # Template for job instances.
     class Definition
       attr_reader :id
       attr_reader :predecessors
@@ -35,7 +40,7 @@ module Jobrnr
         seed = Random.rand(0xffff_ffff)
 
         substitutions = [
-          [/__SEED%x__/, '%08x' % seed],
+          [/__SEED%x__/, format("%08x", seed)],
           [/__SEED%d__/, seed.to_s],
         ]
         substitutions.each_with_object(s) do |substitution, string|

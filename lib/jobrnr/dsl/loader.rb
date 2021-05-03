@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module DSL
-    require 'singleton'
+    require "singleton"
 
+    # Manages stack of scripts (nested imports)
     class Loader
       include Singleton
 
@@ -18,9 +21,9 @@ module Jobrnr
         @prefixes.push(prefix) if prefix
         @import = { filename: filename, prefix: prefix }
         @script_objs.push(@script_obj) if @script_obj
-        @script_obj = Jobrnr::Script.load(filename, {init_args: init_args, base_class: Jobrnr::DSL::Commands})
-        @script_obj = @script_objs.pop if @script_objs.size > 0
-        @import = @imports.pop if @imports.size > 0
+        @script_obj = Jobrnr::Script.load(filename, { init_args: init_args, base_class: Jobrnr::DSL::Commands })
+        @script_obj = @script_objs.pop if @script_objs.size.positive?
+        @import = @imports.pop if @imports.size.positive?
         @prefixes.pop
 
         @script_obj
@@ -35,7 +38,7 @@ module Jobrnr
       end
 
       def prefix
-        @prefixes.join('_')
+        @prefixes.join("_")
       end
     end
   end

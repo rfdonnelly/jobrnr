@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module Jobrnr
   module DSL
+    # Defines the top-level DSL commands: job and import
     class Commands
-      require 'docile'
+      require "docile"
 
       attr_reader :jobrnr_options
       attr_reader :plus_options
@@ -25,14 +28,17 @@ module Jobrnr
         prefix = Jobrnr::DSL::Loader.instance.prefix
 
         pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }
-        pids_not_found = pids
+        pids_not_found =
+          pids
           .map { |pid| [pid, graph.id?(pid)] }
           .select { |_, exists| exists == false }
           .map { |pid, _| "':#{pid}'" }
 
-        raise Jobrnr::ArgumentError,
-          "job ':#{id}' references undefined predecessor job(s) " \
-          "#{pids_not_found.join(', ')} @ #{caller_source}" unless pids_not_found.empty?
+        unless pids_not_found.empty?
+          raise Jobrnr::ArgumentError,
+            "job ':#{id}' references undefined predecessor job(s) " \
+            "#{pids_not_found.join(', ')} @ #{caller_source}"
+        end
 
         predecessors = pids.map { |pid| graph[pid] }
         builder = Jobrnr::DSL::JobBuilder.new(
@@ -45,29 +51,33 @@ module Jobrnr
       end
 
       def import(prefix, filename, *plus_options)
-        raise Jobrnr::ArgumentError,
-          "import prefix argument must be a non-blank string " \
-          "@ #{caller_source}" unless prefix.is_a?(String) && !prefix.strip.empty?
+        unless prefix.is_a?(String) && !prefix.strip.empty?
+          raise Jobrnr::ArgumentError,
+            "import prefix argument must be a non-blank string " \
+            "@ #{caller_source}"
+        end
 
         expanded_filename = Jobrnr::Util.expand_envars(filename)
         importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
         load_filename =
-          if expanded_filename[0] != '/' && File.exist?(importer_relative)
+          if expanded_filename[0] != "/" && File.exist?(importer_relative)
             importer_relative
           else
             expanded_filename
           end
 
-        raise Jobrnr::ArgumentError,
-          "file '#{filename}' not found " \
-          "@ #{caller_source}" unless File.exist?(load_filename)
+        unless File.exist?(load_filename)
+          raise Jobrnr::ArgumentError,
+            "file '#{filename}' not found " \
+            "@ #{caller_source}"
+        end
 
         Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
       end
 
       def prefix_id(prefix, id)
-        if prefix.length > 0
+        if prefix.length.positive?
           "#{prefix}_#{id}".to_sym
         else
           id
