@@ -189,9 +189,7 @@ module Jobrnr
 
       plus_options_hash.each { |option_name, option_value| option_definitions[option_name].value = option_value }
 
-      option_definitions
-        .map { |option_name, option_definition| [option_name, option_definition.value] }
-        .to_h
+      option_definitions.transform_values { |definition| definition.value }
     end
 
     def unsupported_options(options, option_definitions)
