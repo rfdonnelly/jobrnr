@@ -38,8 +38,7 @@ module Jobrnr
         @value = parse_value(value)
       end
 
-      def parse_value(value)
-      end
+      def parse_value(value); end
     end
 
     class BooleanOption < Option
