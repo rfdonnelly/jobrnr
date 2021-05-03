@@ -24,7 +24,7 @@ module Jobrnr
       end
 
       def repeat(times)
-        if !times.is_a?(Integer) || times < 0
+        if !times.is_a?(Integer) || times.negative?
           raise Jobrnr::TypeError, "'repeat' expects a positive Integer" \
             " but was given value of '#{times}' of type" \
             " '#{times.class.name}' @ #{caller_source}"

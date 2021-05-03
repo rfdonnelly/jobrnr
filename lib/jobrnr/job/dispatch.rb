@@ -59,13 +59,13 @@ module Jobrnr
       end
 
       def stop_submission?
-        max_failures_reached || ctrl_c > 0
+        max_failures_reached || ctrl_c.positive?
       end
 
       def nothing_todo?(completed, job_queue, slots)
-        completed.size == 0 && (
-          job_queue.size == 0 ||
-          slots.available == 0 ||
+        completed.empty? && (
+          job_queue.empty? ||
+          slots.available.zero? ||
           stop_submission?
         )
       end
@@ -129,7 +129,7 @@ module Jobrnr
       end
 
       def max_failures_reached
-        options.max_failures > 0 && stats.failed >= options.max_failures
+        options.max_failures.positive? && stats.failed >= options.max_failures
       end
 
       def process_queue(job_queue)

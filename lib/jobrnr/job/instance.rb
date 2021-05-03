@@ -34,7 +34,7 @@ module Jobrnr
         # affecting the command
         @pid = spawn(@command, %i[out err] => log, :pgroup=>true)
         @pid, status = Process.waitpid2(pid)
-        @exit_status = status.exitstatus == 0
+        @exit_status = status.exitstatus.zero?
         @state = :finished
         @end_time = Time.now
 
@@ -44,7 +44,7 @@ module Jobrnr
       end
 
       def sigint
-        return unless state == :dispatched && pid > 0
+        return unless state == :dispatched && pid.positive?
 
         Process.kill("INT", pid)
       end

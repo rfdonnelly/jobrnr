@@ -76,7 +76,7 @@ module Jobrnr
       end
 
       def prefix_id(prefix, id)
-        if prefix.length > 0
+        if prefix.length.positive?
           "#{prefix}_#{id}".to_sym
         else
           id
