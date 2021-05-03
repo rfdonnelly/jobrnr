@@ -6,7 +6,7 @@ module Jobrnr
       ERROR: -999,
       INFO: 1,
       DEBUG: 2,
-    }
+    }.freeze
 
     @@verbosity = 0
 

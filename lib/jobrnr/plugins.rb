@@ -10,7 +10,7 @@ module Jobrnr
       post_instance
       post_interval
       post_application
-    ]
+    ].freeze
 
     PLUGIN_METHODS.each do |meth|
       define_method(meth) { |*args| }
