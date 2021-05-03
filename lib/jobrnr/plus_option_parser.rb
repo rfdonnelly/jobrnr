@@ -46,7 +46,7 @@ module Jobrnr
         case value
         when :noarg
           true
-        when /^(true|t|yes|y|1)$/
+        when /^(true|t|yes|y|1)$/ # rubocop: disable Lint/DuplicateBranch
           true
         when /^(false|f|no|n|0)$/
           false
@@ -84,6 +84,13 @@ module Jobrnr
         end
       end
     end
+
+    VALUE_OPTION_TYPE_MAP = {
+      String => StringOption,
+      TrueClass => BooleanOption,
+      FalseClass => BooleanOption,
+      Integer => IntegerOption,
+    }.freeze
 
     def self.parse(help_spec, plus_options)
       self.new.parse(help_spec, plus_options)
@@ -257,25 +264,20 @@ module Jobrnr
 
     def spec_to_def(id, spec)
       spec[:default] ||= false
-      klass = spec[:default].class
 
-      type =
-        if klass == String
-          StringOption
-        elsif klass == TrueClass
-          BooleanOption
-        elsif klass == FalseClass
-          BooleanOption
-        elsif spec[:default].is_a? Integer
-          IntegerOption
-        end
-
-      if type.nil?
+      value_type = VALUE_OPTION_TYPE_MAP.keys.find { |value_type| spec[:default].is_a?(value_type) }
+      if value_type.nil?
         raise Jobrnr::TypeError, "Could not infer type from default value of " \
           "'#{spec[:default]}' for option '#{sym_to_s(id)}'"
       end
 
-      type.new(id, sym_to_s(id), spec[:default], spec[:doc] || spec[:description])
+      option_type = VALUE_OPTION_TYPE_MAP[value_type]
+      option_type.new(
+        id,
+        sym_to_s(id),
+        spec[:default],
+        spec[:doc] || spec[:description]
+      )
     end
 
     def plus_options_to_hash(plus_options)
