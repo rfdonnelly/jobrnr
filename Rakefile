@@ -8,7 +8,7 @@ end
 
 require "rubocop/rake_task"
 RuboCop::RakeTask.new do |t|
-  t.options = %w[--fail-level W]
+  t.patterns = ["lib/**/*.rb"]
 end
 
 task :man do
