@@ -166,7 +166,7 @@ module Jobrnr
       def log_filename(slot)
         File.join(
           options.output_directory,
-          '%s%02d' % [File.basename(options.output_directory), slot]
+          format('%s%02d', File.basename(options.output_directory), slot)
         )
       end
 
@@ -179,7 +179,7 @@ module Jobrnr
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-        s << 'in %#.2fs' % job_instance.duration if job_instance.state == :finished
+        s << format('in %#.2fs', job_instance.duration) if job_instance.state == :finished
         Jobrnr::Log.info s.join(' ')
       end
     end
