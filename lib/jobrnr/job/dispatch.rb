@@ -34,13 +34,13 @@ module Jobrnr
       # finish. On second Ctrl-C (and beyond), send Ctrl-C to jobs.
       def trap_ctrl_c
         trap "SIGINT" do
+          Jobrnr::Log.info ""
+
           case ctrl_c
           when 0
-            Jobrnr::Log.info ""
             Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
             Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
           else
-            Jobrnr::Log.info ""
             Jobrnr::Log.info "Terminating by sending Ctrl-C (SIGINT) to jobs."
             Jobrnr::Log.info "Ctrl-C again to send Ctrl-C (SIGINT) again."
             pool.sigint
