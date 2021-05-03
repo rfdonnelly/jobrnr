@@ -3,7 +3,10 @@
 module Jobrnr
   # Collects statistics
   class Stats
-    attr_accessor :running, :failed, :passed, :queued
+    attr_accessor :failed
+    attr_accessor :passed
+    attr_accessor :queued
+    attr_accessor :running
 
     def initialize(jobs)
       @running = 0

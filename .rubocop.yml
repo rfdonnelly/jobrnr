@@ -10,6 +10,8 @@ Style/CommandLiteral:
   EnforcedStyle: percent_x
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+Style/AccessorGrouping:
+  EnforcedStyle: separated
 
 Style/TrailingCommaInArrayLiteral:
   Enabled: false
