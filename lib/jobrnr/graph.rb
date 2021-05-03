@@ -44,7 +44,9 @@ module Jobrnr
           j.successors.each { |s| array << "#{j.id} -> #{s.id}" }
         end
 
-        array << format('%<id>s -> %<id>s [ label = "%<iterations>d" ]', id: j.id, iterations: j.iterations) if j.iterations > 1
+        if j.iterations > 1
+          array << format('%<id>s -> %<id>s [ label = "%<iterations>d" ]', id: j.id, iterations: j.iterations)
+        end
       end
 
       [
