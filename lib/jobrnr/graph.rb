@@ -3,6 +3,7 @@
 module Jobrnr
   require 'singleton'
 
+  # Tracks job dependencies
   class Graph
     include Singleton
 

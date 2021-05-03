@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
+  # Provides the entry point of the application
   class Application
     require "pathname"
 

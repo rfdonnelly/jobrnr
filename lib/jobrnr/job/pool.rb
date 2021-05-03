@@ -2,6 +2,9 @@
 
 module Jobrnr
   module Job
+    # The job execution pool.
+    #
+    # Contains all active jobs.
     class Pool
       require 'concurrent'
 

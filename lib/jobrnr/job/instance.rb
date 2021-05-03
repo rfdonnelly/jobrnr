@@ -2,6 +2,9 @@
 
 module Jobrnr
   module Job
+    # An instance of a job definition.
+    #
+    # Executes the job.
     class Instance
       attr_reader :job
       attr_reader :slot

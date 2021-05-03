@@ -2,6 +2,7 @@
 
 module Jobrnr
   module Job
+    # Manages the maximum number of concurrent jobs
     class Slots
       def initialize(num_slots)
         @num_slots = num_slots

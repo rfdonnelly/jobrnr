@@ -2,6 +2,9 @@
 
 module Jobrnr
   module Job
+    # Defined by the DSL job command.
+    # Tracks job state.
+    # Template for job instances.
     class Definition
       attr_reader :id
       attr_reader :predecessors

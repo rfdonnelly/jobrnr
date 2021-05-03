@@ -2,6 +2,7 @@
 
 module Jobrnr
   module DSL
+    # Defines the top-level DSL commands: job and import
     class Commands
       require 'docile'
 

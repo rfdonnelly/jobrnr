@@ -4,6 +4,7 @@ module Jobrnr
   module DSL
     require 'singleton'
 
+    # Manages stack of scripts (nested imports)
     class Loader
       include Singleton
 

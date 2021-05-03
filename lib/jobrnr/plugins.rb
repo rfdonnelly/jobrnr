@@ -3,6 +3,7 @@
 module Jobrnr
   require 'singleton'
 
+  # Defines the plugin API
   module PluginMethodStubs
     PLUGIN_METHODS = %i[
       post_definition
@@ -17,6 +18,7 @@ module Jobrnr
     end
   end
 
+  # Loads and dispatches events to plugins
   class Plugins
     include Singleton
     include Jobrnr::PluginMethodStubs
@@ -94,5 +96,7 @@ module Jobrnr
 end
 
 module Jobrnr
+  # Define an empty Plugin module here so Plugins can use the short form:
+  # Jobrnr::Plugin
   module Plugin; end
 end

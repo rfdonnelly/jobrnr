@@ -2,6 +2,7 @@
 
 module Jobrnr
   module DSL
+    # Defines the commands under the job command: execute and repeat
     class JobBuilder
       def initialize(id:, predecessors:)
         @obj = Jobrnr::Job::Definition.new(id: id, predecessors: predecessors)

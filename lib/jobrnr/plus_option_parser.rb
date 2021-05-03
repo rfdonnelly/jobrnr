@@ -19,7 +19,8 @@ module Jobrnr
   # * `+integer_option=5`
   # * `+boolean_option`
   class PlusOptionParser
-    class Option
+    # PlusOption base class
+    class PlusOption
       attr_reader :id
       attr_reader :name
       attr_reader :default
@@ -41,7 +42,8 @@ module Jobrnr
       def parse_value(value); end
     end
 
-    class BooleanOption < Option
+    # An option that accepts true/false values
+    class BooleanOption < PlusOption
       def parse_value(value)
         case value
         when :noarg
@@ -58,7 +60,8 @@ module Jobrnr
       end
     end
 
-    class StringOption < Option
+    # An option that accepts string values
+    class StringOption < PlusOption
       def parse_value(value)
         if value == :noarg
           raise Jobrnr::ArgumentError,
@@ -69,7 +72,8 @@ module Jobrnr
       end
     end
 
-    class IntegerOption < Option
+    # An option that accepts Integer values
+    class IntegerOption < PlusOption
       def parse_value(value)
         if value == :noarg
           raise Jobrnr::ArgumentError,

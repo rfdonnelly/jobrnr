@@ -2,6 +2,8 @@
 
 module Jobrnr
   module Plugin
+    # The ModifyCommand plugin conditionally modifies the job command before it
+    # is executed.
     class ModifyCommand
       def pre_instance(message)
         # Add the --results-directory option to the command if not already

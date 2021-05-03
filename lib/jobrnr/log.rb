@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
+  # Central logging class
   class Log
     VERBOSITY_SEVERITY_MAP = {
       ERROR: -999,

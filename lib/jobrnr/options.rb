@@ -3,6 +3,7 @@
 module Jobrnr
   require 'optparse'
 
+  # Defines the CLI options.
   class Options
     attr_reader :options
 

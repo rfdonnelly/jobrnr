@@ -2,6 +2,8 @@
 
 module Jobrnr
   module Plugin
+    # The LogTar plugin appends job logs to an tar archive as jobs complete.
+    # When all jobs complete, the tar archive is then gzipped.
     class LogTar
       ARCHIVE_FILE = 'results.tar'
 

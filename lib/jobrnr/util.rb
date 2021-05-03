@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
+  # Various utility methods
   module Util
     # Expand environment variables in string.
     #

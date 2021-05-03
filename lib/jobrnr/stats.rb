@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
+  # Collects statistics
   class Stats
     attr_accessor :running, :failed, :passed, :queued
 

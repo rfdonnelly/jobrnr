@@ -2,6 +2,9 @@
 
 module Jobrnr
   module Job
+    # Contains the main event loop
+    #
+    # Runs all jobs in the graph to completion.
     class Dispatch
       require 'fileutils'
       require 'pastel'
