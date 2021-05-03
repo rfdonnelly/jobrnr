@@ -6,6 +6,9 @@ AllCops:
 Layout/LineLength:
   Max: 120
 
+Style/CommandLiteral:
+  EnforcedStyle: percent_x
+
 Style/TrailingCommaInArrayLiteral:
   Enabled: false
 Style/TrailingCommaInHashLiteral:
