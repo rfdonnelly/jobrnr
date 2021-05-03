@@ -46,11 +46,15 @@ module Jobrnr
         exit
       end
 
-      Jobrnr::Job::Dispatch.new(
+      dispatch = Jobrnr::Job::Dispatch.new(
         options: merged_options,
         graph: Jobrnr::Graph.instance,
         num_slots: options.max_jobs
-      ).run
+      )
+      server = Jobrnr::HttpServer.new(dispatch.slots)
+
+      server.start if options.server
+      dispatch.run
     end
 
     def classify_arguments(argv)
