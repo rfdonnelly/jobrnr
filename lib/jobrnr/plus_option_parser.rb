@@ -97,7 +97,7 @@ module Jobrnr
     }.freeze
 
     def self.parse(help_spec, plus_options)
-      self.new.parse(help_spec, plus_options)
+      new.parse(help_spec, plus_options)
     end
 
     # Parses an array of plus options (+key=value pairs) given an option

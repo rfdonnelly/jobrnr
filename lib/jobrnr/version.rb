@@ -13,8 +13,8 @@ module Jobrnr
   end
 
   def self.version
-    if self.in_git?
-      format("%<version>s (%<git_describe>s)", version: VERSION, git_describe: self.git_describe)
+    if in_git?
+      format("%<version>s (%<git_describe>s)", version: VERSION, git_describe: git_describe)
     else
       VERSION
     end
