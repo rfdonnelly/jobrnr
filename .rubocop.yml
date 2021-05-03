@@ -3,7 +3,7 @@ AllCops:
   DisplayCopNames: true
   NewCops: enable
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Style/TrailingCommaInArrayLiteral:
