@@ -13,7 +13,7 @@ module Jobrnr
     ].freeze
 
     PLUGIN_METHODS.each do |meth|
-      define_method(meth) { |*args| }
+      define_method(meth) { |*args| } # rubocop: disabled Lint/EmptyBlock
     end
   end
 
