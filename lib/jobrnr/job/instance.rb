@@ -32,7 +32,7 @@ module Jobrnr
         @state = :dispatched
         # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
         # affecting the command
-        @pid = spawn(@command, %i[out err] => log, :pgroup=>true)
+        @pid = spawn(@command, %i[out err] => log, :pgroup => true)
         @pid, status = Process.waitpid2(pid)
         @exit_status = status.exitstatus.zero?
         @state = :finished
