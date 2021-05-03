@@ -17,7 +17,7 @@ module Jobrnr
     def self.report(severity, message)
       return unless @@verbosity >= VERBOSITY_SEVERITY_MAP[severity]
 
-      out = severity == :ERROR ? STDERR : STDOUT
+      out = severity == :ERROR ? $stderr : $stdout
       prefix = severity == :INFO ? '' : "#{severity}: jobrnr: "
       out.puts [prefix, message].join
     end
