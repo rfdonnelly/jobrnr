@@ -69,7 +69,8 @@ module Jobrnr
     #
     # Returns Array of all Classes defined in Module mod
     def classes_in_module(mod)
-      mod.constants
+      mod
+        .constants
         .select { |c| Class === mod.const_get(c) }
         .map { |c| mod.const_get(c) }
     end
@@ -85,7 +86,8 @@ module Jobrnr
     #
     # Returns array of plugin class instances
     def create_plugin_instances(classes)
-      classes.map(&:new)
+      classes
+        .map(&:new)
         .each { |o| o.class.send(:include, Jobrnr::PluginMethodStubs) }
     end
   end
