@@ -38,7 +38,7 @@ module Jobrnr
     def to_dot
       relations = jobs.each_with_object([]) do |j, array|
         if j.successors.empty? && j.predecessors.empty?
-          array << "#{j.id}"
+          array << j.id.to_s
         else
           j.successors.each { |s| array << "#{j.id} -> #{s.id}" }
         end
