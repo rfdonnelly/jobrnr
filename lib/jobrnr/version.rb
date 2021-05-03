@@ -2,14 +2,14 @@
 
 module Jobrnr
   def self.in_git?
-    git_top_level = %x(cd #{__dir__} && git rev-parse --show-toplevel).chomp
+    git_top_level = %x(git -C #{__dir__} rev-parse --show-toplevel).chomp
     gem_top_level = File.dirname(File.dirname(__dir__))
 
     git_top_level == gem_top_level
   end
 
   def self.git_describe
-    %x(git describe).chomp
+    %x(git -C #{__dir__} describe).chomp
   end
 
   def self.version
