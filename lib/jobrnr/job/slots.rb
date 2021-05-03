@@ -14,8 +14,11 @@ module Jobrnr
       end
 
       def allocate
-        unless available > 0
-          raise Jobrnr::Error, "allocate called when no slots available"
+        unless available.positive?
+          raise(
+            Jobrnr::Error,
+            "allocate called when no slots available"
+          )
         end
 
         @free_slots.shift
@@ -28,21 +31,19 @@ module Jobrnr
       def deallocate(slot, recycle)
         if discard?
           discard
+        elsif recycle
+          @free_slots.push(slot)
         else
-          if recycle
-            @free_slots.push(slot)
-          else
-            add_new_slot
-          end
+          add_new_slot
         end
       end
 
       def resize(new_size)
         delta = (new_size - size).abs
 
-        if new_size == size
-          return
-        elsif new_size > size
+        return if new_size == size
+
+        if new_size > size
           grow(delta)
         else
           shrink(delta)
@@ -77,12 +78,16 @@ module Jobrnr
       end
 
       def discard?
-        @discards_pending > 0
+        @discards_pending.positive?
       end
 
       def discard
-        raise Jobrnr::Error,
-          "discard called when no discards pending" unless discard?
+        unless discard?
+          raise(
+            Jobrnr::Error,
+            "discard called when no discards pending"
+          )
+        end
 
         @discards_pending -= 1
       end
