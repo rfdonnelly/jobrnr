@@ -187,14 +187,14 @@ module Jobrnr
 
         s = []
         s << "Running:" if job_instance.state == :pending
-        s <<
-          if job_instance.state == :finished
+        if job_instance.state == :finished
+          s <<
             if job_instance.success?
               pastel.green("PASSED:")
             else
               pastel.red("FAILED:")
             end
-          end
+        end
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
