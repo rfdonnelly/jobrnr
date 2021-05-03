@@ -8,13 +8,13 @@ module Jobrnr
     git_top_level == gem_top_level
   end
 
-  def self.git_version
+  def self.git_describe
     %x(git describe).chomp
   end
 
   def self.version
     if self.in_git?
-      format("%s (%s)", VERSION, self.git_version)
+      format("%<version>s (%<git_describe>s)", version: VERSION, git_describe: self.git_describe)
     else
       VERSION
     end

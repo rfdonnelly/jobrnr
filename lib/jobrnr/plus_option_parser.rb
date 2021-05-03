@@ -192,9 +192,9 @@ module Jobrnr
       unless Jobrnr::Util.array_subset_of?(plus_options_hash.keys, option_definitions.keys)
         raise Jobrnr::ArgumentError,
           format(
-            "The following options are not valid options: %s\n\n%s",
-            unsupported_options(plus_options_hash, option_definitions),
-            help(option_definitions)
+            "The following options are not valid options: %<invalid_options>s\n\n%<help>s",
+            invalid_options: unsupported_options(plus_options_hash, option_definitions),
+            help: help(option_definitions)
           )
       end
 
