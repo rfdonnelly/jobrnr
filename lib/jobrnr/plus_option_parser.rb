@@ -282,9 +282,9 @@ module Jobrnr
 
     def plus_options_to_hash(plus_options)
       plus_options.each_with_object({}) do |plus_option, plus_options_hash|
-        if md = plus_option.match(/^\+(.*?)=(.*)/)
+        if (md = plus_option.match(/^\+(.*?)=(.*)/))
           plus_options_hash[s_to_sym(md.captures.first)] = md.captures.last
-        elsif md = plus_option.match(/^\+((\w|-)+)$/)
+        elsif (md = plus_option.match(/^\+((\w|-)+)$/))
           plus_options_hash[s_to_sym(md.captures.first)] = :noarg
         end
       end
