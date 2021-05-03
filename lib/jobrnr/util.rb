@@ -36,7 +36,7 @@ module Jobrnr
     #   caller_source will return the file ane line number of the 'f1;'
     #   statement.
     def self.caller_source(additional_levels = 0)
-      caller[2 + additional_levels].split(/:/)[0..1].join(':')
+      caller[2 + additional_levels].split(/:/)[0..1].join(":")
     end
 
     # Strips indentation in heredocs.
@@ -47,7 +47,7 @@ module Jobrnr
     # See strip_heredoc in Rails.
     def self.strip_heredoc(s)
       indent = s.scan(/^[ \t]*(?=\S)/).min.size || 0
-      s.gsub(/^[ \t]{#{indent}}/, '')
+      s.gsub(/^[ \t]{#{indent}}/, "")
     end
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
-  require 'singleton'
+  require "singleton"
 
   # Defines the plugin API
   module PluginMethodStubs
@@ -41,7 +41,7 @@ module Jobrnr
     # Raises LoadError [see Kernel::require]
     def load(paths)
       Array(paths).each do |path|
-        Dir.glob(File.join(path, '*.rb')).sort.each do |file|
+        Dir.glob(File.join(path, "*.rb")).sort.each do |file|
           # FIXME: require raises LoadError if it cannot find file.
           # Here we are only calling require on files we have found.
           # What about insufficient permissions?

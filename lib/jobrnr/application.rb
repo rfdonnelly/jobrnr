@@ -15,7 +15,7 @@ module Jobrnr
       begin
         run_with_exceptions
       rescue OptionParser::ParseError, Jobrnr::UsageError => e
-        Jobrnr::Log.error [e.message, 'See `jobrnr --help`'].join("\n\n")
+        Jobrnr::Log.error [e.message, "See `jobrnr --help`"].join("\n\n")
       rescue Jobrnr::HelpException => e
         puts e.message
         exit 0
@@ -55,7 +55,7 @@ module Jobrnr
 
     def classify_arguments(argv)
       hash = argv.group_by do |arg|
-        if arg[0] == '+'
+        if arg[0] == "+"
           :plus_options
         else
           :filenames

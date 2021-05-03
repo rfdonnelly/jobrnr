@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
-  require 'singleton'
+  require "singleton"
 
   # Tracks job dependencies
   class Graph
@@ -48,9 +48,9 @@ module Jobrnr
       end
 
       [
-        'digraph DependencyGraph {',
+        "digraph DependencyGraph {",
         *relations.map { |line| "  #{line};" },
-        '}',
+        "}",
       ].join("\n")
     end
   end

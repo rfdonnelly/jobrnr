@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobrnr
-  require 'optparse'
+  require "optparse"
 
   # Defines the CLI options.
   class Options
@@ -18,54 +18,54 @@ module Jobrnr
       options.argv = argv.clone
 
       ::OptionParser.new do |op|
-        op.banner = 'Usage: jobrnr [<option(s)>] <file.jr>'
+        op.banner = "Usage: jobrnr [<option(s)>] <file.jr>"
 
-        op.separator('GENERAL OPTIONS')
-        op.on('-v', '--vebose', 'Enable debug output.') do
+        op.separator("GENERAL OPTIONS")
+        op.on("-v", "--vebose", "Enable debug output.") do
           options.verbosity += 1
         end
-        op.on('-d', '--output-directory <directory>',
-              'Directory to place results.',
+        op.on("-d", "--output-directory <directory>",
+              "Directory to place results.",
               String) do |arg|
           options.output_directory = arg
         end
-        op.on('-f', '--max-failures <failures>',
-              'Maximum number of failures before disabling execution of new' \
-              ' jobs',
+        op.on("-f", "--max-failures <failures>",
+              "Maximum number of failures before disabling execution of new" \
+              " jobs",
               Integer) do |arg|
           options.max_failures = arg
         end
-        op.on('-j', '--max-jobs <jobs>',
-              'Maximum number of jobs to run simultaneously',
+        op.on("-j", "--max-jobs <jobs>",
+              "Maximum number of jobs to run simultaneously",
               Integer) do |arg|
           options.max_jobs = arg
         end
-        op.on('--no-recycle', 'Prevents recycling of job slots') do
+        op.on("--no-recycle", "Prevents recycling of job slots") do
           options.recycle = false
         end
-        op.separator('')
+        op.separator("")
 
-        op.separator('DEBUG OPTIONS')
-        op.on('--dot', 'Display job graph in GraphViz DOT format and exit') do
+        op.separator("DEBUG OPTIONS")
+        op.on("--dot", "Display job graph in GraphViz DOT format and exit") do
           options.dot = true
         end
-        op.separator('')
+        op.separator("")
 
-        op.separator('MISCELLANEOUS OPTIONS')
-        op.on('-h', 'Display short help (this message)') do
+        op.separator("MISCELLANEOUS OPTIONS")
+        op.on("-h", "Display short help (this message)") do
           puts op
           exit
         end
-        op.on('--help', 'Display long help') do
+        op.on("--help", "Display long help") do
           exec "man #{man_path('jobrnr.1')}"
         end
-        op.on('--help-format', 'Display job description file format help') do
+        op.on("--help-format", "Display job description file format help") do
           exec "man #{man_path('jobrnr.5')}"
         end
-        op.on('--help-plugin', 'Display plugin API help and exit.') do
+        op.on("--help-plugin", "Display plugin API help and exit.") do
           exec "man #{man_path('jobrnr-plugin.3')}"
         end
-        op.on('--version', 'Display version') do
+        op.on("--version", "Display version") do
           puts "Jobrnr version #{Jobrnr::version}"
           exit
         end
@@ -75,7 +75,7 @@ module Jobrnr
     end
 
     def man_path(man_file)
-      Jobrnr::Util.relative_to_file(File.join('../../man', man_file), __FILE__)
+      Jobrnr::Util.relative_to_file(File.join("../../man", man_file), __FILE__)
     end
 
     def initialize_options
@@ -102,10 +102,10 @@ module Jobrnr
     end
 
     def load_environment(options)
-      options.max_failures = Integer(ENV['JOBRNR_MAX_FAILURES']) if ENV.key?('JOBRNR_MAX_FAILURES')
-      options.max_jobs = Integer(ENV['JOBRNR_MAX_JOBS']) if ENV.key?('JOBRNR_MAX_JOBS')
-      options.plugin_paths = ENV['JOBRNR_PLUGIN_PATH'].split(/:/) if ENV.key?('JOBRNR_PLUGIN_PATH')
-      options.output_directory = ENV['JOBRNR_OUTPUT_DIRECTORY'] if ENV.key?('JOBRNR_OUTPUT_DIRECTORY')
+      options.max_failures = Integer(ENV["JOBRNR_MAX_FAILURES"]) if ENV.key?("JOBRNR_MAX_FAILURES")
+      options.max_jobs = Integer(ENV["JOBRNR_MAX_JOBS"]) if ENV.key?("JOBRNR_MAX_JOBS")
+      options.plugin_paths = ENV["JOBRNR_PLUGIN_PATH"].split(/:/) if ENV.key?("JOBRNR_PLUGIN_PATH")
+      options.output_directory = ENV["JOBRNR_OUTPUT_DIRECTORY"] if ENV.key?("JOBRNR_OUTPUT_DIRECTORY")
     end
   end
 end

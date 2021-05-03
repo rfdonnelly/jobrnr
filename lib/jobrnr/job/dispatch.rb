@@ -6,8 +6,8 @@ module Jobrnr
     #
     # Runs all jobs in the graph to completion.
     class Dispatch
-      require 'fileutils'
-      require 'pastel'
+      require "fileutils"
+      require "pastel"
 
       TIME_SLICE_INTERVAL = 1
 
@@ -134,7 +134,7 @@ module Jobrnr
         )
 
         if max_failures_reached && !job_queue.empty?
-          Jobrnr::Log.info 'Early termination due to reaching maximum failures'
+          Jobrnr::Log.info "Early termination due to reaching maximum failures"
         end
 
         status_code
@@ -178,7 +178,7 @@ module Jobrnr
       def log_filename(slot)
         File.join(
           options.output_directory,
-          format('%s%02d', File.basename(options.output_directory), slot)
+          format("%s%02d", File.basename(options.output_directory), slot)
         )
       end
 
@@ -186,20 +186,20 @@ module Jobrnr
         pastel = Pastel.new
 
         s = []
-        s << 'Running:' if job_instance.state == :pending
+        s << "Running:" if job_instance.state == :pending
         s <<
           if job_instance.state == :finished
             if job_instance.success?
-              pastel.green('PASSED:')
+              pastel.green("PASSED:")
             else
-              pastel.red('FAILED:')
+              pastel.red("FAILED:")
             end
           end
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-        s << format('in %#.2fs', job_instance.duration) if job_instance.state == :finished
-        Jobrnr::Log.info s.join(' ')
+        s << format("in %#.2fs", job_instance.duration) if job_instance.state == :finished
+        Jobrnr::Log.info s.join(" ")
       end
     end
   end

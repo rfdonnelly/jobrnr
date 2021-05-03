@@ -2,7 +2,7 @@
 
 module Jobrnr
   module DSL
-    require 'singleton'
+    require "singleton"
 
     # Manages stack of scripts (nested imports)
     class Loader
@@ -38,7 +38,7 @@ module Jobrnr
       end
 
       def prefix
-        @prefixes.join('_')
+        @prefixes.join("_")
       end
     end
   end

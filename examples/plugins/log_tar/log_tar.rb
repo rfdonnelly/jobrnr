@@ -5,10 +5,10 @@ module Jobrnr
     # The LogTar plugin appends job logs to an tar archive as jobs complete.
     # When all jobs complete, the tar archive is then gzipped.
     class LogTar
-      ARCHIVE_FILE = 'results.tar'
+      ARCHIVE_FILE = "results.tar"
 
       def post_instance(message)
-        relative_log = message.instance.log.sub("#{message.options.output_directory}/", '')
+        relative_log = message.instance.log.sub("#{message.options.output_directory}/", "")
         command = "cd #{message.options.output_directory}; tar --append --file #{ARCHIVE_FILE} #{relative_log}"
         Jobrnr::Log.debug command
         system command

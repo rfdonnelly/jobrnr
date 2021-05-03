@@ -8,6 +8,8 @@ Layout/LineLength:
 
 Style/CommandLiteral:
   EnforcedStyle: percent_x
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
 
 Style/TrailingCommaInArrayLiteral:
   Enabled: false

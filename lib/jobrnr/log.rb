@@ -19,7 +19,7 @@ module Jobrnr
       return unless @@verbosity >= VERBOSITY_SEVERITY_MAP[severity]
 
       out = severity == :ERROR ? $stderr : $stdout
-      prefix = severity == :INFO ? '' : "#{severity}: jobrnr: "
+      prefix = severity == :INFO ? "" : "#{severity}: jobrnr: "
       out.puts [prefix, message].join
     end
 

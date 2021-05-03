@@ -10,7 +10,7 @@ module Jobrnr
         # present
         return if message.instance.command.match(/\s--results-directory\b/)
 
-        results_directory = File.basename(message.instance.log, '.log')
+        results_directory = File.basename(message.instance.log, ".log")
         message.instance.command << " --results-directory #{results_directory}"
       end
     end

@@ -6,7 +6,7 @@ module Jobrnr
     #
     # Contains all active jobs.
     class Pool
-      require 'concurrent'
+      require "concurrent"
 
       def initialize
         self.futures = []

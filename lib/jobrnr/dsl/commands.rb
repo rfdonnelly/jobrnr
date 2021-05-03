@@ -4,7 +4,7 @@ module Jobrnr
   module DSL
     # Defines the top-level DSL commands: job and import
     class Commands
-      require 'docile'
+      require "docile"
 
       attr_reader :jobrnr_options
       attr_reader :plus_options
@@ -61,7 +61,7 @@ module Jobrnr
         importer_relative = Jobrnr::Util.relative_to_file(expanded_filename, importer_filename)
 
         load_filename =
-          if expanded_filename[0] != '/' && File.exist?(importer_relative)
+          if expanded_filename[0] != "/" && File.exist?(importer_relative)
             importer_relative
           else
             expanded_filename

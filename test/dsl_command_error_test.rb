@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 module Jobrnr
   class Graph
@@ -10,15 +10,15 @@ module Jobrnr
   end
 end
 
-describe 'DSL command usage errors' do
+describe "DSL command usage errors" do
   before do
     Jobrnr::Graph.instance.clear
     @obj = Jobrnr::DSL::Commands.new({}, {})
   end
 
-  describe 'job command' do
-    it 'errors on predecessor not found' do
-      @obj.stub :caller_source, 'file:line' do
+  describe "job command" do
+    it "errors on predecessor not found" do
+      @obj.stub :caller_source, "file:line" do
         e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job1, :job0) {} }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           job ':job1' references undefined predecessor job(s) ':job0' @ file:line
@@ -26,8 +26,8 @@ describe 'DSL command usage errors' do
       end
     end
 
-    it 'errors on absence of block' do
-      @obj.stub :caller_source, 'file:line' do
+    it "errors on absence of block" do
+      @obj.stub :caller_source, "file:line" do
         e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job0) }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF), e.message)
           job ':job0' definition is incomplete @ file:line
@@ -41,8 +41,8 @@ describe 'DSL command usage errors' do
       end
     end
 
-    it 'errors on absence of execute command' do
-      Jobrnr::Util.stub :caller_source, 'file:line' do
+    it "errors on absence of execute command" do
+      Jobrnr::Util.stub :caller_source, "file:line" do
         e = assert_raises(Jobrnr::ArgumentError) { @obj.job(:job0) {} }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           job 'job0' is missing required 'execute' command @ file:line
@@ -50,11 +50,11 @@ describe 'DSL command usage errors' do
       end
     end
 
-    describe 'job.execute command' do
-      it 'requires a String or block' do
+    describe "job.execute command" do
+      it "requires a String or block" do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
-            stub :caller_source, 'file:line' do
+            stub :caller_source, "file:line" do
               execute
             end
           end
@@ -64,10 +64,10 @@ describe 'DSL command usage errors' do
         EOF
       end
 
-      it 'requires a String or block, not both' do
+      it "requires a String or block, not both" do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
-            stub :caller_source, 'file:line' do
+            stub :caller_source, "file:line" do
               execute("true") {}
             end
           end
@@ -77,10 +77,10 @@ describe 'DSL command usage errors' do
         EOF
       end
 
-      it 'requires a String' do
+      it "requires a String" do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
-            stub :caller_source, 'file:line' do
+            stub :caller_source, "file:line" do
               execute 5
             end
           end
@@ -89,12 +89,12 @@ describe 'DSL command usage errors' do
       end
     end
 
-    describe 'job.repeat command' do
-      it 'requires an Integer' do
+    describe "job.repeat command" do
+      it "requires an Integer" do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
-            stub :caller_source, 'file:line' do
-              repeat '5'
+            stub :caller_source, "file:line" do
+              repeat "5"
             end
           end
         end
@@ -103,10 +103,10 @@ describe 'DSL command usage errors' do
         EOF
       end
 
-      it 'requires a positive Integer' do
+      it "requires a positive Integer" do
         e = assert_raises(Jobrnr::TypeError) do
           @obj.job :id do
-            stub :caller_source, 'file:line' do
+            stub :caller_source, "file:line" do
               repeat(-1)
             end
           end
@@ -116,28 +116,28 @@ describe 'DSL command usage errors' do
     end
   end
 
-  describe 'import command' do
-    it 'requires string prefix' do
-      @obj.stub :caller_source, 'file:line' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(5, 'fixtures/empty.jr') }
+  describe "import command" do
+    it "requires string prefix" do
+      @obj.stub :caller_source, "file:line" do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(5, "fixtures/empty.jr") }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           import prefix argument must be a non-blank string @ file:line
         EOF
       end
     end
 
-    it 'requires non-empty' do
-      @obj.stub :caller_source, 'file:line' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(' ', 'fixtures/empty.jr') }
+    it "requires non-empty" do
+      @obj.stub :caller_source, "file:line" do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import(" ", "fixtures/empty.jr") }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           import prefix argument must be a non-blank string @ file:line
         EOF
       end
     end
 
-    it 'requires file existence' do
-      @obj.stub :caller_source, 'file:line' do
-        e = assert_raises(Jobrnr::ArgumentError) { @obj.import('prefix', 'invalid.jr') }
+    it "requires file existence" do
+      @obj.stub :caller_source, "file:line" do
+        e = assert_raises(Jobrnr::ArgumentError) { @obj.import("prefix", "invalid.jr") }
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
           file 'invalid.jr' not found @ file:line
         EOF

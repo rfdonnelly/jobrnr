@@ -207,7 +207,7 @@ module Jobrnr
       common_options = options.keys & option_definitions.keys
 
       (options.keys - common_options)
-        .map { |option| "+#{sym_to_s(option)}" }.join(', ')
+        .map { |option| "+#{sym_to_s(option)}" }.join(", ")
     end
 
     def help(option_definitions, doc_params = {})
@@ -215,27 +215,27 @@ module Jobrnr
 
       if doc_params[:name]
         lines << [
-          'NAME',
+          "NAME",
           "  #{doc_params[:name]}",
         ]
       end
 
       if doc_params[:synopsis]
         lines << [
-          'SYNOPSIS',
+          "SYNOPSIS",
           "  #{doc_params[:synopsis]}",
         ]
       end
 
       if doc_params[:description]
         lines << [
-          'DESCRIPTION',
+          "DESCRIPTION",
           doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
         ]
       end
 
       lines << [
-        'OPTIONS',
+        "OPTIONS",
         option_definitions.values.map { |option_definition| help_format_option(option_definition) },
         "  +help\n    Show this help and exit."
       ]
@@ -257,7 +257,7 @@ module Jobrnr
     end
 
     def help_format_name(option_definition)
-      option_definition.name + (option_definition.is_a?(BooleanOption) ? '[=<value>]' : '=<value>')
+      option_definition.name + (option_definition.is_a?(BooleanOption) ? "[=<value>]" : "=<value>")
     end
 
     def specs_to_defs(options_spec)
@@ -295,11 +295,11 @@ module Jobrnr
     end
 
     def s_to_sym(s)
-      s.tr('-', '_').to_sym
+      s.tr("-", "_").to_sym
     end
 
     def sym_to_s(sym)
-      sym.to_s.tr('_', '-')
+      sym.to_s.tr("_", "-")
     end
   end
 end
