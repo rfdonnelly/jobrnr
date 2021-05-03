@@ -43,11 +43,12 @@ module Jobrnr
 
     class BooleanOption < Option
       def parse_value(value)
-        if value == :noarg
+        case value
+        when :noarg
           true
-        elsif value.match(/^(true|t|yes|y|1)$/)
+        when /^(true|t|yes|y|1)$/
           true
-        elsif value.match(/^(false|f|no|n|0)$/)
+        when /^(false|f|no|n|0)$/
           false
         else
           raise Jobrnr::ArgumentError,
