@@ -39,11 +39,19 @@ module Jobrnr
       attr_accessor :instances
 
       def remove_futures(completed_futures)
-        self.futures.reject! { |future| completed_futures.any? { |completed_future| future == completed_future } }
+        self.futures.reject! do |future|
+          completed_futures.any? do |completed_future|
+            future == completed_future
+          end
+        end
       end
 
       def remove_instances(completed_instances)
-        self.instances.reject! { |instance| completed_instances.any? { |completed_instance| instance == completed_instance } }
+        self.instances.reject! do |instance|
+          completed_instances.any? do |completed_instance|
+            instance == completed_instance
+          end
+        end
       end
 
       def create_futures(instances)

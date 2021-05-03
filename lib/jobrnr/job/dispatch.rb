@@ -121,9 +121,18 @@ module Jobrnr
         end
 
         status_code = stats.failed
-        plugins.post_application(Jobrnr::PostApplicationMessage.new(status_code, cummulative_completed_instances, stats, options))
+        plugins.post_application(
+          Jobrnr::PostApplicationMessage.new(
+            status_code,
+            cummulative_completed_instances,
+            stats,
+            options
+          )
+        )
 
-        Jobrnr::Log.info 'Early termination due to reaching maximum failures' if max_failures_reached && !job_queue.empty?
+        if max_failures_reached && !job_queue.empty?
+          Jobrnr::Log.info 'Early termination due to reaching maximum failures'
+        end
 
         status_code
       end
@@ -175,7 +184,14 @@ module Jobrnr
 
         s = []
         s << 'Running:' if job_instance.state == :pending
-        s << (job_instance.success? ? pastel.green('PASSED:') : pastel.red('FAILED:')) if job_instance.state == :finished
+        s <<
+          if job_instance.state == :finished
+            if job_instance.success?
+              pastel.green('PASSED:')
+            else
+              pastel.red('FAILED:')
+            end
+          end
         s << "'#{job_instance}'"
         s << File.basename(job_instance.log)
         s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1

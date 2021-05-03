@@ -179,7 +179,12 @@ module Jobrnr
       raise Jobrnr::HelpException, help(option_definitions, doc_params) if plus_options_hash.keys.include?(:help)
 
       unless Jobrnr::Util.array_subset_of?(plus_options_hash.keys, option_definitions.keys)
-        raise Jobrnr::ArgumentError, "The following options are not valid options: #{unsupported_options(plus_options_hash, option_definitions)}\n\n#{help(option_definitions)}"
+        raise Jobrnr::ArgumentError,
+          format(
+            "The following options are not valid options: %s\n\n%s",
+            unsupported_options(plus_options_hash, option_definitions),
+            help(option_definitions)
+          )
       end
 
       plus_options_hash.each { |option_name, option_value| option_definitions[option_name].value = option_value }
