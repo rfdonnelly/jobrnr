@@ -38,8 +38,11 @@ module Jobrnr
       end
 
       def build
-        raise Jobrnr::ArgumentError, "job '#{@obj.id}' is missing required 'execute' command" \
-          " @ #{caller_source}" if @obj.command.nil?
+        if @obj.command.nil?
+          raise Jobrnr::ArgumentError,
+            "job '#{@obj.id}' is missing required 'execute' command" \
+            " @ #{caller_source}"
+        end
 
         @obj
       end

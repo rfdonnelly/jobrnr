@@ -51,7 +51,8 @@ module Jobrnr
         elsif value.match(/^(false|f|no|n|0)$/)
           false
         else
-          raise Jobrnr::ArgumentError, "Could not parse '#{value}' as Boolean " \
+          raise Jobrnr::ArgumentError,
+            "Could not parse '#{value}' as Boolean " \
             "type for the '+#{name}' option"
         end
       end
@@ -59,8 +60,10 @@ module Jobrnr
 
     class StringOption < Option
       def parse_value(value)
-        raise Jobrnr::ArgumentError, "No argument given for " \
-          "'+#{name}' option" if value == :noarg
+        if value == :noarg
+          raise Jobrnr::ArgumentError,
+            "No argument given for '+#{name}' option"
+        end
 
         value
       end
@@ -68,8 +71,10 @@ module Jobrnr
 
     class IntegerOption < Option
       def parse_value(value)
-        raise Jobrnr::ArgumentError, "No argument given for " \
-          "'+#{name}' option" if value == :noarg
+        if value == :noarg
+          raise Jobrnr::ArgumentError,
+            "No argument given for '+#{name}' option"
+        end
 
         begin
           Integer(value)
@@ -192,20 +197,26 @@ module Jobrnr
     def help(option_definitions, doc_params = {})
       lines = []
 
-      lines << [
-        'NAME',
-        "  #{doc_params[:name]}",
-      ] if doc_params[:name]
+      if doc_params[:name]
+        lines << [
+          'NAME',
+          "  #{doc_params[:name]}",
+        ]
+      end
 
-      lines << [
-        'SYNOPSIS',
-        "  #{doc_params[:synopsis]}",
-      ] if doc_params[:synopsis]
+      if doc_params[:synopsis]
+        lines << [
+          'SYNOPSIS',
+          "  #{doc_params[:synopsis]}",
+        ]
+      end
 
-      lines << [
-        'DESCRIPTION',
-        doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
-      ] if doc_params[:description]
+      if doc_params[:description]
+        lines << [
+          'DESCRIPTION',
+          doc_params[:description].split("\n").map { |line| "  #{line}" }.join("\n"),
+        ]
+      end
 
       lines << [
         'OPTIONS',
@@ -213,9 +224,11 @@ module Jobrnr
         "  +help\n    Show this help and exit."
       ]
 
-      lines << [
-        doc_params[:extra]
-      ] if doc_params[:extra]
+      if doc_params[:extra]
+        lines << [
+          doc_params[:extra]
+        ]
+      end
 
       lines.join("\n\n")
     end
@@ -250,8 +263,10 @@ module Jobrnr
           IntegerOption
         end
 
-      raise Jobrnr::TypeError, "Could not infer type from default value of " \
-        "'#{spec[:default]}' for option '#{sym_to_s(id)}'" if type.nil?
+      if type.nil?
+        raise Jobrnr::TypeError, "Could not infer type from default value of " \
+          "'#{spec[:default]}' for option '#{sym_to_s(id)}'"
+      end
 
       type.new(id, sym_to_s(id), spec[:default], spec[:doc] || spec[:description])
     end
