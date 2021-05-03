@@ -148,20 +148,20 @@ describe Jobrnr::PlusOptionParser do
 
         it 'supports man doc' do
           e = assert_raises(Jobrnr::HelpException) do
-              @obj.parse(
-                {
-                  name: 'file',
-                  synopsis: 'jobrnr file.jr',
-                  description: "line1\nline2",
-                  options: @specs,
-                  extra: Jobrnr::Util.strip_heredoc(<<-EOF).strip
+            @obj.parse(
+              {
+                name: 'file',
+                synopsis: 'jobrnr file.jr',
+                description: "line1\nline2",
+                options: @specs,
+                extra: Jobrnr::Util.strip_heredoc(<<-EOF).strip
                     EXAMPLES
 
                       blah
-                  EOF
-                },
-                %w[+help]
-              )
+                EOF
+              },
+              %w[+help]
+            )
           end
 
           assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
