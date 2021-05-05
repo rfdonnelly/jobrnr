@@ -7,50 +7,25 @@ module Jobrnr
     # Runs all jobs in the graph to completion.
     class Dispatch
       require "fileutils"
-      require "pastel"
-
-      TIME_SLICE_INTERVAL = 1
 
       attr_reader :options
       attr_reader :graph
       attr_reader :slots
+      attr_reader :job_queue
       attr_reader :pool
       attr_reader :stats
       attr_reader :plugins
+      attr_reader :ui
 
-      attr_reader :ctrl_c
-
-      def initialize(options:, graph:, num_slots:)
+      def initialize(options:, graph:, ui:, stats:, slots:)
         @options = options
         @graph = graph
-        @slots = Jobrnr::Job::Slots.new(num_slots)
-        @stats = Jobrnr::Stats.new(graph.roots)
+        @ui = ui
+        @slots = slots
+        @stats = stats
         @plugins = Jobrnr::Plugins.instance
-        @ctrl_c = 0
-
+        @job_queue = []
         @pool = Jobrnr::Job::Pool.new
-      end
-
-      # Handle Ctrl-C
-      #
-      # On first Ctrl-C, stop submitting new jobs and allow current jobs to
-      # finish. On second Ctrl-C (and beyond), send Ctrl-C to jobs.
-      def trap_ctrl_c
-        trap "SIGINT" do
-          Jobrnr::Log.info ""
-
-          case ctrl_c
-          when 0
-            Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
-            Jobrnr::Log.info "Ctrl-C again to terminate active jobs gracefully."
-          else
-            Jobrnr::Log.info "Terminating by sending Ctrl-C (SIGINT) to jobs."
-            Jobrnr::Log.info "Ctrl-C again to send Ctrl-C (SIGINT) again."
-            pool.sigint
-          end
-
-          @ctrl_c += 1
-        end
       end
 
       def prerequisites_met?(job)
@@ -62,7 +37,7 @@ module Jobrnr
       end
 
       def stop_submission?
-        max_failures_reached || ctrl_c.positive?
+        max_failures_reached || ui.stop_submission?
       end
 
       def nothing_todo?(completed, job_queue, slots)
@@ -77,12 +52,15 @@ module Jobrnr
         successors.select { |successor| !successor.state.queued? && prerequisites_met?(successor) }
       end
 
-      def run
-        trap_ctrl_c
+      def enqueue(*jobs)
+        stats.enqueue(*jobs)
+        job_queue.push(*jobs)
+      end
 
+      def run
         cummulative_completed_instances = []
 
-        job_queue = graph.roots
+        enqueue(*graph.roots)
 
         FileUtils.mkdir_p(options.output_directory)
 
@@ -91,23 +69,22 @@ module Jobrnr
 
           if nothing_todo?(completed, job_queue, slots)
             # skip this interval
-            sleep TIME_SLICE_INTERVAL
+            ui.sleep
             next
           end
 
           # process completed job instances
           cummulative_completed_instances.push(*completed)
           completed.each do |job_instance|
-            message(job_instance)
-            stats.collect(job_instance)
+            ui.post_instance(job_instance)
+            stats.post_instance(job_instance)
             plugins.post_instance(Jobrnr::PostInstanceMessage.new(job_instance, options))
 
             # find new jobs to be queued
             if job_instance.success? && job_instance.job.state.finished?
               successors_to_queue = ready_to_queue(job_instance.job.successors)
               successors_to_queue.each { |successor| successor.state.queue }
-              job_queue.push(*successors_to_queue)
-              stats.queue(successors_to_queue)
+              enqueue(*successors_to_queue)
             end
 
             slots.deallocate(job_instance.slot, options.recycle && job_instance.success?)
@@ -117,10 +94,10 @@ module Jobrnr
           new_instances = stop_submission? ? [] : process_queue(job_queue)
           pool.add_and_start(new_instances)
 
-          Jobrnr::Log.info stats.to_s
+          ui.post_interval(stats)
           plugins.post_interval(Jobrnr::PostIntervalMessage.new(completed, new_instances, stats, options))
 
-          sleep TIME_SLICE_INTERVAL
+          ui.sleep
         end
 
         status_code = stats.failed
@@ -132,10 +109,9 @@ module Jobrnr
             options
           )
         )
-
-        if max_failures_reached && !job_queue.empty?
-          Jobrnr::Log.info "Early termination due to reaching maximum failures"
-        end
+        ui.post_application(
+          early_termination: max_failures_reached && !job_queue.empty?
+        )
 
         status_code
       end
@@ -147,9 +123,8 @@ module Jobrnr
       def process_queue(job_queue)
         num_jobs_queued = [*job_queue.map(&:state).map(&:to_be_scheduled), 0].reduce(&:+)
         num_to_schedule = [num_jobs_queued, slots.available].min
-        new_instances = []
 
-        num_to_schedule.times do
+        num_to_schedule.times.map do
           slot = slots.allocate
           job_instance = Jobrnr::Job::Instance.new(
             job: job_queue.first,
@@ -166,13 +141,11 @@ module Jobrnr
           end
 
           plugins.pre_instance(Jobrnr::PreInstanceMessage.new(job_instance, options))
-          message(job_instance)
-          stats.collect(job_instance)
+          ui.pre_instance(job_instance)
+          stats.pre_instance
 
-          new_instances.push(job_instance)
+          job_instance
         end
-
-        new_instances
       end
 
       def log_filename(slot)
@@ -180,26 +153,6 @@ module Jobrnr
           options.output_directory,
           format("%<dirname>s%<slot_id>02d", dirname: File.basename(options.output_directory), slot_id: slot)
         )
-      end
-
-      def message(job_instance)
-        pastel = Pastel.new
-
-        s = []
-        s << "Running:" if job_instance.state == :pending
-        if job_instance.state == :finished
-          s <<
-            if job_instance.success?
-              pastel.green("PASSED:")
-            else
-              pastel.red("FAILED:")
-            end
-        end
-        s << "'#{job_instance}'"
-        s << File.basename(job_instance.log)
-        s << "iter#{job_instance.iteration}" if job_instance.job.iterations > 1
-        s << format("in %#.2fs", job_instance.duration) if job_instance.state == :finished
-        Jobrnr::Log.info s.join(" ")
       end
     end
   end

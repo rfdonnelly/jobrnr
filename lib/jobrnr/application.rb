@@ -46,10 +46,16 @@ module Jobrnr
         exit
       end
 
+      slots = Jobrnr::Job::Slots.new(
+        size: options.max_jobs,
+      )
+      ui = Jobrnr::UI.new
       Jobrnr::Job::Dispatch.new(
         options: merged_options,
         graph: Jobrnr::Graph.instance,
-        num_slots: options.max_jobs
+        stats: Jobrnr::Stats.new,
+        slots: slots,
+        ui: ui,
       ).run
     end
 

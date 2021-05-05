@@ -5,6 +5,8 @@ AllCops:
 
 Layout/LineLength:
   Max: 120
+Naming/MethodParameterName:
+  MinNameLength: 2
 
 Style/CommandLiteral:
   EnforcedStyle: percent_x

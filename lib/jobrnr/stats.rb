@@ -8,31 +8,29 @@ module Jobrnr
     attr_accessor :queued
     attr_accessor :running
 
-    def initialize(jobs)
+    def initialize
       @running = 0
       @failed = 0
       @passed = 0
       @queued = 0
-
-      queue(jobs)
     end
 
-    def collect(job_instance)
-      if job_instance.state == :pending
-        @running += 1
-        @queued -= 1
-      else
-        @running -= 1
+    def pre_instance
+      @running += 1
+      @queued -= 1
+    end
 
-        if job_instance.success?
-          @passed += 1
-        else
-          @failed += 1
-        end
+    def post_instance(inst)
+      @running -= 1
+
+      if inst.success?
+        @passed += 1
+      else
+        @failed += 1
       end
     end
 
-    def queue(jobs)
+    def enqueue(*jobs)
       @queued += [0, *jobs.map(&:iterations)].reduce(:+)
     end
 
