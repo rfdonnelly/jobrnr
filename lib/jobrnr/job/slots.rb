@@ -6,7 +6,7 @@ module Jobrnr
     class Slots
       attr_reader :size
 
-      def initialize(size)
+      def initialize(size:)
         @size = size
         @next_slot = size
         @free_slots = *(0..(size - 1))

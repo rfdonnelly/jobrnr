@@ -3,7 +3,7 @@ require "test_helper"
 describe Jobrnr::Job::Slots do
   before do
     @size = 4
-    @obj = Jobrnr::Job::Slots.new(@size)
+    @obj = Jobrnr::Job::Slots.new(size: @size)
   end
 
   describe "methods" do
