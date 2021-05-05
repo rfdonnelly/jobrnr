@@ -3,18 +3,21 @@
 module Jobrnr
   # User interface
   class UI
+    require "io/console"
     require "pastel"
 
     attr_reader :color
     attr_reader :ctrl_c
     attr_reader :pool
+    attr_reader :slots
 
     DEFAULT_TIME_SLICE_INTERVAL = 1
 
-    def initialize(pool:)
+    def initialize(pool:, slots:)
       @color = Pastel.new(enabled: $stdout.tty?)
       @ctrl_c = 0
       @pool = pool
+      @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
 
       trap_ctrl_c
@@ -53,11 +56,28 @@ module Jobrnr
     end
 
     def sleep
-      Kernel.sleep @time_slice_interval
+      process_input
     end
 
     def stop_submission?
       ctrl_c.positive?
+    end
+
+    def process_input
+      c = $stdin.getch(min: 0, time: @time_slice_interval)
+      return unless c
+      case c.ord
+      when 3 # Ctrl-C
+        process_ctrl_c
+      when "=".ord
+        $stdout.write("max-jobs=")
+        begin
+          n = Integer($stdin.gets)
+          slots.resize(n)
+        rescue ::ArgumentError
+          $stdout.puts("could not parse integer")
+        end
+      end
     end
 
     def format_status(inst)
