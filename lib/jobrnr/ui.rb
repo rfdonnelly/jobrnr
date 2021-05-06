@@ -13,6 +13,12 @@ module Jobrnr
 
     DEFAULT_TIME_SLICE_INTERVAL = 1
 
+    KEYS = Hash.new do |h, k|
+      k.chr
+    end.merge({
+      3 => :ctrl_c,
+    })
+
     def initialize(pool:, slots:)
       @color = Pastel.new(enabled: $stdout.tty?)
       @ctrl_c = 0
@@ -66,10 +72,10 @@ module Jobrnr
     def process_input
       c = $stdin.getch(min: 0, time: @time_slice_interval)
       return unless c
-      case c.ord
-      when 3 # Ctrl-C
+      case KEYS[c.ord]
+      when :ctrl_c
         sigint
-      when "=".ord
+      when "="
         $stdout.write("max-jobs=")
         begin
           n = Integer($stdin.gets)
