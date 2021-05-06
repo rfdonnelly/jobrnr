@@ -20,7 +20,7 @@ module Jobrnr
       @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
 
-      trap_ctrl_c
+      trapint
     end
 
     def pre_instance(inst)
@@ -68,7 +68,7 @@ module Jobrnr
       return unless c
       case c.ord
       when 3 # Ctrl-C
-        process_ctrl_c
+        sigint
       when "=".ord
         $stdout.write("max-jobs=")
         begin
@@ -100,9 +100,9 @@ module Jobrnr
       format("iter:%d", inst.iteration) if inst.job.iterations > 1
     end
 
-    def trap_ctrl_c
-      trap "SIGINT" do
-        process_ctrl_c
+    def trapint
+      trap "INT" do
+        sigint
       end
     end
 
@@ -111,7 +111,7 @@ module Jobrnr
     # On first Ctrl-C, stop submitting new jobs and allow current jobs to
     # finish. On second Ctrl-C, send SIGINT to jobs. On third Ctrl-C, send
     # SIGTERM to jobs. On fourth (and subsequent) Ctrl-C, send SIGKILL to jobs.
-    def process_ctrl_c
+    def sigint
       case ctrl_c
       when 0
         Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
