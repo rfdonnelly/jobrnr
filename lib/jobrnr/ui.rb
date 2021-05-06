@@ -5,6 +5,7 @@ module Jobrnr
   class UI
     require "io/console"
     require "pastel"
+    require "English"
 
     attr_reader :color
     attr_reader :ctrl_c
@@ -17,6 +18,7 @@ module Jobrnr
       k.chr
     end.merge({
       3 => :ctrl_c,
+      26 => :ctrl_z,
     })
 
     def initialize(pool:, slots:)
@@ -75,6 +77,8 @@ module Jobrnr
       case KEYS[c.ord]
       when :ctrl_c
         sigint
+      when :ctrl_z
+        sigtstp
       when "="
         $stdout.write("max-jobs=")
         begin
@@ -104,6 +108,10 @@ module Jobrnr
 
     def format_iteration(inst)
       format("iter:%d", inst.iteration) if inst.job.iterations > 1
+    end
+
+    def sigtstp
+      Process.kill("TSTP", $PID)
     end
 
     def trapint
