@@ -49,10 +49,14 @@ module Jobrnr
       slots = Jobrnr::Job::Slots.new(
         size: options.max_jobs,
       )
-      ui = Jobrnr::UI.new
+      pool = Jobrnr::Job::Pool.new
+      ui = Jobrnr::UI.new(
+        pool: pool
+      )
       Jobrnr::Job::Dispatch.new(
         options: merged_options,
         graph: Jobrnr::Graph.instance,
+        pool: pool,
         stats: Jobrnr::Stats.new,
         slots: slots,
         ui: ui,

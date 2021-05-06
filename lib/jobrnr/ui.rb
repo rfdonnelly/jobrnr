@@ -7,12 +7,14 @@ module Jobrnr
 
     attr_reader :color
     attr_reader :ctrl_c
+    attr_reader :pool
 
     TIME_SLICE_INTERVAL = 1
 
-    def initialize
+    def initialize(pool:)
       @color = Pastel.new
       @ctrl_c = 0
+      @pool = pool
 
       trap_ctrl_c
     end

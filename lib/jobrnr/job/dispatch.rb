@@ -17,7 +17,7 @@ module Jobrnr
       attr_reader :plugins
       attr_reader :ui
 
-      def initialize(options:, graph:, ui:, stats:, slots:)
+      def initialize(options:, graph:, pool:, ui:, stats:, slots:)
         @options = options
         @graph = graph
         @ui = ui
@@ -25,7 +25,7 @@ module Jobrnr
         @stats = stats
         @plugins = Jobrnr::Plugins.instance
         @job_queue = []
-        @pool = Jobrnr::Job::Pool.new
+        @pool = pool
       end
 
       def prerequisites_met?(job)
