@@ -19,6 +19,17 @@ module Jobrnr
 
       # Removes completed job instances from the pool and returns them
       def remove_completed
+        # Raise any exceptions that occured in the futures
+        #
+        # If we don't do this, any exceptions that occured in the Futures
+        # will be silently ignored and cause Jobrnr to hang since they will
+        # never get fullfilled.
+        #
+        # We don't handle this gracefully because user code cannot cause
+        # exceptions here. Any exceptions that occur in futures are due to
+        # bad Jobrnr code. We want exceptions in Futures to be "loud".
+        futures.select(&:rejected?).map(&:value!)
+
         completed_futures = futures.select(&:fulfilled?)
         remove_futures(completed_futures)
         completed_instances = completed_futures.map(&:value)

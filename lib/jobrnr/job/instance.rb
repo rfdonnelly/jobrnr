@@ -37,7 +37,7 @@ module Jobrnr
         # affecting the command
         @pid = spawn(@command, %i[out err] => log, :pgroup => true)
         @pid, status = Process.waitpid2(pid)
-        @exit_status = status.exitstatus.zero?
+        @exit_status = status.exited? && status.success?
         @state = :finished
         @end_time = Time.now
 
