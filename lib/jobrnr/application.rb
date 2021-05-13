@@ -25,7 +25,8 @@ module Jobrnr
     end
 
     def run_with_exceptions
-      options = Jobrnr::OptionParser.new.parse(argv)
+      option_parser = Jobrnr::OptionParser.new(@argv)
+      options = option_parser.parse(argv)
       Log.verbosity = options.verbosity
       filenames, plus_options = classify_arguments(argv)
 

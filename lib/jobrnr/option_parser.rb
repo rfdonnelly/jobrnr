@@ -6,18 +6,16 @@ module Jobrnr
     require "optparse"
 
     attr_reader :options
+    attr_reader :parser
 
-    def initialize
+    def initialize(argv)
       @options = initialize_options
 
-      default_options(@options)
-      load_environment(@options)
-    end
-
-    def parse(argv)
       options.argv = argv.clone
+      default_options(options)
+      load_environment(options)
 
-      ::OptionParser.new do |op|
+      @parser = ::OptionParser.new do |op|
         op.banner = "Usage: jobrnr [<option(s)>] <file.jr>"
 
         op.separator("GENERAL OPTIONS")
@@ -69,7 +67,11 @@ module Jobrnr
           puts "Jobrnr version #{Jobrnr::version}"
           exit
         end
-      end.parse!(argv)
+      end
+    end
+
+    def parse(argv)
+      parser.parse!(argv)
 
       options
     end
