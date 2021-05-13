@@ -2,12 +2,12 @@
 .\"     Title: jobrnr
 .\"    Author: Rob Donnelly
 .\" Generator: Asciidoctor 2.0.15
-.\"      Date: 2021-05-02
+.\"      Date: 2021-05-13
 .\"    Manual: Jobrnr Manual
 .\"    Source: Jobrnr v1.1.0
 .\"  Language: English
 .\"
-.TH "JOBRNR" "5" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.TH "JOBRNR" "5" "2021-05-13" "Jobrnr v1.1.0" "Jobrnr Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -58,6 +58,26 @@ Define the number of times a job should be repated.
 \fBimport\fP \fIprefix\fP, \fIfilename\fP
 .RS 4
 Imports jobs from another job description (*.jr) file.
+.RE
+.SH "OBJECTS"
+.sp
+\fBjobrnr_options\fP
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\fBoutput_directory\fP: Path to output directory.
+Relative paths are relative to \fBPWD\fP.
+Environment variables are expanded.
+This value will override any \fB\-\-output\-directory\fP option \fIbefore\fP the job description file on the command\-line.
+This value can be overriden by any \fB\-\-output\-directory\fP option \fIafter\fP the job description file on the command\-line.
+.RE
 .RE
 .SH "EXAMPLES"
 .SS "A simple job"
@@ -176,6 +196,21 @@ import \(aqimport\(aq, \(aqimports.jr\(aq
 job :run, :import_compile do
   execute \(aqmake run\(aq
 end
+.fam
+.fi
+.if n .RE
+.SS "Output Directory"
+.sp
+Place output logs in the $RESULTS/jobs directory.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :example do
+  execute \(aqsleep 10\(aq
+end
+
+jobrnr_options.output_directory = "$RESULTS/jobs"
 .fam
 .fi
 .if n .RE
