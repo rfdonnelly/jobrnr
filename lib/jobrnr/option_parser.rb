@@ -183,7 +183,7 @@ module Jobrnr
         if Pathname.new(expanded_directory).absolute?
           expanded_directory
         else
-          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
+          File.expand_path(expanded_directory)
         end
     end
   end
