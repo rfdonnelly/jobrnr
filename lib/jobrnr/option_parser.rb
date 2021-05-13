@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Jobrnr
-  require "optparse"
-
   # Defines the CLI options.
-  class Options
+  class OptionParser
+    require "optparse"
+
     attr_reader :options
 
     def initialize

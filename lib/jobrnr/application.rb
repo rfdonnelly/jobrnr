@@ -14,7 +14,7 @@ module Jobrnr
     def run
       begin
         run_with_exceptions
-      rescue OptionParser::ParseError, Jobrnr::UsageError => e
+      rescue ::OptionParser::ParseError, Jobrnr::UsageError => e
         Jobrnr::Log.error [e.message, "See `jobrnr --help`"].join("\n\n")
       rescue Jobrnr::HelpException => e
         puts e.message
@@ -25,7 +25,7 @@ module Jobrnr
     end
 
     def run_with_exceptions
-      options = Jobrnr::Options.new.parse(argv)
+      options = Jobrnr::OptionParser.new.parse(argv)
       Log.verbosity = options.verbosity
       filenames, plus_options = classify_arguments(argv)
 
