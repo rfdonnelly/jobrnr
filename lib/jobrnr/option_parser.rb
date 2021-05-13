@@ -15,7 +15,51 @@ module Jobrnr
       default_options(options)
       load_environment(options)
 
-      @parser = ::OptionParser.new do |op|
+      @parser = create_parser
+    end
+
+    def parse(argv)
+      parser.parse!(argv)
+
+      options
+    end
+
+    def man_path(man_file)
+      Jobrnr::Util.relative_to_file(File.join("../../man", man_file), __FILE__)
+    end
+
+    def initialize_options
+      Struct.new(
+        :argv,
+        :dot,
+        :max_failures,
+        :max_jobs,
+        :output_directory,
+        :plugin_paths,
+        :recycle,
+        :verbosity,
+      ).new
+    end
+
+    def default_options(options)
+      options.dot = false
+      options.max_failures = 0
+      options.max_jobs = 8
+      options.output_directory = Dir.pwd
+      options.plugin_paths = []
+      options.verbosity = 1
+      options.recycle = true
+    end
+
+    def load_environment(options)
+      options.max_failures = Integer(ENV["JOBRNR_MAX_FAILURES"]) if ENV.key?("JOBRNR_MAX_FAILURES")
+      options.max_jobs = Integer(ENV["JOBRNR_MAX_JOBS"]) if ENV.key?("JOBRNR_MAX_JOBS")
+      options.plugin_paths = ENV["JOBRNR_PLUGIN_PATH"].split(/:/) if ENV.key?("JOBRNR_PLUGIN_PATH")
+      options.output_directory = ENV["JOBRNR_OUTPUT_DIRECTORY"] if ENV.key?("JOBRNR_OUTPUT_DIRECTORY")
+    end
+
+    def create_parser
+      ::OptionParser.new do |op|
         op.banner = "Usage: jobrnr [<option(s)>] <file.jr>"
 
         op.separator("GENERAL OPTIONS")
@@ -68,46 +112,6 @@ module Jobrnr
           exit
         end
       end
-    end
-
-    def parse(argv)
-      parser.parse!(argv)
-
-      options
-    end
-
-    def man_path(man_file)
-      Jobrnr::Util.relative_to_file(File.join("../../man", man_file), __FILE__)
-    end
-
-    def initialize_options
-      Struct.new(
-        :argv,
-        :dot,
-        :max_failures,
-        :max_jobs,
-        :output_directory,
-        :plugin_paths,
-        :recycle,
-        :verbosity,
-      ).new
-    end
-
-    def default_options(options)
-      options.dot = false
-      options.max_failures = 0
-      options.max_jobs = 8
-      options.output_directory = Dir.pwd
-      options.plugin_paths = []
-      options.verbosity = 1
-      options.recycle = true
-    end
-
-    def load_environment(options)
-      options.max_failures = Integer(ENV["JOBRNR_MAX_FAILURES"]) if ENV.key?("JOBRNR_MAX_FAILURES")
-      options.max_jobs = Integer(ENV["JOBRNR_MAX_JOBS"]) if ENV.key?("JOBRNR_MAX_JOBS")
-      options.plugin_paths = ENV["JOBRNR_PLUGIN_PATH"].split(/:/) if ENV.key?("JOBRNR_PLUGIN_PATH")
-      options.output_directory = ENV["JOBRNR_OUTPUT_DIRECTORY"] if ENV.key?("JOBRNR_OUTPUT_DIRECTORY")
     end
   end
 end
