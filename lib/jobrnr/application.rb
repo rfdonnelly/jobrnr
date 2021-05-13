@@ -39,7 +39,7 @@ module Jobrnr
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
       user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
-      merged_options = merge_options(options, user_script.jobrnr_options, filename)
+      options = transform_options(user_script.jobrnr_options, filename)
 
       if options.dot
         Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
@@ -54,7 +54,7 @@ module Jobrnr
         pool: pool
       )
       Jobrnr::Job::Dispatch.new(
-        options: merged_options,
+        options: options,
         graph: Jobrnr::Graph.instance,
         pool: pool,
         stats: Jobrnr::Stats.new,
@@ -75,24 +75,20 @@ module Jobrnr
       %i[filenames plus_options].map { |key| Array(hash[key]) }
     end
 
-    def merge_options(global_options, user_script_options, user_script_filename)
+    def transform_options(user_script_options, user_script_filename)
       merged_options = user_script_options.clone
 
-      merged_options.output_directory = get_output_directory(global_options, user_script_options, user_script_filename)
+      merged_options.output_directory = get_output_directory(user_script_options, user_script_filename)
 
       merged_options
     end
 
-    def get_output_directory(global_options, user_script_options, user_script_filename)
-      if user_script_options.output_directory.nil?
-        global_options.output_directory
+    def get_output_directory(user_script_options, user_script_filename)
+      expanded_directory = Jobrnr::Util.expand_envars(user_script_options.output_directory)
+      if Pathname.new(expanded_directory).absolute?
+        expanded_directory
       else
-        expanded_directory = Jobrnr::Util.expand_envars(user_script_options.output_directory)
-        if Pathname.new(expanded_directory).absolute?
-          expanded_directory
-        else
-          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
-        end
+        Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
       end
     end
   end
