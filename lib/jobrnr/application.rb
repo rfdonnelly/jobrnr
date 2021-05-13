@@ -42,9 +42,8 @@ module Jobrnr
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
       Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
-      option_parser.expand_output_directory(filename)
-
       option_parser.parse(post_args)
+      option_parser.expand_output_directory(filename)
 
       if options.dot
         Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
