@@ -31,6 +31,16 @@ Define the number of times a job should be repated.
 *import* _prefix_, _filename_::
 Imports jobs from another job description (*.jr) file.
 
+== Objects
+
+*jobrnr_options*::
+
+** *output_directory*: Path to output directory.
+Relative paths are relative to *PWD*.
+Environment variables are expanded.
+This value will override any *--output-directory* option _before_ the job description file on the command-line.
+This value can be overriden by any *--output-directory* option _after_ the job description file on the command-line.
+
 == Examples
 
 === A simple job
@@ -134,6 +144,19 @@ import 'import', 'imports.jr'
 job :run, :import_compile do
   execute 'make run'
 end
+----
+
+=== Output Directory
+
+Place output logs in the $RESULTS/jobs directory.
+
+[source,ruby]
+----
+job :example do
+  execute 'sleep 10'
+end
+
+jobrnr_options.output_directory = "$RESULTS/jobs"
 ----
 
 == See Also
