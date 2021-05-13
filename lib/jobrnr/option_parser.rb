@@ -114,8 +114,8 @@ module Jobrnr
       end
     end
 
-    # Bisects args into two groups to enable command-line options to override
-    # job script options.
+    # Partitions args into two groups to enable command-line options to
+    # override job script options.
     #
     # The two groups are:
     #
@@ -133,7 +133,7 @@ module Jobrnr
     #
     #   * args: -a b -c d -e file +x +y +z
     #   * post_args: -f g -h
-    def bisect_args(argv)
+    def partition_args(argv)
       args = []
       post_args = []
       found_file = false

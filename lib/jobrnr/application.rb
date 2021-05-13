@@ -27,7 +27,7 @@ module Jobrnr
 
     def run_with_exceptions
       @option_parser = Jobrnr::OptionParser.new(argv)
-      args, post_args = option_parser.bisect_args(argv)
+      args, post_args = option_parser.partition_args(argv)
       option_parser.parse(args)
 
       Log.verbosity = options.verbosity
