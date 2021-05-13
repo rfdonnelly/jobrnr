@@ -40,7 +40,8 @@ module Jobrnr
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
       user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
-      options = transform_options(user_script.jobrnr_options, filename)
+      options = user_script.jobrnr_options
+      options.output_directory = expand_output_directory(options.output_directory, filename)
 
       if options.dot
         Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
@@ -76,16 +77,8 @@ module Jobrnr
       %i[filenames plus_options].map { |key| Array(hash[key]) }
     end
 
-    def transform_options(user_script_options, user_script_filename)
-      merged_options = user_script_options.clone
-
-      merged_options.output_directory = get_output_directory(user_script_options, user_script_filename)
-
-      merged_options
-    end
-
-    def get_output_directory(user_script_options, user_script_filename)
-      expanded_directory = Jobrnr::Util.expand_envars(user_script_options.output_directory)
+    def expand_output_directory(output_directory, user_script_filename)
+      expanded_directory = Jobrnr::Util.expand_envars(output_directory)
       if Pathname.new(expanded_directory).absolute?
         expanded_directory
       else
