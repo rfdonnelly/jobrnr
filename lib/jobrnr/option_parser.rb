@@ -139,20 +139,16 @@ module Jobrnr
       found_file = false
       found_option_after_file = false
 
-      argv.each_with_index do |arg, index|
-        if !found_file
-          if File.exist?(arg)
-            found_file = true
-          end
+      argv.each do |arg|
+        if !found_file && File.exist?(arg)
+          found_file = true
         end
 
-        if found_file && !found_option_after_file
-          if arg.start_with?("-")
-            found_option_after_file = true
-          end
+        if found_file && !found_option_after_file && arg.start_with?("-")
+          found_option_after_file = true
         end
 
-        if found_file && found_option_after_file && !arg.start_with?("+")
+        if found_option_after_file && !arg.start_with?("+")
           post_args << arg
         else
           args << arg
@@ -177,7 +173,7 @@ module Jobrnr
     end
 
     # Expands any environment variables and possible script-relative path
-    def expand_output_directory(user_script_filename)
+    def expand_output_directory
       expanded_directory = Jobrnr::Util.expand_envars(options.output_directory)
       options.output_directory =
         if Pathname.new(expanded_directory).absolute?
