@@ -30,7 +30,7 @@ module Jobrnr
       option_parser.parse(argv)
 
       Log.verbosity = options.verbosity
-      filenames, plus_options = classify_arguments(argv)
+      filenames, plus_options = option_parser.classify_arguments(argv)
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil? || filenames.empty?
       raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..].join(' ')}" if filenames.size > 1
 
@@ -41,7 +41,7 @@ module Jobrnr
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
       Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
-      options.output_directory = expand_output_directory(options.output_directory, filename)
+      option_parser.expand_output_directory(filename)
 
       if options.dot
         Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
@@ -67,27 +67,6 @@ module Jobrnr
 
     def options
       option_parser.options
-    end
-
-    def classify_arguments(argv)
-      hash = argv.group_by do |arg|
-        if arg[0] == "+"
-          :plus_options
-        else
-          :filenames
-        end
-      end
-
-      %i[filenames plus_options].map { |key| Array(hash[key]) }
-    end
-
-    def expand_output_directory(output_directory, user_script_filename)
-      expanded_directory = Jobrnr::Util.expand_envars(output_directory)
-      if Pathname.new(expanded_directory).absolute?
-        expanded_directory
-      else
-        Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
-      end
     end
   end
 end

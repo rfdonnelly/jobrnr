@@ -113,5 +113,30 @@ module Jobrnr
         end
       end
     end
+
+    # Classifies args remaining after initial parse as filenames or plus
+    # options.
+    def classify_arguments(argv)
+      hash = argv.group_by do |arg|
+        if arg[0] == "+"
+          :plus_options
+        else
+          :filenames
+        end
+      end
+
+      %i[filenames plus_options].map { |key| Array(hash[key]) }
+    end
+
+    # Expands any environment variables and possible script-relative path
+    def expand_output_directory(user_script_filename)
+      expanded_directory = Jobrnr::Util.expand_envars(options.output_directory)
+      options.output_directory =
+        if Pathname.new(expanded_directory).absolute?
+          expanded_directory
+        else
+          Jobrnr::Util.relative_to_file(expanded_directory, user_script_filename)
+        end
+    end
   end
 end
