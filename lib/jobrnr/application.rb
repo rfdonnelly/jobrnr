@@ -27,10 +27,11 @@ module Jobrnr
 
     def run_with_exceptions
       @option_parser = Jobrnr::OptionParser.new(argv)
-      option_parser.parse(argv)
+      args, post_args = option_parser.bisect_args(argv)
+      option_parser.parse(args)
 
       Log.verbosity = options.verbosity
-      filenames, plus_options = option_parser.classify_arguments(argv)
+      filenames, plus_options = option_parser.classify_arguments(args)
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil? || filenames.empty?
       raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..].join(' ')}" if filenames.size > 1
 
@@ -42,6 +43,8 @@ module Jobrnr
 
       Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
       option_parser.expand_output_directory(filename)
+
+      option_parser.parse(post_args)
 
       if options.dot
         Jobrnr::Log.info Jobrnr::Graph.instance.to_dot

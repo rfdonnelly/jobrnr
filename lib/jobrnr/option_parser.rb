@@ -114,6 +114,54 @@ module Jobrnr
       end
     end
 
+    # Bisects args into two groups to enable command-line options to override
+    # job script options.
+    #
+    # The two groups are:
+    #
+    # 1. args (lowest precedence)
+    # 2. post_args (highest precedence) -- override any options set by the job
+    #    script
+    #
+    # Example:
+    #
+    # The following args:
+    #
+    #   -a b -c d -e file +x +y -f g +z -h
+    #
+    # Are grouped as follows:
+    #
+    #   * args: -a b -c d -e file +x +y +z
+    #   * post_args: -f g -h
+    def bisect_args(argv)
+      args = []
+      post_args = []
+      found_file = false
+      found_option_after_file = false
+
+      argv.each_with_index do |arg, index|
+        if !found_file
+          if File.exist?(arg)
+            found_file = true
+          end
+        end
+
+        if found_file && !found_option_after_file
+          if arg.start_with?("-")
+            found_option_after_file = true
+          end
+        end
+
+        if found_file && found_option_after_file && !arg.start_with?("+")
+          post_args << arg
+        else
+          args << arg
+        end
+      end
+
+      [args, post_args]
+    end
+
     # Classifies args remaining after initial parse as filenames or plus
     # options.
     def classify_arguments(argv)
