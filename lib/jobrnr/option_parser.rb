@@ -140,13 +140,8 @@ module Jobrnr
       found_option_after_file = false
 
       argv.each do |arg|
-        if !found_file && File.exist?(arg)
-          found_file = true
-        end
-
-        if found_file && !found_option_after_file && arg.start_with?("-")
-          found_option_after_file = true
-        end
+        found_file |= !found_file && File.exist?(arg)
+        found_option_after_file |= found_file && !found_option_after_file && arg.start_with?("-")
 
         if found_option_after_file && !arg.start_with?("+")
           post_args << arg
