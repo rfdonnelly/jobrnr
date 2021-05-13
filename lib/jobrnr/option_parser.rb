@@ -25,7 +25,7 @@ module Jobrnr
     end
 
     def man_path(man_file)
-      Jobrnr::Util.relative_to_file(File.join("../../man", man_file), __FILE__)
+      File.join(__dir__, "../../man", man_file)
     end
 
     def initialize_options
