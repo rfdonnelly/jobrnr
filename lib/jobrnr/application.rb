@@ -6,6 +6,7 @@ module Jobrnr
     require "pathname"
 
     attr_reader :argv
+    attr_reader :option_parser
 
     def initialize(argv)
       @argv = argv
@@ -25,11 +26,11 @@ module Jobrnr
     end
 
     def run_with_exceptions
-      option_parser = Jobrnr::OptionParser.new(@argv)
-      options = option_parser.parse(argv)
+      @option_parser = Jobrnr::OptionParser.new(argv)
+      option_parser.parse(argv)
+
       Log.verbosity = options.verbosity
       filenames, plus_options = classify_arguments(argv)
-
       raise Jobrnr::UsageError, "missing filename argument" if filenames.nil? || filenames.empty?
       raise Jobrnr::UsageError, "unrecognized option(s): #{filenames[1..].join(' ')}" if filenames.size > 1
 
@@ -62,6 +63,10 @@ module Jobrnr
         slots: slots,
         ui: ui,
       ).run
+    end
+
+    def options
+      option_parser.options
     end
 
     def classify_arguments(argv)
