@@ -39,8 +39,7 @@ module Jobrnr
       # load plugins
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
-      user_script = Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
-      options = user_script.jobrnr_options
+      Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
       options.output_directory = expand_output_directory(options.output_directory, filename)
 
       if options.dot

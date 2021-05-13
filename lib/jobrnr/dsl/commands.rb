@@ -10,7 +10,7 @@ module Jobrnr
       attr_reader :plus_options
 
       def initialize(options, plus_options)
-        @jobrnr_options = options.clone
+        @jobrnr_options = options
         @plus_options = plus_options
       end
 
