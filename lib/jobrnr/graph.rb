@@ -5,8 +5,6 @@ module Jobrnr
 
   # Tracks job dependencies
   class Graph
-    include Singleton
-
     def initialize
       @jobs = {}
     end

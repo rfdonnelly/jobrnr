@@ -41,12 +41,20 @@ module Jobrnr
       # load plugins
       Jobrnr::Plugins.instance.load(options.plugin_paths)
 
-      Jobrnr::DSL::Loader.instance.evaluate(nil, filename, options, plus_options)
+      graph = Jobrnr::Graph.new
+
+      Jobrnr::DSL::Loader.instance.evaluate(
+        prefix: nil,
+        filename: filename,
+        graph: graph,
+        options: options,
+        plus_options: plus_options,
+      )
       option_parser.parse(post_args)
       option_parser.expand_output_directory
 
       if options.dot
-        Jobrnr::Log.info Jobrnr::Graph.instance.to_dot
+        Jobrnr::Log.info graph.to_dot
         exit
       end
 
@@ -59,7 +67,7 @@ module Jobrnr
       )
       Jobrnr::Job::Dispatch.new(
         options: options,
-        graph: Jobrnr::Graph.instance,
+        graph: graph,
         pool: pool,
         stats: Jobrnr::Stats.new,
         slots: slots,
