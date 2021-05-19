@@ -18,6 +18,7 @@ module Jobrnr
       k.chr
     end.merge({
       3 => :ctrl_c,
+      13 => :enter,
       26 => :ctrl_z,
     })
 
@@ -29,6 +30,8 @@ module Jobrnr
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
 
       trapint
+
+      Jobrnr::Log.info "Press '?' for help."
     end
 
     def pre_instance(inst)
@@ -79,14 +82,33 @@ module Jobrnr
         sigint
       when :ctrl_z
         sigtstp
-      when "="
-        $stdout.write("max-jobs=")
+      when :enter
+        # Let the user know we are not hung
+        $stdout.puts
+      when "?"
+        $stdout.puts format(<<~EOF, ctrl_c_help)
+          j: Modify max-jobs
+          Ctrl-C: %s
+        EOF
+      when "j"
+        $stdout.write format("max-jobs (%d): ", slots.size)
         begin
           n = Integer($stdin.gets)
           slots.resize(n)
         rescue ::ArgumentError
-          $stdout.puts("could not parse integer")
+          $stdout.puts "could not parse integer"
         end
+      else
+        $stdout.puts format("unrecognized ord:%d", c.ord)
+      end
+    end
+
+    def ctrl_c_help
+      case ctrl_c
+      when 0
+        "Stop job submission"
+      else
+        "Terminate"
       end
     end
 
