@@ -9,7 +9,8 @@ module Jobrnr
       attr_reader :jobrnr_options
       attr_reader :plus_options
 
-      def initialize(options, plus_options)
+      def initialize(graph:, options:, plus_options:)
+        @graph = graph
         @jobrnr_options = options
         @plus_options = plus_options
       end
@@ -30,7 +31,7 @@ module Jobrnr
         pids = Array(predecessor_ids).map { |pid| prefix_id(prefix, pid) }
         pids_not_found =
           pids
-          .map { |pid| [pid, graph.id?(pid)] }
+          .map { |pid| [pid, @graph.id?(pid)] }
           .select { |_, exists| exists == false }
           .map { |pid, _| "':#{pid}'" }
 
@@ -40,14 +41,14 @@ module Jobrnr
             "#{pids_not_found.join(', ')} @ #{caller_source}"
         end
 
-        predecessors = pids.map { |pid| graph[pid] }
+        predecessors = pids.map { |pid| @graph[pid] }
         builder = Jobrnr::DSL::JobBuilder.new(
           id: prefix_id(prefix, id),
           predecessors: predecessors
         )
         job = Docile.dsl_eval(builder, &block).build
         Jobrnr::Plugins.instance.post_definition(job)
-        graph.add_job(job)
+        @graph.add_job(job)
       end
 
       def import(prefix, filename, *plus_options)
@@ -73,7 +74,13 @@ module Jobrnr
             "@ #{caller_source}"
         end
 
-        Jobrnr::DSL::Loader.instance.evaluate(prefix, load_filename, jobrnr_options, plus_options)
+        Jobrnr::DSL::Loader.instance.evaluate(
+          prefix: prefix,
+          filename: load_filename,
+          graph: @graph,
+          options: jobrnr_options,
+          plus_options: plus_options,
+        )
       end
 
       def prefix_id(prefix, id)
@@ -90,10 +97,6 @@ module Jobrnr
 
       def caller_source
         Jobrnr::Util.caller_source(1)
-      end
-
-      def graph
-        Jobrnr::Graph.instance
       end
     end
   end

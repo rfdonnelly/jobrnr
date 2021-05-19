@@ -12,8 +12,12 @@ end
 
 describe "DSL command usage errors" do
   before do
-    Jobrnr::Graph.instance.clear
-    @obj = Jobrnr::DSL::Commands.new({}, {})
+    graph = Jobrnr::Graph.new
+    @obj = Jobrnr::DSL::Commands.new(
+      graph: graph,
+      options: {},
+      plus_options: {},
+    )
   end
 
   describe "job command" do
