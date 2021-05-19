@@ -27,6 +27,8 @@ Previous behavior can be kept by making the following change:
 
 * Changed minimum Ruby version to 2.7
 
+* Re-licensed under the more permissive MIT/Apache 2.0
+
 === Added
 
 * Added graceful Ctrl-C handling
