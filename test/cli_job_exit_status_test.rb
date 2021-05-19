@@ -12,8 +12,10 @@ describe "CLI Job Exit Status" do
   def assert_io_matches(exp_out, exp_err)
     out, err = capture_io do
       no_color do
-        Kernel.stub(:trap, nil) do
-          yield
+        speedup do
+          Kernel.stub(:trap, nil) do
+            yield
+          end
         end
       end
     end

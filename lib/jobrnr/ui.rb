@@ -9,12 +9,13 @@ module Jobrnr
     attr_reader :ctrl_c
     attr_reader :pool
 
-    TIME_SLICE_INTERVAL = 1
+    DEFAULT_TIME_SLICE_INTERVAL = 1
 
     def initialize(pool:)
       @color = Pastel.new
       @ctrl_c = 0
       @pool = pool
+      @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
 
       trap_ctrl_c
     end
@@ -52,7 +53,7 @@ module Jobrnr
     end
 
     def sleep
-      Kernel.sleep TIME_SLICE_INTERVAL
+      Kernel.sleep @time_slice_interval
     end
 
     def stop_submission?
