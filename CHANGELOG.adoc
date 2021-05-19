@@ -1,0 +1,67 @@
+= Jobrnr Changelog
+
+:github: https://github.com/rfdonnelly/jobrnr
+:compare: {github}/compare
+:commits: {github}/commits
+:latest: v1.1.0
+:ellipses: \...
+:unreleased: {compare}/{latest}{ellipses}master[Unreleased]
+:v1_1_0: {compare}/v1.0.0{ellipses}v1.1.0[v1.1.0]
+:v1_0_0: {commits}/v1.0.0[v1.0.0]
+
+== {unreleased}
+
+=== Changed
+
+* Changed handling of relative output directory paths.
++
+Previously, relative output directory paths were relative to the job description file.
+Now, relative output directory paths are relative to `$PWD`.
+Previous behavior can be kept by making the following change:
++
+[source,diff]
+----
+- jobrnr_options.output_directory = "relative/path"
++ jobrnr_options.output_directory = File.join(__dir__, "relative/path")
+----
+
+* Changed minimum Ruby version to 2.7
+
+=== Added
+
+* Added graceful Ctrl-C handling
++
+First Ctrl-C stops submission of new jobs and allows active jobs to complete.
+Second Ctrl-C sends Ctrl-C to active jobs.
+
+* Added internal support for dynamic job scaling.
++
+This effectively allows `--max-jobs` to be modified at runtime.
+However, the functionality has not yet been exposed to the user.
+
+* Allow the `--output-directory` option to override the value set by the job description via `jobrnr_options.output_directory`.
+
+* Added documentation for setting the output directory via the job description.
+
+=== Fixed
+
+* Fixed missing `--version` option.
+
+=== Removed
+
+* Removed dependency on `ronn`
+
+== {v1_1_0}
+
+=== Added
+
+* Added the `--no-recycle` option which prevents recycling of logs.
+
+=== Fixed
+
+* Fixed `Fixnum` deprecation warnings for Ruby >=2.4
+* Fixed stacktrace when running jobrnr without arguments
+
+== {v1_0_0}
+
+Initial release.
