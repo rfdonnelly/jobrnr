@@ -21,6 +21,7 @@ describe "CLI Plus Options" do
       exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
         parent: {:name=>"parent", :child_name=>"child-name", :present=>false}
         child: {:name=>"child-name", :present=>false}
+        Press '?' for help.
       EOF
 
       assert_io_matches(exp_out, "") do
@@ -32,6 +33,7 @@ describe "CLI Plus Options" do
       exp_out = Jobrnr::Util.strip_heredoc(<<-EOF)
         parent: {:name=>"foo", :child_name=>"bar", :present=>true}
         child: {:name=>"bar", :present=>true}
+        Press '?' for help.
       EOF
 
       assert_io_matches(exp_out, "") do
