@@ -55,7 +55,14 @@ module Jobrnr
       end
 
       def duration
-        @end_time - @start_time
+        case state
+        when :pending
+          0
+        when :dispatched
+          Time.now - @start_time
+        when :finished
+          @end_time - @start_time
+        end
       end
 
       def success?

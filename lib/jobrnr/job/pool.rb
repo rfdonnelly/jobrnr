@@ -8,6 +8,8 @@ module Jobrnr
     class Pool
       require "concurrent"
 
+      attr_accessor :instances
+
       def initialize
         self.futures = []
         self.instances = []
@@ -52,7 +54,6 @@ module Jobrnr
       private
 
       attr_accessor :futures
-      attr_accessor :instances
 
       def remove_futures(completed_futures)
         futures.reject! do |future|

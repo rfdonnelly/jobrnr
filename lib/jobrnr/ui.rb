@@ -88,6 +88,8 @@ module Jobrnr
       when "?"
         $stdout.puts format(<<~EOF, ctrl_c_help)
           j: Modify max-jobs
+          i: Interrupt job
+          l: List active jobs by pid, duration, and command
           Ctrl-C: %s
         EOF
       when "j"
@@ -98,8 +100,21 @@ module Jobrnr
         rescue ::ArgumentError
           $stdout.puts "could not parse integer"
         end
-      else
-        $stdout.puts format("unrecognized ord:%d", c.ord)
+      when "i"
+        $stdout.write "interrupt job pid: "
+        begin
+          pid = Integer($stdin.gets)
+          pool.instances.find { |inst| inst.pid == pid }&.sigint
+        rescue ::ArgumentError
+          $stdout.puts "could not parse pid"
+        end
+      when "l"
+        $stdout.puts pool
+          .instances
+          .sort { |inst| inst.duration }
+          .reverse
+          .map { |inst| format("%d %ds %s", inst.pid, inst.duration.round, inst) }
+          .join("\n")
       end
     end
 
