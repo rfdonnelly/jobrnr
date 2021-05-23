@@ -87,8 +87,8 @@ module Jobrnr
         $stdout.puts
       when "?"
         $stdout.puts format(<<~EOF, ctrl_c_help)
-          j: Modify max-jobs
           i: Interrupt job
+          j: Modify max-jobs
           l: List active jobs by pid, duration, and command
           Ctrl-C: %s
         EOF
