@@ -90,6 +90,7 @@ module Jobrnr
           i: Interrupt job
           j: Modify max-jobs
           l: List active jobs
+          t: Terminate job
         EOF
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
@@ -119,6 +120,14 @@ module Jobrnr
           rows: data,
         )
         $stdout.puts table.render
+      when "t"
+        $stdout.write "terminate job pid: "
+        begin
+          pid = Integer($stdin.gets)
+          pool.instances.find { |inst| inst.pid == pid }&.sigterm
+        rescue ::ArgumentError
+          $stdout.puts "could not parse pid"
+        end
       end
     end
 
