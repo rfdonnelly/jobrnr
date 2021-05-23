@@ -109,12 +109,17 @@ module Jobrnr
           $stdout.puts "could not parse pid"
         end
       when "l"
-        $stdout.puts pool
+        data = pool
           .instances
           .sort { |inst| inst.duration }
           .reverse
-          .map { |inst| format("%d %ds %s", inst.pid, inst.duration.round, inst) }
-          .join("\n")
+          .map { |inst| [inst.pid, format("%ds", inst.duration.round), inst.to_s] }
+          .to_a
+        table = Jobrnr::Table.new(
+          header: %w(PID Duration Command),
+          rows: data,
+        )
+        $stdout.puts table.render
       end
     end
 
