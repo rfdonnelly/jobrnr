@@ -52,6 +52,12 @@ module Jobrnr
         Process.kill("INT", pid)
       end
 
+      def sigterm
+        return unless state == :dispatched && pid.positive?
+
+        Process.kill("TERM", pid)
+      end
+
       def duration
         @end_time - @start_time
       end
