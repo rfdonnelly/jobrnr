@@ -47,6 +47,10 @@ module Jobrnr
         instances.each(&:sigint)
       end
 
+      def sigterm
+        instances.each(&:sigterm)
+      end
+
       private
 
       attr_accessor :futures

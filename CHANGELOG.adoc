@@ -34,7 +34,8 @@ Previous behavior can be kept by making the following change:
 * Added graceful Ctrl-C handling
 +
 First Ctrl-C stops submission of new jobs and allows active jobs to complete.
-Second Ctrl-C sends Ctrl-C to active jobs.
+Second Ctrl-C sends Ctrl-C (i.e. SIGINT) to active jobs.
+Third Ctrl-C sends SIGTERM to active jobs.
 
 * Added internal support for dynamic job scaling.
 +
