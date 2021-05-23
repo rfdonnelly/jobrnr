@@ -86,11 +86,10 @@ module Jobrnr
         # Let the user know we are not hung
         $stdout.puts
       when "?"
-        $stdout.puts format(<<~EOF, ctrl_c_help)
+        $stdout.puts <<~EOF
           i: Interrupt job
           j: Modify max-jobs
-          l: List active jobs by pid, duration, and command
-          Ctrl-C: %s
+          l: List active jobs
         EOF
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
@@ -120,15 +119,6 @@ module Jobrnr
           rows: data,
         )
         $stdout.puts table.render
-      end
-    end
-
-    def ctrl_c_help
-      case ctrl_c
-      when 0
-        "Stop job submission"
-      else
-        "Terminate"
       end
     end
 
