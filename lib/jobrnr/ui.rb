@@ -74,6 +74,20 @@ module Jobrnr
       ctrl_c.positive?
     end
 
+    def parse_integer(type_name, &block)
+      begin
+        n = Integer($stdin.gets)
+        block.call(n)
+      rescue ::ArgumentError
+        $stdout.puts "could not parse #{type_name}"
+      end
+    end
+
+    def instance_by_pid(pid, &block)
+      inst = pool.instances.find { |inst| inst.pid == pid }
+      block.call(inst) unless inst.nil?
+    end
+
     def process_input
       c = $stdin.getch(min: 0, time: @time_slice_interval)
       return unless c
@@ -94,20 +108,10 @@ module Jobrnr
         EOF
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
-        begin
-          n = Integer($stdin.gets)
-          slots.resize(n)
-        rescue ::ArgumentError
-          $stdout.puts "could not parse integer"
-        end
+        parse_integer("integer") { |n| slots.resize(n) }
       when "i"
         $stdout.write "interrupt job pid: "
-        begin
-          pid = Integer($stdin.gets)
-          pool.instances.find { |inst| inst.pid == pid }&.sigint
-        rescue ::ArgumentError
-          $stdout.puts "could not parse pid"
-        end
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigint) }
       when "l"
         data = pool
           .instances
@@ -122,12 +126,7 @@ module Jobrnr
         $stdout.puts table.render
       when "t"
         $stdout.write "terminate job pid: "
-        begin
-          pid = Integer($stdin.gets)
-          pool.instances.find { |inst| inst.pid == pid }&.sigterm
-        rescue ::ArgumentError
-          $stdout.puts "could not parse pid"
-        end
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigterm) }
       end
     end
 
