@@ -23,6 +23,7 @@ module Jobrnr
         @pid = nil
         @exit_status = nil
         @state = :pending
+        @execute = true
 
         @start_time = Time.new
         @end_time = Time.new
@@ -31,12 +32,19 @@ module Jobrnr
       end
 
       def execute
-        @start_time = Time.now
-        @state = :dispatched
-        # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
-        # affecting the command
-        @pid = spawn(@command, %i[out err] => log, :pgroup => true)
-        @pid, status = Process.waitpid2(pid)
+        status = nil
+
+        # Loop to enable restart feature
+        while @execute
+          @execute = false
+          @start_time = Time.now
+          @state = :dispatched
+          # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
+          # affecting the command
+          @pid = spawn(@command, %i[out err] => log, :pgroup => true)
+          @pid, status = Process.waitpid2(pid)
+        end
+
         @exit_status = status.exited? && status.success?
         @state = :finished
         @end_time = Time.now
@@ -52,6 +60,11 @@ module Jobrnr
 
           Process.kill(method.upcase, pid)
         end
+      end
+
+      def restart
+        sigterm
+        @execute = true
       end
 
       def duration

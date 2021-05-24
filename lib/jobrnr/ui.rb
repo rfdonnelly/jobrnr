@@ -88,6 +88,19 @@ module Jobrnr
       block.call(inst) unless inst.nil?
     end
 
+    def restart_instance(inst)
+      message = [
+        "Restarting:",
+        format_command(inst),
+      ]
+
+      message << format_iteration(inst) if inst.job.iterations > 1
+
+      Jobrnr::Log.info message.join(" ")
+
+      inst.restart
+    end
+
     def process_input
       c = $stdin.getch(min: 0, time: @time_slice_interval)
       return unless c
@@ -104,6 +117,7 @@ module Jobrnr
           i: Interrupt job
           j: Modify max-jobs
           l: List active jobs
+          r: Restart job
           t: Terminate job
         EOF
       when "j"
@@ -124,6 +138,9 @@ module Jobrnr
           rows: data,
         )
         $stdout.puts table.render
+      when "r"
+        $stdout.write "restart job pid: "
+        parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
       when "t"
         $stdout.write "terminate job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigterm) }
