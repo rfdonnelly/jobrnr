@@ -116,6 +116,7 @@ module Jobrnr
         $stdout.puts <<~EOF
           i: Interrupt job
           j: Modify max-jobs
+          k: Kill job
           l: List active jobs
           r: Restart job
           t: Terminate job
@@ -126,6 +127,9 @@ module Jobrnr
       when "i"
         $stdout.write "interrupt job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigint) }
+      when "k"
+        $stdout.write "kill job (pid): "
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
       when "l"
         data = pool
           .instances
