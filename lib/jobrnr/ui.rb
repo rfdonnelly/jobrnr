@@ -67,7 +67,11 @@ module Jobrnr
     end
 
     def sleep
-      process_input
+      if $stdout.tty?
+        process_input
+      else
+        Kernel.sleep @time_slice_interval
+      end
     end
 
     def stop_submission?
