@@ -89,8 +89,8 @@ module Jobrnr
     # Handle Ctrl-C
     #
     # On first Ctrl-C, stop submitting new jobs and allow current jobs to
-    # finish. On second Ctrl-C, send SIGINT to jobs. On third (and subsequent)
-    # Ctrl-C, send SIGTERM to jobs.
+    # finish. On second Ctrl-C, send SIGINT to jobs. On third Ctrl-C, send
+    # SIGTERM to jobs. On fourth (and subsequent) Ctrl-C, send SIGKILL to jobs.
     def process_ctrl_c
       case ctrl_c
       when 0
@@ -100,9 +100,13 @@ module Jobrnr
         Jobrnr::Log.info "Interrupting (SIGINT) jobs."
         Jobrnr::Log.info "Ctrl-C again to terminate (SIGTERM) active jobs."
         pool.sigint
-      else
+      when 2
         Jobrnr::Log.info "Terminating (SIGTERM) jobs."
+        Jobrnr::Log.info "Ctrl-C again to kill (SIGKILL) active jobs."
         pool.sigterm
+      else
+        Jobrnr::Log.info "Killing (SIGKILL) jobs."
+        pool.sigkill
       end
 
       @ctrl_c += 1

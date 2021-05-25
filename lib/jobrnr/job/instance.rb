@@ -46,7 +46,7 @@ module Jobrnr
         self
       end
 
-      %i[sigint sigterm].each do |method|
+      %i[sigint sigterm sigkill].each do |method|
         define_method method do
           return unless state == :dispatched && pid.positive?
 

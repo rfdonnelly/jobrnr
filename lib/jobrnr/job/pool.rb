@@ -43,7 +43,7 @@ module Jobrnr
         futures.concat(create_futures(instances))
       end
 
-      %i[sigint sigterm].each do |method|
+      %i[sigint sigterm sigkill].each do |method|
         define_method method do
           instances.each(&method)
         end
