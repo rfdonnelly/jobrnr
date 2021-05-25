@@ -46,16 +46,12 @@ module Jobrnr
         self
       end
 
-      def sigint
-        return unless state == :dispatched && pid.positive?
+      %i[sigint sigterm sigkill].each do |method|
+        define_method method do
+          return unless state == :dispatched && pid.positive?
 
-        Process.kill("INT", pid)
-      end
-
-      def sigterm
-        return unless state == :dispatched && pid.positive?
-
-        Process.kill("TERM", pid)
+          Process.kill(method.upcase, pid)
+        end
       end
 
       def duration
