@@ -50,6 +50,7 @@ However, the functionality has not yet been exposed to the user.
 === Fixed
 
 * Fixed missing `--version` option.
+* Fixed coloring output when STDOUT is not a TTY
 
 === Removed
 
