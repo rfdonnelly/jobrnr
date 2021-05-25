@@ -12,7 +12,7 @@ module Jobrnr
     DEFAULT_TIME_SLICE_INTERVAL = 1
 
     def initialize(pool:)
-      @color = Pastel.new
+      @color = Pastel.new(enabled: $stdout.tty?)
       @ctrl_c = 0
       @pool = pool
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
