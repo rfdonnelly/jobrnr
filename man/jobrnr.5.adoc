@@ -5,6 +5,8 @@ Rob Donnelly
 :manmanual: Jobrnr Manual
 :mansource: Jobrnr {version}
 
+:du: __
+
 == Name
 
 jobrnr - job description file format
@@ -22,11 +24,22 @@ The Jobrnr job description file format is an internal {dsl}[DSL] writen in {ruby
 *job* _id_, [_prerequisite(s)_], _&block_::
 Defines a job.
 
-*job::execute* _String_ | _Proc_::
-Define the command a job will execute.
+*execute* _String_ | _Proc_::::
+Defines the command a job will execute.
++
+The argument can be a String or a Proc that returns a String.
+If a String is given, it is evaluated when a job is executed.
+This allows command Strings to be interpolated at execution time.
+If a Proc is given, it is called when a job instance is executed.
++
+Seed substitution is then performed on the resulting command String.
+The following subsitutions are supported:
++
+* "{du}SEED%x{du}" -- Substituted with a random 32-bit hexadecimal integer
+* "{du}SEED%d{du}" -- Substituted with a random 32-bit decimal integer
 
-*job::repeat* _Integer_::
-Define the number of times a job should be repated.
+*repeat* _Integer_::::
+Defines the number of times a job should be repated.
 
 *import* _prefix_, _filename_::
 Imports jobs from another job description (*.jr) file.
@@ -35,7 +48,8 @@ Imports jobs from another job description (*.jr) file.
 
 *jobrnr_options*::
 
-** *output_directory*: Path to output directory.
+*output_directory=*::::
+Path to output directory.
 Relative paths are relative to *PWD*.
 Environment variables are expanded.
 This value will override any *--output-directory* option _before_ the job description file on the command-line.
@@ -62,30 +76,28 @@ job :repeat do
 end
 ----
 
-=== A block command
+=== A proc command
 
 The examples prior to this passed a command string to *execute*.
-This example passes a block.
-The block returns a command string.
+This example passes a proc.
+The proc returns a command string.
 
-The block is evaluated at job execution time instead of at job definition time.
+The proc is evaluated at job execution time instead of at job definition time.
 This allows dynamic control of the command string.
 
-In this example, each repition will execute a different command.
+In this example, each repitition will execute a different command.
 
 [source,ruby]
 ----
 job :block do
-  execute do
-    "sleep " + rand(10)
-  end
+  execute { "sleep " + rand(10) }
   repeat 5
 end
 ----
 
 === An immediate interpolation command
 
-The command string interpolated at job definition time so all 5 repitions will execute the same command.
+The command string interpolated at job definition time so all 5 repititions will execute the same command.
 
 [source,ruby]
 ----
@@ -97,12 +109,25 @@ end
 
 === A delayed interpolation command
 
-The string is interpolated at job execution time so each repition will execute a different command.
+The command string is interpolated at job execution time so each repitition will execute a different command.
 
 [source,ruby]
 ----
 job :delayed_evaluation do
   execute 'sleep #{rand(10)}'
+  repeat 5
+end
+----
+
+=== Seed substitution
+
+The command string is substituted at job execution time with a random seed.
+Each repitition will be substituted with a different seed.
+
+[source,ruby]
+----
+job :seed_substitution do
+  execute "echo 0x__SEED%x__"
   repeat 5
 end
 ----
