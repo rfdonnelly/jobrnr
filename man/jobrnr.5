@@ -2,12 +2,12 @@
 .\"     Title: jobrnr
 .\"    Author: Rob Donnelly
 .\" Generator: Asciidoctor 2.0.15
-.\"      Date: 2021-05-13
+.\"      Date: 2021-05-26
 .\"    Manual: Jobrnr Manual
 .\"    Source: Jobrnr v1.1.0
 .\"  Language: English
 .\"
-.TH "JOBRNR" "5" "2021-05-13" "Jobrnr v1.1.0" "Jobrnr Manual"
+.TH "JOBRNR" "5" "2021-05-26" "Jobrnr v1.1.0" "Jobrnr Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -43,16 +43,46 @@ of jobs.
 \fBjob\fP \fIid\fP, [\fIprerequisite(s)\fP], \fI&block\fP
 .RS 4
 Defines a job.
+.sp
+\fBexecute\fP \fIString\fP | \fIProc\fP
+.RS 4
+Defines the command a job will execute.
+.sp
+The argument can be a String or a Proc that returns a String.
+If a String is given, it is evaluated when a job is executed.
+This allows command Strings to be interpolated at execution time.
+If a Proc is given, it is called when a job instance is executed.
+.sp
+Seed substitution is then performed on the resulting command String.
+The following subsitutions are supported:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+"__SEED%x__" \(em Substituted with a random 32\-bit hexadecimal integer
 .RE
 .sp
-\fBjob::execute\fP \fIString\fP | \fIProc\fP
 .RS 4
-Define the command a job will execute.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+"__SEED%d__" \(em Substituted with a random 32\-bit decimal integer
+.RE
 .RE
 .sp
-\fBjob::repeat\fP \fIInteger\fP
+\fBrepeat\fP \fIInteger\fP
 .RS 4
-Define the number of times a job should be repated.
+Defines the number of times a job should be repated.
+.RE
 .RE
 .sp
 \fBimport\fP \fIprefix\fP, \fIfilename\fP
@@ -64,15 +94,9 @@ Imports jobs from another job description (*.jr) file.
 \fBjobrnr_options\fP
 .RS 4
 .sp
+\fBoutput_directory=\fP
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.  sp -1
-.  IP \(bu 2.3
-.\}
-\fBoutput_directory\fP: Path to output directory.
+Path to output directory.
 Relative paths are relative to \fBPWD\fP.
 Environment variables are expanded.
 This value will override any \fB\-\-output\-directory\fP option \fIbefore\fP the job description file on the command\-line.
@@ -103,24 +127,22 @@ end
 .fam
 .fi
 .if n .RE
-.SS "A block command"
+.SS "A proc command"
 .sp
 The examples prior to this passed a command string to \fBexecute\fP.
-This example passes a block.
-The block returns a command string.
+This example passes a proc.
+The proc returns a command string.
 .sp
-The block is evaluated at job execution time instead of at job definition time.
+The proc is evaluated at job execution time instead of at job definition time.
 This allows dynamic control of the command string.
 .sp
-In this example, each repition will execute a different command.
+In this example, each repitition will execute a different command.
 .sp
 .if n .RS 4
 .nf
 .fam C
 job :block do
-  execute do
-    "sleep " + rand(10)
-  end
+  execute { "sleep " + rand(10) }
   repeat 5
 end
 .fam
@@ -128,7 +150,7 @@ end
 .if n .RE
 .SS "An immediate interpolation command"
 .sp
-The command string interpolated at job definition time so all 5 repitions will execute the same command.
+The command string interpolated at job definition time so all 5 repititions will execute the same command.
 .sp
 .if n .RS 4
 .nf
@@ -142,13 +164,28 @@ end
 .if n .RE
 .SS "A delayed interpolation command"
 .sp
-The string is interpolated at job execution time so each repition will execute a different command.
+The command string is interpolated at job execution time so each repitition will execute a different command.
 .sp
 .if n .RS 4
 .nf
 .fam C
 job :delayed_evaluation do
   execute \(aqsleep #{rand(10)}\(aq
+  repeat 5
+end
+.fam
+.fi
+.if n .RE
+.SS "Seed substitution"
+.sp
+The command string is substituted at job execution time with a random seed.
+Each repitition will be substituted with a different seed.
+.sp
+.if n .RS 4
+.nf
+.fam C
+job :seed_substitution do
+  execute "echo 0x__SEED%x__"
   repeat 5
 end
 .fam
