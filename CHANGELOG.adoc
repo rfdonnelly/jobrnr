@@ -46,6 +46,7 @@ However, the functionality has not yet been exposed to the user.
 * Allow the `--output-directory` option to override the value set by the job description via `jobrnr_options.output_directory`.
 
 * Added documentation for setting the output directory via the job description.
+* Added documentation for job command string handling including seed substitution.
 
 === Fixed
 
