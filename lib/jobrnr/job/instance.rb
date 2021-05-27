@@ -14,6 +14,9 @@ module Jobrnr
       attr_reader :state
       attr_reader :pid
 
+      attr_reader :start_time
+      attr_reader :end_time
+
       def initialize(job:, slot:, log:)
         @job = job
         @slot = slot

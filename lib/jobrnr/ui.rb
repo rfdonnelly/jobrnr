@@ -28,6 +28,7 @@ module Jobrnr
       @pool = pool
       @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
+      @completed = []
 
       trapint
 
@@ -46,8 +47,10 @@ module Jobrnr
     end
 
     def post_instance(inst)
+      @completed << inst
+
       message = [
-        format_status(inst),
+        format_completion_status(inst),
         format_command(inst),
       ]
 
@@ -118,13 +121,28 @@ module Jobrnr
         $stdout.puts
       when "?"
         $stdout.puts <<~EOF
-          i: Interrupt job
-          j: Modify max-jobs
-          k: Kill job
-          l: List active jobs
-          r: Restart job
-          t: Terminate job
+          Inspect                 Job Control
+          a: List active jobs     i: Interrupt job
+          c: List completed jobs  t: Terminate job
+          l: List all jobs        k: Kill job
+          p: List passed jobs     r: Restart job
+          f: List failed jobs     j: Modify max-jobs
         EOF
+      when "a"
+        insts = pool
+          .instances
+          .sort_by { |inst| inst.duration }
+          .reverse
+        print_insts("active", insts)
+      when "c"
+        insts = @completed
+          .sort_by { |inst| inst.end_time }
+        print_insts("completed", insts)
+      when "f"
+        insts = @completed
+          .reject { |inst| inst.success? }
+          .sort_by { |inst| inst.end_time }
+        print_insts("failed", insts)
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
         parse_integer("integer") { |n| slots.resize(n) }
@@ -135,20 +153,13 @@ module Jobrnr
         $stdout.write "kill job (pid): "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
       when "l"
-        data = pool
-          .instances
-          .sort_by { |inst| inst.duration }
-          .reverse
-          .map { |inst| [inst.pid, format("%ds", inst.duration.round), inst.to_s] }
-          .to_a
-        if data.empty?
-          $stdout.puts "No active jobs"
-        else
-          $stdout.puts Jobrnr::Table.new(
-            header: %w(PID Duration Command),
-            rows: data,
-          ).render
-        end
+        insts = [*pool.instances, *@completed]
+        print_insts("all", insts)
+      when "p"
+        insts = @completed
+          .select { |inst| inst.success? }
+          .sort_by { |inst| inst.end_time }
+        print_insts("passed", insts)
       when "r"
         $stdout.write "restart job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
@@ -158,7 +169,38 @@ module Jobrnr
       end
     end
 
-    def format_status(inst)
+    def print_insts(type, insts)
+      data = insts
+        .map do |inst|
+          [
+            inst.pid,
+            format_active_status(inst),
+            format("%ds", inst.duration.round),
+            inst.to_s,
+          ]
+        end.to_a
+
+      if data.empty?
+        $stdout.puts format("No %s jobs", type)
+      else
+        $stdout.puts Jobrnr::Table.new(
+          header: %w(PID Status Duration Command),
+          rows: data,
+        ).render
+      end
+    end
+
+    def format_active_status(inst)
+      if inst.state == :dispatched
+        color.yellow("Running")
+      elsif inst.success?
+        color.green("Passed")
+      else
+        color.red("Failed")
+      end
+    end
+
+    def format_completion_status(inst)
       if inst.success?
         color.green("PASSED:")
       else
