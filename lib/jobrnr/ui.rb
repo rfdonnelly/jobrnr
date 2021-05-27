@@ -137,7 +137,7 @@ module Jobrnr
       when "l"
         data = pool
           .instances
-          .sort { |inst| inst.duration }
+          .sort_by { |inst| inst.duration }
           .reverse
           .map { |inst| [inst.pid, format("%ds", inst.duration.round), inst.to_s] }
           .to_a
