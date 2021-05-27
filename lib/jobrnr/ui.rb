@@ -141,11 +141,14 @@ module Jobrnr
           .reverse
           .map { |inst| [inst.pid, format("%ds", inst.duration.round), inst.to_s] }
           .to_a
-        table = Jobrnr::Table.new(
-          header: %w(PID Duration Command),
-          rows: data,
-        )
-        $stdout.puts table.render
+        if data.empty?
+          $stdout.puts "No active jobs"
+        else
+          $stdout.puts Jobrnr::Table.new(
+            header: %w(PID Duration Command),
+            rows: data,
+          ).render
+        end
       when "r"
         $stdout.write "restart job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
