@@ -133,16 +133,16 @@ module Jobrnr
           .instances
           .sort_by { |inst| inst.duration }
           .reverse
-        print_insts("active", insts)
+        print_insts(insts, "active")
       when "c"
         insts = @completed
           .sort_by { |inst| inst.end_time }
-        print_insts("completed", insts)
+        print_insts(insts, "completed")
       when "f"
         insts = @completed
           .reject { |inst| inst.success? }
           .sort_by { |inst| inst.end_time }
-        print_insts("failed", insts)
+        print_insts(insts, "failed")
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
         parse_integer("integer") { |n| slots.resize(n) }
@@ -154,12 +154,12 @@ module Jobrnr
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
       when "l"
         insts = [*pool.instances, *@completed]
-        print_insts("all", insts)
+        print_insts(insts)
       when "p"
         insts = @completed
           .select { |inst| inst.success? }
           .sort_by { |inst| inst.end_time }
-        print_insts("passed", insts)
+        print_insts(insts, "passed")
       when "r"
         $stdout.write "restart job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
@@ -169,7 +169,7 @@ module Jobrnr
       end
     end
 
-    def print_insts(type, insts)
+    def print_insts(insts, type = nil)
       data = insts
         .map do |inst|
           [
@@ -181,7 +181,7 @@ module Jobrnr
         end.to_a
 
       if data.empty?
-        $stdout.puts format("No %s jobs", type)
+        $stdout.puts ["No", type, "jobs present"].flatten.join(" ")
       else
         $stdout.puts Jobrnr::Table.new(
           header: %w(PID Status Duration Command),
