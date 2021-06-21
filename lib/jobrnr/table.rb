@@ -3,6 +3,7 @@ module Jobrnr
     def initialize(header:, rows:)
       @header = header
       @rows = rows
+      @pastel = Pastel.new
     end
 
     def render
@@ -19,7 +20,7 @@ module Jobrnr
 
       data.each do |row|
         widths = row
-          .map { |cell| cell.size }
+          .map { |cell| @pastel.strip(cell).size }
           .zip(widths)
           .map { |pair| pair.max }
       end
