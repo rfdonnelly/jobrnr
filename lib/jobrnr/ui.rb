@@ -127,6 +127,7 @@ module Jobrnr
           l: List all jobs        k: Kill job
           p: List passed jobs     r: Restart job
           f: List failed jobs     j: Modify max-jobs
+          o: View output of job
         EOF
       when "a"
         insts = pool
@@ -155,6 +156,16 @@ module Jobrnr
       when "l"
         insts = [*pool.instances, *@completed]
         print_insts(insts)
+      when "o"
+        $stdout.write "view output (pid): "
+        parse_integer("pid") do |pid|
+          instance_by_pid(pid) do |inst|
+            cmd = format("tail %s", inst.log)
+            $stdout.puts cmd
+            system(cmd)
+            $stdout.puts
+          end
+        end
       when "p"
         insts = @completed
           .select { |inst| inst.success? }
