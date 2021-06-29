@@ -3,21 +3,36 @@
 module Jobrnr
   # User interface
   class UI
+    require "io/console"
     require "pastel"
+    require "English"
 
     attr_reader :color
     attr_reader :ctrl_c
     attr_reader :pool
+    attr_reader :slots
 
     DEFAULT_TIME_SLICE_INTERVAL = 1
 
-    def initialize(pool:)
+    KEYS = Hash.new do |h, k|
+      k.chr
+    end.merge({
+      3 => :ctrl_c,
+      13 => :enter,
+      26 => :ctrl_z,
+    })
+
+    def initialize(pool:, slots:)
       @color = Pastel.new(enabled: $stdout.tty?)
       @ctrl_c = 0
       @pool = pool
+      @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
+      @completed = []
 
-      trap_ctrl_c
+      trapint
+
+      Jobrnr::Log.info "Press '?' for help."
     end
 
     def pre_instance(inst)
@@ -32,8 +47,10 @@ module Jobrnr
     end
 
     def post_instance(inst)
+      @completed << inst
+
       message = [
-        format_status(inst),
+        format_completion_status(inst),
         format_command(inst),
       ]
 
@@ -53,14 +70,148 @@ module Jobrnr
     end
 
     def sleep
-      Kernel.sleep @time_slice_interval
+      if $stdout.tty?
+        process_input
+      else
+        Kernel.sleep @time_slice_interval
+      end
     end
 
     def stop_submission?
       ctrl_c.positive?
     end
 
-    def format_status(inst)
+    def parse_integer(type_name, &block)
+      begin
+        n = Integer($stdin.gets)
+        block.call(n)
+      rescue ::ArgumentError
+        $stdout.puts "could not parse #{type_name}"
+      end
+    end
+
+    def instance_by_pid(pid, &block)
+      inst = pool.instances.find { |inst| inst.pid == pid }
+      block.call(inst) unless inst.nil?
+    end
+
+    def restart_instance(inst)
+      message = [
+        "Restarting:",
+        format_command(inst),
+      ]
+
+      message << format_iteration(inst) if inst.job.iterations > 1
+
+      Jobrnr::Log.info message.join(" ")
+
+      inst.restart
+    end
+
+    def process_input
+      c = $stdin.getch(min: 0, time: @time_slice_interval)
+      return unless c
+      case KEYS[c.ord]
+      when :ctrl_c
+        sigint
+      when :ctrl_z
+        sigtstp
+      when :enter
+        # Let the user know we are not hung
+        $stdout.puts
+      when "?"
+        $stdout.puts <<~EOF
+          Inspect                 Job Control
+          a: List active jobs     i: Interrupt job
+          c: List completed jobs  t: Terminate job
+          l: List all jobs        k: Kill job
+          p: List passed jobs     r: Restart job
+          f: List failed jobs     j: Modify max-jobs
+          o: View output of job
+        EOF
+      when "a"
+        insts = pool
+          .instances
+          .sort_by { |inst| inst.duration }
+          .reverse
+        print_insts(insts, "active")
+      when "c"
+        insts = @completed
+          .sort_by { |inst| inst.end_time }
+        print_insts(insts, "completed")
+      when "f"
+        insts = @completed
+          .reject { |inst| inst.success? }
+          .sort_by { |inst| inst.end_time }
+        print_insts(insts, "failed")
+      when "j"
+        $stdout.write format("max-jobs (%d): ", slots.size)
+        parse_integer("integer") { |n| slots.resize(n) }
+      when "i"
+        $stdout.write "interrupt job pid: "
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigint) }
+      when "k"
+        $stdout.write "kill job (pid): "
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
+      when "l"
+        insts = [*pool.instances, *@completed]
+        print_insts(insts)
+      when "o"
+        $stdout.write "view output (pid): "
+        parse_integer("pid") do |pid|
+          instance_by_pid(pid) do |inst|
+            cmd = format("tail %s", inst.log)
+            $stdout.puts cmd
+            system(cmd)
+            $stdout.puts
+          end
+        end
+      when "p"
+        insts = @completed
+          .select { |inst| inst.success? }
+          .sort_by { |inst| inst.end_time }
+        print_insts(insts, "passed")
+      when "r"
+        $stdout.write "restart job pid: "
+        parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
+      when "t"
+        $stdout.write "terminate job pid: "
+        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigterm) }
+      end
+    end
+
+    def print_insts(insts, type = nil)
+      data = insts
+        .map do |inst|
+          [
+            inst.pid,
+            format_active_status(inst),
+            format("%ds", inst.duration.round),
+            inst.to_s,
+          ]
+        end.to_a
+
+      if data.empty?
+        $stdout.puts ["No", type, "jobs present"].flatten.join(" ")
+      else
+        $stdout.puts Jobrnr::Table.new(
+          header: %w(PID Status Duration Command),
+          rows: data,
+        ).render
+      end
+    end
+
+    def format_active_status(inst)
+      if inst.state == :dispatched
+        color.yellow("Running")
+      elsif inst.success?
+        color.green("Passed")
+      else
+        color.red("Failed")
+      end
+    end
+
+    def format_completion_status(inst)
       if inst.success?
         color.green("PASSED:")
       else
@@ -80,9 +231,13 @@ module Jobrnr
       format("iter:%d", inst.iteration) if inst.job.iterations > 1
     end
 
-    def trap_ctrl_c
-      trap "SIGINT" do
-        process_ctrl_c
+    def sigtstp
+      Process.kill("TSTP", $PID)
+    end
+
+    def trapint
+      trap "INT" do
+        sigint
       end
     end
 
@@ -91,7 +246,7 @@ module Jobrnr
     # On first Ctrl-C, stop submitting new jobs and allow current jobs to
     # finish. On second Ctrl-C, send SIGINT to jobs. On third Ctrl-C, send
     # SIGTERM to jobs. On fourth (and subsequent) Ctrl-C, send SIGKILL to jobs.
-    def process_ctrl_c
+    def sigint
       case ctrl_c
       when 0
         Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
