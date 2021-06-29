@@ -95,17 +95,17 @@ module Jobrnr
       case ctrl_c
       when 0
         Jobrnr::Log.info "Stopping job submission. Allowing active jobs to finish."
-        Jobrnr::Log.info "Ctrl-C again to interrupt (SIGINT) active jobs."
+        Jobrnr::Log.info "Ctrl-C again to interrupt active jobs with SIGINT."
       when 1
-        Jobrnr::Log.info "Interrupting (SIGINT) jobs."
-        Jobrnr::Log.info "Ctrl-C again to terminate (SIGTERM) active jobs."
+        Jobrnr::Log.info "Interrupting jobs with SIGINT."
+        Jobrnr::Log.info "Ctrl-C again to terminate active jobs with SIGTERM."
         pool.sigint
       when 2
-        Jobrnr::Log.info "Terminating (SIGTERM) jobs."
-        Jobrnr::Log.info "Ctrl-C again to kill (SIGKILL) active jobs."
+        Jobrnr::Log.info "Terminating jobs with SIGTERM."
+        Jobrnr::Log.info "Ctrl-C again to kill active jobs with SIGKILL."
         pool.sigterm
       else
-        Jobrnr::Log.info "Killing (SIGKILL) jobs."
+        Jobrnr::Log.info "Killing jobs with SIGKILL."
         pool.sigkill
       end
 
