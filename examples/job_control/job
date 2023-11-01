@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+def handle(sig)
+  Signal.trap(sig) do
+    if rand < 0.33
+      $stderr.puts format("Exiting on SIG%s", sig)
+      exit Signal.list[sig]
+    else
+      $stderr.puts format("Ignoring SIG%s", sig)
+    end
+  end
+end
+
+def main
+  handle("INT")
+  handle("TERM")
+
+  seconds = Random.rand(30..50)
+  seconds.times.each do |second|
+    $stdout.puts format("%d s", second)
+    $stdout.flush
+    sleep 1
+  end
+end
+
+main

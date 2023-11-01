@@ -1,0 +1,9 @@
+= Job Control Example
+
+This example is for demonstrating the interactive job control capabilities.
+
+Run the example:
+
+ jobrnr index.jr
+
+Then press the `?` key to display the job control menu.

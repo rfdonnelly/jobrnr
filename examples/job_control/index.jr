@@ -1,0 +1,10 @@
+ENV['PATH'] = [__dir__, ENV['PATH']].join(':')
+
+job :time do
+  execute do
+    format("job %02d", Random.rand(5..50))
+  end
+  repeat 100
+end
+
+# vim: ft=ruby
