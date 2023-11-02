@@ -10,9 +10,15 @@ module Jobrnr
       data = [@header, *@rows]
       data.map! { |row| row.map! { |cell| cell.to_s } }
       widths = calculate_widths(data)
-      fmtstrs = widths.map { |width| "%-#{width}s" }
-      fmtstr = fmtstrs.join(" ")
-      data.map { |row| format(fmtstr, *row) }.join("\n")
+      # NOTE: Previously used the Ruby %-<width>s string format specifier but
+      # it does not handle colors well so we roll our own formatting here.
+      data.map do |row|
+        row.zip(widths).map do |cell, width|
+          pad_width = width - @pastel.strip(cell).size
+          padding = " " * pad_width
+          cell + padding
+        end.join(" ")
+      end.join("\n")
     end
 
     def calculate_widths(data)
