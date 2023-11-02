@@ -30,7 +30,8 @@ module Jobrnr
       @pool = pool
       @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
-      @completed = []
+      @passed = []
+      @failed = []
 
       trapint
 
@@ -50,7 +51,12 @@ module Jobrnr
     end
 
     def post_instance(inst)
-      @completed << inst
+      case inst.success?
+      when true
+        @passed << inst
+      when false
+        @failed << inst
+      end
 
       message = [
         format_completion_status(inst),
@@ -146,12 +152,12 @@ module Jobrnr
           .reverse
         print_insts(insts, "active")
       when "c"
-        insts = @completed
+        insts = @passed
+          .chain(@failed)
           .sort_by { |inst| inst.end_time }
         print_insts(insts, "completed")
       when "f"
-        insts = @completed
-          .reject { |inst| inst.success? }
+        insts = @failed
           .sort_by { |inst| inst.end_time }
         print_insts(insts, "failed")
       when "j"
@@ -164,7 +170,7 @@ module Jobrnr
         $stdout.write "kill (SIGKILL) job (slot): "
         parse_integer("slot") { |slot| instance_by_slot(slot, &:sigkill) }
       when "l"
-        insts = [*pool.instances, *@completed]
+        insts = [*@failed, *pool.instances, *@passed]
         print_insts(insts)
       when "o"
         $stdout.write "view output (slot): "
@@ -177,8 +183,7 @@ module Jobrnr
           end
         end
       when "p"
-        insts = @completed
-          .select { |inst| inst.success? }
+        insts = @passed
           .sort_by { |inst| inst.end_time }
         print_insts(insts, "passed")
       when "r"
