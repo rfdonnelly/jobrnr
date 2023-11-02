@@ -122,9 +122,9 @@ module Jobrnr
       when "?"
         $stdout.puts <<~EOF
           Inspect                 Job Control
-          a: List active jobs     i: Interrupt job
-          c: List completed jobs  t: Terminate job
-          l: List all jobs        k: Kill job
+          a: List active jobs     i: Interrupt (SIGINT) job
+          c: List completed jobs  t: Terminate (SIGTERM) job
+          l: List all jobs        k: Kill (SIGKILL) job
           p: List passed jobs     r: Restart job
           f: List failed jobs     j: Modify max-jobs
           o: View output of job
@@ -148,10 +148,10 @@ module Jobrnr
         $stdout.write format("max-jobs (%d): ", slots.size)
         parse_integer("integer") { |n| slots.resize(n) }
       when "i"
-        $stdout.write "interrupt job pid: "
+        $stdout.write "interrupt (SIGINT) job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigint) }
       when "k"
-        $stdout.write "kill job (pid): "
+        $stdout.write "kill (SIGKILL) job (pid): "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
       when "l"
         insts = [*pool.instances, *@completed]
@@ -175,7 +175,7 @@ module Jobrnr
         $stdout.write "restart job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
       when "t"
-        $stdout.write "terminate job pid: "
+        $stdout.write "terminate (SIGTERM) job pid: "
         parse_integer("pid") { |pid| instance_by_pid(pid, &:sigterm) }
       end
     end
