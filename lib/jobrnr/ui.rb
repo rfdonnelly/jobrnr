@@ -9,6 +9,7 @@ module Jobrnr
 
     attr_reader :color
     attr_reader :ctrl_c
+    attr_reader :options
     attr_reader :pool
     attr_reader :slots
 
@@ -22,9 +23,10 @@ module Jobrnr
       26 => :ctrl_z,
     })
 
-    def initialize(pool:, slots:)
+    def initialize(options:, pool:, slots:)
       @color = Pastel.new(enabled: $stdout.tty?)
       @ctrl_c = 0
+      @options = options
       @pool = pool
       @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
@@ -41,6 +43,7 @@ module Jobrnr
         format_command(inst),
       ]
 
+      message << format_slot_with_label(inst)
       message << format_iteration(inst) if inst.job.iterations > 1
 
       Jobrnr::Log.info message.join(" ")
@@ -54,6 +57,7 @@ module Jobrnr
         format_command(inst),
       ]
 
+      message << format_slot_with_label(inst)
       message << format_iteration(inst) if inst.job.iterations > 1
 
       message << format("in %#.2fs", inst.duration)
@@ -101,6 +105,7 @@ module Jobrnr
         format_command(inst),
       ]
 
+      message << format_slot_with_label(inst)
       message << format_iteration(inst) if inst.job.iterations > 1
 
       Jobrnr::Log.info message.join(" ")
@@ -184,6 +189,7 @@ module Jobrnr
       data = insts
         .map do |inst|
           [
+            format_slot(inst),
             inst.pid,
             format_active_status(inst),
             format("%ds", inst.duration.round),
@@ -195,7 +201,7 @@ module Jobrnr
         $stdout.puts ["No", type, "jobs present"].flatten.join(" ")
       else
         $stdout.puts Jobrnr::Table.new(
-          header: %w(PID Status Duration Command),
+          header: %w(Slot PID Status Duration Command),
           rows: data,
         ).render
       end
@@ -225,6 +231,18 @@ module Jobrnr
         command: inst.to_s,
         log: File.basename(inst.log),
       )
+    end
+
+    def format_slot(inst)
+      if options.recycle && inst.state == :finished && inst.success?
+        "♲"
+      else
+        format("%d", inst.slot)
+      end
+    end
+
+    def format_slot_with_label(inst)
+      format("slot:%s", format_slot(inst))
     end
 
     def format_iteration(inst)
