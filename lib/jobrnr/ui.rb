@@ -137,13 +137,19 @@ module Jobrnr
         $stdout.puts
       when "?"
         $stdout.puts <<~EOF
-          Inspect                 Job Control
+          INSPECT                 JOB CONTROL
           a: List active jobs     i: Interrupt (SIGINT) job
           c: List completed jobs  t: Terminate (SIGTERM) job
           l: List all jobs        k: Kill (SIGKILL) job
           p: List passed jobs     r: Restart job
           f: List failed jobs     j: Modify max-jobs
           o: View output of job
+
+          QUIT
+          Ctrl+c (1st): Stop job submission, allow active jobs to finish
+          Ctrl+c (2nd): Send SIGINT to active jobs
+          Ctrl+c (3rd): Send SIGTERM to active jobs
+          Ctrl+c (4th): Send SIGKILL to active jobs
         EOF
       when "a"
         insts = pool
