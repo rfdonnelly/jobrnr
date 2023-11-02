@@ -95,9 +95,13 @@ module Jobrnr
       end
     end
 
-    def instance_by_pid(pid, &block)
-      inst = pool.instances.find { |inst| inst.pid == pid }
-      block.call(inst) unless inst.nil?
+    def instance_by_slot(slot, &block)
+      inst = pool.instances.find { |inst| inst.slot == slot }
+      if inst.nil?
+        $stderr.puts "invalid slot"
+      else
+        block.call(inst)
+      end
     end
 
     def restart_instance(inst)
@@ -154,18 +158,18 @@ module Jobrnr
         $stdout.write format("max-jobs (%d): ", slots.size)
         parse_integer("integer") { |n| slots.resize(n) }
       when "i"
-        $stdout.write "interrupt (SIGINT) job pid: "
-        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigint) }
+        $stdout.write "interrupt (SIGINT) job (slot): "
+        parse_integer("slot") { |slot| instance_by_slot(slot, &:sigint) }
       when "k"
-        $stdout.write "kill (SIGKILL) job (pid): "
-        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigkill) }
+        $stdout.write "kill (SIGKILL) job (slot): "
+        parse_integer("slot") { |slot| instance_by_slot(slot, &:sigkill) }
       when "l"
         insts = [*pool.instances, *@completed]
         print_insts(insts)
       when "o"
-        $stdout.write "view output (pid): "
-        parse_integer("pid") do |pid|
-          instance_by_pid(pid) do |inst|
+        $stdout.write "view output (slot): "
+        parse_integer("slot") do |slot|
+          instance_by_slot(slot) do |inst|
             cmd = format("tail %s", inst.log)
             $stdout.puts cmd
             system(cmd)
@@ -178,11 +182,11 @@ module Jobrnr
           .sort_by { |inst| inst.end_time }
         print_insts(insts, "passed")
       when "r"
-        $stdout.write "restart job pid: "
-        parse_integer("pid") { |pid| instance_by_pid(pid) { |inst| restart_instance(inst) } }
+        $stdout.write "restart job (slot): "
+        parse_integer("slot") { |slot| instance_by_slot(slot) { |inst| restart_instance(inst) } }
       when "t"
-        $stdout.write "terminate (SIGTERM) job pid: "
-        parse_integer("pid") { |pid| instance_by_pid(pid, &:sigterm) }
+        $stdout.write "terminate (SIGTERM) job (slot): "
+        parse_integer("slot") { |slot| instance_by_slot(slot, &:sigterm) }
       end
     end
 
@@ -191,7 +195,6 @@ module Jobrnr
         .map do |inst|
           [
             format_slot(inst),
-            inst.pid,
             format_active_status(inst),
             format("%ds", inst.duration.round),
             inst.to_s,
@@ -202,7 +205,7 @@ module Jobrnr
         $stdout.puts ["No", type, "jobs present"].flatten.join(" ")
       else
         $stdout.puts Jobrnr::Table.new(
-          header: %w(Slot PID Status Duration Command),
+          header: %w(Slot Status Duration Command),
           rows: data,
         ).render
       end
