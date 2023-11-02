@@ -59,6 +59,7 @@ module Jobrnr
 
       message << format_slot_with_label(inst)
       message << format_iteration(inst) if inst.job.iterations > 1
+      message << format_exitcode(inst)
 
       message << format("in %#.2fs", inst.duration)
 
@@ -247,6 +248,10 @@ module Jobrnr
 
     def format_iteration(inst)
       format("iter:%d", inst.iteration) if inst.job.iterations > 1
+    end
+
+    def format_exitcode(inst)
+      format("exitcode:%s", inst.exitcode)
     end
 
     def sigtstp

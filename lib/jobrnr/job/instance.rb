@@ -27,6 +27,7 @@ module Jobrnr
         @iteration = job.state.num_scheduled
         @pid = nil
         @exit_status = nil
+        @exit_code = nil
         @state = :pending
         @execute = true
 
@@ -62,6 +63,7 @@ module Jobrnr
         end
 
         @exit_status = status.exited? && status.success?
+        @exit_code = status.exitstatus
         @state = :finished
         @end_time = Time.now
 
@@ -96,6 +98,14 @@ module Jobrnr
 
       def success?
         @exit_status
+      end
+
+      def exitcode
+        if @exit_code.nil?
+          "n/a"
+        else
+          @exit_code.to_s
+        end
       end
 
       def to_s
