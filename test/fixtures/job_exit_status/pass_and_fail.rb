@@ -13,3 +13,7 @@ end
 job :fail_42 do
   execute "job 42"
 end
+
+job :command_not_found do
+  execute "command_not_found arg"
+end

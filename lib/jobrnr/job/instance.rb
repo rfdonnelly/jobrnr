@@ -58,12 +58,18 @@ module Jobrnr
           # Since we are using spawn(3), we don't get a subshell and the
           # shell's handling of args so we need to do this using Shellwords.
           command, *argv = Shellwords.split(@command)
-          @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
-          @pid, status = Process.waitpid2(pid)
+          begin
+            @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
+          rescue StandardError => e
+            File.write(log, format("ERROR: failed to spawn command '%s' for job '%s': %s", @command, job.id, e.to_s))
+            @exit_status = false
+          else
+            @pid, status = Process.waitpid2(pid)
+            @exit_status = status.exited? && status.success?
+            @exit_code = status.exitstatus
+          end
         end
 
-        @exit_status = status.exited? && status.success?
-        @exit_code = status.exitstatus
         @state = :finished
         @end_time = Time.now
 
