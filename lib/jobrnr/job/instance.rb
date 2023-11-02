@@ -2,6 +2,8 @@
 
 module Jobrnr
   module Job
+    require "shellwords"
+
     # An instance of a job definition.
     #
     # Executes the job.
@@ -42,9 +44,20 @@ module Jobrnr
           @execute = false
           @start_time = Time.now
           @state = :dispatched
+
           # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
-          # affecting the command
-          @pid = spawn(@command, %i[out err] => log, :pgroup => true)
+          # affecting the command.
+          # Use spawn(3) instead of spawn(1) to prevent an intermediate
+          # subshell (i.e. sh -c command).  An intermediate subshell interferes
+          # with passing signals to the child process.
+          # Use spawn(3) instead of spawn(2) because sometimes we have
+          # arguments and sometimes we don't.  When no args, we need to use
+          # spawn(3) otherwise spawn(1) will be used.  In other words, there
+          # is no way spawn(2) w/o args.
+          # Since we are using spawn(3), we don't get a subshell and the
+          # shell's handling of args so we need to do this using Shellwords.
+          command, *argv = Shellwords.split(@command)
+          @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
           @pid, status = Process.waitpid2(pid)
         end
 
