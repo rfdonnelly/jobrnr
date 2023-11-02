@@ -91,7 +91,7 @@ module Jobrnr
         n = Integer($stdin.gets)
         block.call(n)
       rescue ::ArgumentError
-        $stdout.puts "could not parse #{type_name}"
+        $stderr.puts "could not parse #{type_name}"
       end
     end
 
