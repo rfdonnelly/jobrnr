@@ -208,7 +208,7 @@ module Jobrnr
       data = insts
         .map do |inst|
           [
-            format_slot(inst),
+            format_slot(inst).capitalize,
             format_active_status(inst),
             format("%ds", inst.duration.round),
             inst.to_s,
@@ -253,7 +253,7 @@ module Jobrnr
 
     def format_slot(inst)
       if options.recycle && inst.state == :finished && inst.success?
-        "♲"
+        "recycled"
       else
         format("%d", inst.slot)
       end
