@@ -10,15 +10,15 @@ module Jobrnr
 
       def execute(command = nil, &block)
         if command.nil? && block.nil?
-          raise Jobrnr::TypeError, "'execute' expects a String or block" \
-            " @ #{caller_source}"
+          raise Jobrnr::TypeError, "'execute' expects a String or block " \
+                                   "@ #{caller_source}"
         elsif !command.nil? && !block.nil?
-          raise Jobrnr::TypeError, "'execute' expects a String or block" \
-            " not both @ #{caller_source}"
+          raise Jobrnr::TypeError, "'execute' expects a String or block " \
+                                   "not both @ #{caller_source}"
         elsif !command.nil? && !command.is_a?(String)
-          raise Jobrnr::TypeError, "'execute' expects a String or block" \
-            " but was given value of '#{command}' of type" \
-            " '#{command.class.name}' @ #{caller_source}"
+          raise Jobrnr::TypeError, "'execute' expects a String or block " \
+                                   "but was given value of '#{command}' of type " \
+                                   "'#{command.class.name}' @ #{caller_source}"
         end
 
         @obj.command = command.nil? ? block : command
@@ -26,9 +26,9 @@ module Jobrnr
 
       def repeat(times)
         if !times.is_a?(Integer) || times.negative?
-          raise Jobrnr::TypeError, "'repeat' expects a positive Integer" \
-            " but was given value of '#{times}' of type" \
-            " '#{times.class.name}' @ #{caller_source}"
+          raise Jobrnr::TypeError, "'repeat' expects a positive Integer " \
+                                   "but was given value of '#{times}' of type " \
+                                   "'#{times.class.name}' @ #{caller_source}"
         end
 
         @obj.iterations = times
@@ -41,8 +41,8 @@ module Jobrnr
       def build
         if @obj.command.nil?
           raise Jobrnr::ArgumentError,
-            "job '#{@obj.id}' is missing required 'execute' command" \
-            " @ #{caller_source}"
+                "job '#{@obj.id}' is missing required 'execute' command " \
+                "@ #{caller_source}"
         end
 
         @obj

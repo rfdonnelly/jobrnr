@@ -61,12 +61,15 @@ module Jobrnr
           begin
             @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
           rescue StandardError => e
-            File.write(log, format(
-              "ERROR: failed to spawn command '%<command>s' for job '%<job>s': %<cause>s",
-              command: @command,
-              job: job.id,
-              cause: e.to_s,
-            ))
+            File.write(
+              log,
+              format(
+                "ERROR: failed to spawn command '%<command>s' for job '%<job>s': %<cause>s",
+                command: @command,
+                job: job.id,
+                cause: e.to_s,
+              ),
+            )
             @exit_status = false
           else
             @pid, status = Process.waitpid2(pid)

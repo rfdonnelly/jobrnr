@@ -72,8 +72,8 @@ module Jobrnr
           options.output_directory = arg
         end
         op.on("-f", "--max-failures <failures>",
-              "Maximum number of failures before disabling execution of new" \
-              " jobs",
+              "Maximum number of failures before disabling execution of new " \
+              "jobs",
               Integer) do |arg|
           options.max_failures = arg
         end
