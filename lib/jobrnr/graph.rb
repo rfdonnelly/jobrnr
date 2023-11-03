@@ -30,7 +30,7 @@ module Jobrnr
     end
 
     def roots
-      jobs.select { |j| j.predecessors.size.zero? }
+      jobs.select { |j| j.predecessors.empty? }
     end
 
     # Generates GraphViz dot format

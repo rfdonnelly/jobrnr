@@ -32,7 +32,7 @@ module Jobrnr
     # param options [Struct] the options struct
     # param plus_options [Struct] the plus options struct
     def self.load(filename:, graph:, baseclass:, options:, plus_options:)
-      code = IO.read(filename)
+      code = File.read(filename)
       self.eval(
         code: code,
         filename: filename,
