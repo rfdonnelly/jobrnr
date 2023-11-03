@@ -1,7 +1,7 @@
 = Jobrnr
 
-[link=https://github.com/rfdonnelly/jobrnr/actions/workflows/ruby.yml]
-image::https://github.com/rfdonnelly/jobrnr/actions/workflows/ruby.yml/badge.svg?branch=master[Build Status]
+[link=https://github.com/rfdonnelly/jobrnr/actions/workflows/ci.yml]
+image::https://github.com/rfdonnelly/jobrnr/actions/workflows/ci.yml/badge.svg?branch=master[Build Status]
 
 Jobrnr runs jobs.
 Jobrnr is designed for use as a test runner for ASIC/FPGA development but it can run any command.
