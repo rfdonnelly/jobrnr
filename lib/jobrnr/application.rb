@@ -63,7 +63,9 @@ module Jobrnr
       )
       pool = Jobrnr::Job::Pool.new
       ui = Jobrnr::UI.new(
-        pool: pool
+        options: options,
+        pool: pool,
+        slots: slots,
       )
       Jobrnr::Job::Dispatch.new(
         options: options,
