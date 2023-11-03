@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: jobrnr
 .\"    Author: Rob Donnelly
-.\" Generator: Asciidoctor 2.0.15
-.\"      Date: 2021-05-26
+.\" Generator: Asciidoctor 2.0.20
+.\"      Date: 2023-11-03
 .\"    Manual: Jobrnr Manual
-.\"    Source: Jobrnr v1.1.0
+.\"    Source: Jobrnr v2.0.0-beta
 .\"  Language: English
 .\"
-.TH "JOBRNR" "5" "2021-05-26" "Jobrnr v1.1.0" "Jobrnr Manual"
+.TH "JOBRNR" "5" "2023-11-03" "Jobrnr v2.0.0\-beta" "Jobrnr Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -100,7 +100,7 @@ Path to output directory.
 Relative paths are relative to \fBPWD\fP.
 Environment variables are expanded.
 This value will override any \fB\-\-output\-directory\fP option \fIbefore\fP the job description file on the command\-line.
-This value can be overriden by any \fB\-\-output\-directory\fP option \fIafter\fP the job description file on the command\-line.
+This value will be overriden by any \fB\-\-output\-directory\fP option \fIafter\fP the job description file on the command\-line.
 .RE
 .RE
 .SH "EXAMPLES"
@@ -170,7 +170,7 @@ The command string is interpolated at job execution time so each repitition will
 .nf
 .fam C
 job :delayed_evaluation do
-  execute \(aqsleep #{rand(10)}\(aq
+  execute \*(Aqsleep #{rand(10)}\*(Aq
   repeat 5
 end
 .fam
@@ -199,23 +199,23 @@ The compile job is a prerequisite of the run job.
 .nf
 .fam C
 job :compile do
-  execute \(aqmake compile\(aq
+  execute \*(Aqmake compile\*(Aq
 end
 
 job :run, :compile do
-  execute \(aqmake run\(aq
+  execute \*(Aqmake run\*(Aq
 end
 .fam
 .fi
 .if n .RE
 .SS "Import"
 .sp
-Import jobs from \(aqb.jr\(aq with prefix \(aqa\(aq.  If \(aqb.jr\(aq has job \(aqc\(aq, it will be imported as \(aqa_c\(aq.
+Import jobs from \*(Aqb.jr\*(Aq with prefix \*(Aqa\*(Aq.  If \*(Aqb.jr\*(Aq has job \*(Aqc\*(Aq, it will be imported as \*(Aqa_c\*(Aq.
 .sp
 .if n .RS 4
 .nf
 .fam C
-import \(aqa\(aq, \(aqb.jr\(aq
+import \*(Aqa\*(Aq, \*(Aqb.jr\*(Aq
 .fam
 .fi
 .if n .RE
@@ -223,15 +223,15 @@ import \(aqa\(aq, \(aqb.jr\(aq
 .sp
 Imported jobs can be referenced in the form of <import\-prefix>_<job\-id>.
 .sp
-This example assumes \(aqimports.jr\(aq contains a \(aqcompile\(aq job.
+This example assumes \*(Aqimports.jr\*(Aq contains a \*(Aqcompile\*(Aq job.
 .sp
 .if n .RS 4
 .nf
 .fam C
-import \(aqimport\(aq, \(aqimports.jr\(aq
+import \*(Aqimport\*(Aq, \*(Aqimports.jr\*(Aq
 
 job :run, :import_compile do
-  execute \(aqmake run\(aq
+  execute \*(Aqmake run\*(Aq
 end
 .fam
 .fi
@@ -244,7 +244,7 @@ Place output logs in the $RESULTS/jobs directory.
 .nf
 .fam C
 job :example do
-  execute \(aqsleep 10\(aq
+  execute \*(Aqsleep 10\*(Aq
 end
 
 jobrnr_options.output_directory = "$RESULTS/jobs"

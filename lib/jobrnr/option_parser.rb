@@ -32,6 +32,7 @@ module Jobrnr
       Struct.new(
         :argv,
         :dot,
+        :dry_run,
         :max_failures,
         :max_jobs,
         :output_directory,
@@ -43,6 +44,7 @@ module Jobrnr
 
     def default_options(options)
       options.dot = false
+      options.dry_run = false
       options.max_failures = 0
       options.max_jobs = 8
       options.output_directory = Dir.pwd
@@ -90,6 +92,9 @@ module Jobrnr
         op.separator("DEBUG OPTIONS")
         op.on("--dot", "Display job graph in GraphViz DOT format and exit") do
           options.dot = true
+        end
+        op.on("--dry-run", "Don't execute any jobs") do
+          options.dry_run = true
         end
         op.separator("")
 

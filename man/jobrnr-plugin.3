@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: jobrnr-plugin
 .\"    Author: Rob Donnelly
-.\" Generator: Asciidoctor 2.0.15
-.\"      Date: 2021-05-02
+.\" Generator: Asciidoctor 2.0.20
+.\"      Date: 2023-11-03
 .\"    Manual: Jobrnr Manual
-.\"    Source: Jobrnr v1.1.0
+.\"    Source: Jobrnr v2.0.0-beta
 .\"  Language: English
 .\"
-.TH "JOBRNR\-PLUGIN" "3" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.TH "JOBRNR\-PLUGIN" "3" "2023-11-03" "Jobrnr v2.0.0\-beta" "Jobrnr Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -478,8 +478,8 @@ module Jobrnr::Plugin
     end
 
     def post_interval(message)
-      path = File.join(message.options.output_directory, \(aqstatus\(aq)
-      File.open(path, \(aqw\(aq) do |file|
+      path = File.join(message.options.output_directory, \*(Aqstatus\*(Aq)
+      File.open(path, \*(Aqw\*(Aq) do |file|
         file.write "#{message.stats.to_s}\(rsn"
 
         unless @failures.empty?
@@ -503,7 +503,7 @@ Incrementally \f(CRtar\fP results then \f(CRgzip\fP on \f(CRpost_application\fP.
 module Jobrnr::Plugin
   class ResultAccumulator
     def post_instance(message)
-      @archive_path ||= File.join(message.options.output_directory, \(aqresults.tar\(aq)
+      @archive_path ||= File.join(message.options.output_directory, \*(Aqresults.tar\*(Aq)
       system("tar \-\-append \-\-file #{@archive_path} #{message.instance.log}")
     end
 

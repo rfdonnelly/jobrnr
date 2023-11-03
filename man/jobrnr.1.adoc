@@ -1,6 +1,6 @@
 = jobrnr(1)
 Rob Donnelly
-:version: v1.1.0
+:version: v2.0.0-beta
 :doctype: manpage
 :manmanual: Jobrnr Manual
 :mansource: Jobrnr {version}
@@ -62,6 +62,11 @@ The *--no-recycle* option changes the default to prevent recycling of job slots 
 
 *--dot*::
 Display the job graph to `STDOUT` in Graphviz {dot}[DOT] format and exit.
+
+*--dry-run*::
+Don't execute any jobs.
+Only print what would be executed.
+Set *--max-jobs* to a larger value to make this faster.
 
 *-v, --verbose*::
 Enable debug output.

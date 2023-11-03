@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: jobrnr
 .\"    Author: Rob Donnelly
-.\" Generator: Asciidoctor 2.0.15
-.\"      Date: 2021-05-02
+.\" Generator: Asciidoctor 2.0.20
+.\"      Date: 2023-11-03
 .\"    Manual: Jobrnr Manual
-.\"    Source: Jobrnr v1.1.0
+.\"    Source: Jobrnr v2.0.0-beta
 .\"  Language: English
 .\"
-.TH "JOBRNR" "1" "2021-05-02" "Jobrnr v1.1.0" "Jobrnr Manual"
+.TH "JOBRNR" "1" "2023-11-03" "Jobrnr v2.0.0\-beta" "Jobrnr Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -134,6 +134,13 @@ The \fB\-\-no\-recycle\fP option changes the default to prevent recycling of job
 Display the job graph to \f(CRSTDOUT\fP in Graphviz \c
 .URL "http://www.graphviz.org/content/dot\-language" "DOT" ""
 format and exit.
+.RE
+.sp
+\fB\-\-dry\-run\fP
+.RS 4
+Don\(cqt execute any jobs.
+Only print what would be executed.
+Set \fB\-\-max\-jobs\fP to a larger value to make this faster.
 .RE
 .sp
 \fB\-v, \-\-verbose\fP

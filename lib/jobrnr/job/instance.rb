@@ -37,44 +37,49 @@ module Jobrnr
         job.state.schedule
       end
 
-      def execute
+      def execute(dry_run:)
         status = nil
 
-        # Loop to enable restart feature
-        while @execute
-          @execute = false
+        if dry_run
           @start_time = Time.now
-          @state = :dispatched
+          @exit_status = true
+        else
+          # Loop to enable restart feature
+          while @execute
+            @execute = false
+            @start_time = Time.now
+            @state = :dispatched
 
-          # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
-          # affecting the command.
-          # Use spawn(3) instead of spawn(1) to prevent an intermediate
-          # subshell (i.e. sh -c command).  An intermediate subshell interferes
-          # with passing signals to the child process.
-          # Use spawn(3) instead of spawn(2) because sometimes we have
-          # arguments and sometimes we don't.  When no args, we need to use
-          # spawn(3) otherwise spawn(1) will be used.  In other words, there
-          # is no way spawn(2) w/o args.
-          # Since we are using spawn(3), we don't get a subshell and the
-          # shell's handling of args so we need to do this using Shellwords.
-          command, *argv = Shellwords.split(@command)
-          begin
-            @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
-          rescue StandardError => e
-            File.write(
-              log,
-              format(
-                "ERROR: failed to spawn command '%<command>s' for job '%<job>s': %<cause>s",
-                command: @command,
-                job: job.id,
-                cause: e.to_s,
-              ),
-            )
-            @exit_status = false
-          else
-            @pid, status = Process.waitpid2(pid)
-            @exit_status = status.exited? && status.success?
-            @exit_code = status.exitstatus
+            # Use spawn with :pgroup => true instead of system to prevent Ctrl+C
+            # affecting the command.
+            # Use spawn(3) instead of spawn(1) to prevent an intermediate
+            # subshell (i.e. sh -c command).  An intermediate subshell interferes
+            # with passing signals to the child process.
+            # Use spawn(3) instead of spawn(2) because sometimes we have
+            # arguments and sometimes we don't.  When no args, we need to use
+            # spawn(3) otherwise spawn(1) will be used.  In other words, there
+            # is no way spawn(2) w/o args.
+            # Since we are using spawn(3), we don't get a subshell and the
+            # shell's handling of args so we need to do this using Shellwords.
+            command, *argv = Shellwords.split(@command)
+            begin
+              @pid = spawn([command, command], *argv, %i[out err] => log, :pgroup => true)
+            rescue StandardError => e
+              File.write(
+                log,
+                format(
+                  "ERROR: failed to spawn command '%<command>s' for job '%<job>s': %<cause>s",
+                  command: @command,
+                  job: job.id,
+                  cause: e.to_s,
+                ),
+              )
+              @exit_status = false
+            else
+              @pid, status = Process.waitpid2(pid)
+              @exit_status = status.exited? && status.success?
+              @exit_code = status.exitstatus
+            end
           end
         end
 

@@ -1,6 +1,6 @@
 = jobrnr(5)
 Rob Donnelly
-:version: v1.1.0
+:version: v2.0.0-beta
 :doctype: manpage
 :manmanual: Jobrnr Manual
 :mansource: Jobrnr {version}
@@ -53,7 +53,7 @@ Path to output directory.
 Relative paths are relative to *PWD*.
 Environment variables are expanded.
 This value will override any *--output-directory* option _before_ the job description file on the command-line.
-This value can be overriden by any *--output-directory* option _after_ the job description file on the command-line.
+This value will be overriden by any *--output-directory* option _after_ the job description file on the command-line.
 
 == Examples
 

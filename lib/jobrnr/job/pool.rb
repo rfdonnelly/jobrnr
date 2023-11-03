@@ -9,8 +9,10 @@ module Jobrnr
       require "concurrent"
 
       attr_accessor :instances
+      attr_reader :options
 
-      def initialize
+      def initialize(options:)
+        @options = options
         self.futures = []
         self.instances = []
       end
@@ -72,7 +74,7 @@ module Jobrnr
       end
 
       def create_futures(instances)
-        instances.map { |instance| Concurrent::Promises.future { instance.execute } }
+        instances.map { |instance| Concurrent::Promises.future { instance.execute(dry_run: options.dry_run) } }
       end
     end
   end

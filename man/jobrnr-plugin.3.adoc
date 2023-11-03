@@ -1,6 +1,6 @@
 = jobrnr-plugin(3)
 Rob Donnelly
-:version: v1.1.0
+:version: v2.0.0-beta
 :doctype: manpage
 :manmanual: Jobrnr Manual
 :mansource: Jobrnr {version}

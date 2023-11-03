@@ -160,6 +160,8 @@ Fourth Ctrl-C sends SIGKILL to active jobs.
 * Added documentation for setting the output directory via the job description.
 * Added documentation for job command string handling including seed substitution.
 
+* Added `--dry-run` option
+
 === Fixed
 
 * Fixed typo of `--verbose` option

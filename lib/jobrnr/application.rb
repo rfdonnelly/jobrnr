@@ -59,7 +59,9 @@ module Jobrnr
       slots = Jobrnr::Job::Slots.new(
         size: options.max_jobs,
       )
-      pool = Jobrnr::Job::Pool.new
+      pool = Jobrnr::Job::Pool.new(
+        options: options,
+      )
       ui = Jobrnr::UI.new(
         options: options,
         pool: pool,
