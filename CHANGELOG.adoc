@@ -3,13 +3,16 @@
 :github: https://github.com/rfdonnelly/jobrnr
 :compare: {github}/compare
 :commits: {github}/commits
-:latest: v1.1.0
+:latest: v2.0.0-beta
 :ellipses: \...
 :unreleased: {compare}/{latest}{ellipses}master[Unreleased]
+:v2_0_0_beta: {compare}/v1.0.0{ellipses}v2.0.0-beta[v2.0.0-beta]
 :v1_1_0: {compare}/v1.0.0{ellipses}v1.1.0[v1.1.0]
 :v1_0_0: {commits}/v1.0.0[v1.0.0]
 
 == {unreleased}
+
+== {v2_0_0_beta}
 
 === Highlights
 
