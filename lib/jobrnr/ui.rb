@@ -15,7 +15,7 @@ module Jobrnr
 
     DEFAULT_TIME_SLICE_INTERVAL = 1
 
-    KEYS = Hash.new do |h, k|
+    KEYS = Hash.new do |_, k|
       k.chr
     end.merge({
       3 => :ctrl_c,
@@ -96,18 +96,16 @@ module Jobrnr
     end
 
     def parse_integer(type_name, &block)
-      begin
-        n = Integer($stdin.gets)
-        block.call(n)
-      rescue ::ArgumentError
-        $stderr.puts "could not parse #{type_name}"
-      end
+      n = Integer($stdin.gets)
+      block.call(n)
+    rescue ::ArgumentError
+      warn "could not parse #{type_name}"
     end
 
     def instance_by_slot(slot, &block)
       inst = @instances.find { |inst| inst.slot == slot }
       if inst.nil?
-        $stderr.puts "invalid slot"
+        warn "invalid slot"
       else
         block.call(inst)
       end
@@ -130,6 +128,7 @@ module Jobrnr
     def process_input
       c = $stdin.getch(min: 0, time: @time_slice_interval)
       return unless c
+
       case KEYS[c.ord]
       when :ctrl_c
         sigint
@@ -157,17 +156,17 @@ module Jobrnr
       when "a"
         insts = pool
           .instances
-          .sort_by { |inst| inst.duration }
+          .sort_by(&:start_time)
           .reverse
         print_insts(insts, "active")
       when "c"
         insts = @passed
           .chain(@failed)
-          .sort_by { |inst| inst.end_time }
+          .sort_by(&:end_time)
         print_insts(insts, "completed")
       when "f"
         insts = @failed
-          .sort_by { |inst| inst.end_time }
+          .sort_by(&:end_time)
         print_insts(insts, "failed")
       when "j"
         $stdout.write format("max-jobs (%d): ", slots.size)
@@ -193,7 +192,7 @@ module Jobrnr
         end
       when "p"
         insts = @passed
-          .sort_by { |inst| inst.end_time }
+          .sort_by(&:end_time)
         print_insts(insts, "passed")
       when "r"
         $stdout.write "restart job (slot): "
@@ -219,7 +218,7 @@ module Jobrnr
         $stdout.puts ["No", type, "jobs present"].flatten.join(" ")
       else
         $stdout.puts Jobrnr::Table.new(
-          header: %w(Slot Status Duration Command),
+          header: %w[Slot Status Duration Command],
           rows: data,
         ).render
       end

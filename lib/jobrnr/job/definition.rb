@@ -32,7 +32,7 @@ module Jobrnr
         if command.respond_to?(:call)
           command.call
         else
-          eval('"' + command + '"')
+          eval(format('"%s"', command))
         end
       end
 
