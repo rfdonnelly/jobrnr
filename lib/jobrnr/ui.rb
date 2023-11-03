@@ -30,6 +30,7 @@ module Jobrnr
       @pool = pool
       @slots = slots
       @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
+      @instances = []
       @passed = []
       @failed = []
 
@@ -39,6 +40,8 @@ module Jobrnr
     end
 
     def pre_instance(inst)
+      @instances << inst
+
       message = [
         "Running:",
         format_command(inst),
@@ -102,7 +105,7 @@ module Jobrnr
     end
 
     def instance_by_slot(slot, &block)
-      inst = pool.instances.find { |inst| inst.slot == slot }
+      inst = @instances.find { |inst| inst.slot == slot }
       if inst.nil?
         $stderr.puts "invalid slot"
       else
