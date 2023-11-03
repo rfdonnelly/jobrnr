@@ -4,11 +4,13 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "concurrent-ruby", require: "concurrent"
-gem "docile"
-gem "pastel"
+gem "concurrent-ruby", "~> 1", require: "concurrent"
+gem "docile", "~> 1"
+gem "pastel", "~> 0.8"
 
-gem "asciidoctor", group: "development"
-gem "minitest", group: "development"
-gem "rake", group: "development"
-gem "rubocop", group: "development"
+group :development do
+  gem "asciidoctor", "~> 2"
+  gem "minitest", "~> 5"
+  gem "rake", "~> 13"
+  gem "rubocop", "~> 1"
+end
