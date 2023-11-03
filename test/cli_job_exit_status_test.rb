@@ -50,6 +50,8 @@ describe "CLI Job Exit Status" do
     expect(err).must_equal ""
 
     command_not_found_output = File.read("pass_and_fail/2")
-    expect(command_not_found_output).must_equal("ERROR: failed to spawn command 'command_not_found arg' for job 'command_not_found': No such file or directory - command_not_found")
+    expect(command_not_found_output).must_equal("ERROR: failed to spawn command 'command_not_found arg' " \
+                                                "for job 'command_not_found': No such file or directory " \
+                                                "- command_not_found")
   end
 end
