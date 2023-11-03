@@ -43,7 +43,7 @@ describe "CLI Job Exit Status" do
       Jobrnr::Application.new(%w[test/fixtures/job_exit_status/pass_and_fail.rb -j1 -d pass_and_fail]).run
     end
 
-    expect(out).must_match(/PASSED: 'job 0' pass_and_fail00 slot:♲ exitcode:0/)
+    expect(out).must_match(/PASSED: 'job 0' pass_and_fail00 slot:recycled exitcode:0/)
     expect(out).must_match(/FAILED: 'job 1' pass_and_fail00 slot:0 exitcode:1/)
     expect(out).must_match(/FAILED: 'job 42' pass_and_fail01 slot:1 exitcode:42/)
     expect(out).must_match(/FAILED: 'command_not_found arg' pass_and_fail02 slot:2 exitcode:n\/a/)
