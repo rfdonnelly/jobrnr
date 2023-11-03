@@ -27,7 +27,8 @@ module Jobrnr
       widths = data.first.map { 0 }
 
       data.each do |row|
-        widths = row
+        widths =
+          row
           .map { |cell| @pastel.strip(cell).size }
           .zip(widths)
           .map(&:max)

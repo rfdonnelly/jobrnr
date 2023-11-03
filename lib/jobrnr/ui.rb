@@ -17,11 +17,13 @@ module Jobrnr
 
     KEYS = Hash.new do |_, k|
       k.chr
-    end.merge({
-      3 => :ctrl_c,
-      13 => :enter,
-      26 => :ctrl_z,
-    })
+    end.merge(
+      {
+        3 => :ctrl_c,
+        13 => :enter,
+        26 => :ctrl_z,
+      }
+    )
 
     def initialize(options:, pool:, slots:)
       @color = Pastel.new(enabled: $stdout.tty?)
@@ -154,18 +156,21 @@ module Jobrnr
           Ctrl+c (4th): Send SIGKILL to active jobs
         EOF
       when "a"
-        insts = pool
+        insts =
+          pool
           .instances
           .sort_by(&:start_time)
           .reverse
         print_insts(insts, "active")
       when "c"
-        insts = @passed
+        insts =
+          @passed
           .chain(@failed)
           .sort_by(&:end_time)
         print_insts(insts, "completed")
       when "f"
-        insts = @failed
+        insts =
+          @failed
           .sort_by(&:end_time)
         print_insts(insts, "failed")
       when "j"
@@ -191,7 +196,8 @@ module Jobrnr
           end
         end
       when "p"
-        insts = @passed
+        insts =
+          @passed
           .sort_by(&:end_time)
         print_insts(insts, "passed")
       when "r"
@@ -204,7 +210,8 @@ module Jobrnr
     end
 
     def print_insts(insts, type = nil)
-      data = insts
+      data =
+        insts
         .map do |inst|
           [
             format_slot(inst).capitalize,
