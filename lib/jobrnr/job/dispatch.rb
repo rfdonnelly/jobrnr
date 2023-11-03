@@ -151,7 +151,7 @@ module Jobrnr
       def log_filename(slot)
         File.join(
           options.output_directory,
-          format("%<dirname>s%<slot_id>02d", dirname: File.basename(options.output_directory), slot_id: slot)
+          slot.to_s
         )
       end
     end
