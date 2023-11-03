@@ -13,16 +13,14 @@ module Jobrnr
     end
 
     def run
-      begin
-        run_with_exceptions
-      rescue ::OptionParser::ParseError, Jobrnr::UsageError => e
-        Jobrnr::Log.error [e.message, "See `jobrnr --help`"].join("\n\n")
-      rescue Jobrnr::HelpException => e
-        puts e.message
-        exit 0
-      rescue Jobrnr::Error => e
-        Jobrnr::Log.error e.message
-      end
+      run_with_exceptions
+    rescue ::OptionParser::ParseError, Jobrnr::UsageError => e
+      Jobrnr::Log.error [e.message, "See `jobrnr --help`"].join("\n\n")
+    rescue Jobrnr::HelpException => e
+      puts e.message
+      exit 0
+    rescue Jobrnr::Error => e
+      Jobrnr::Log.error e.message
     end
 
     def run_with_exceptions

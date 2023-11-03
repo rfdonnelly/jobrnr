@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jobrnr
   class Table
     def initialize(header:, rows:)
@@ -8,7 +10,7 @@ module Jobrnr
 
     def render
       data = [@header, *@rows]
-      data.map! { |row| row.map! { |cell| cell.to_s } }
+      data.map! { |row| row.map!(&:to_s) }
       widths = calculate_widths(data)
       # NOTE: Previously used the Ruby %-<width>s string format specifier but
       # it does not handle colors well so we roll our own formatting here.
@@ -28,7 +30,7 @@ module Jobrnr
         widths = row
           .map { |cell| @pastel.strip(cell).size }
           .zip(widths)
-          .map { |pair| pair.max }
+          .map(&:max)
       end
 
       widths
