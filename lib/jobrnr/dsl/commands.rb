@@ -37,8 +37,8 @@ module Jobrnr
 
         unless pids_not_found.empty?
           raise Jobrnr::ArgumentError,
-            "job ':#{id}' references undefined predecessor job(s) " \
-            "#{pids_not_found.join(', ')} @ #{caller_source}"
+                "job ':#{id}' references undefined predecessor job(s) " \
+                "#{pids_not_found.join(', ')} @ #{caller_source}"
         end
 
         predecessors = pids.map { |pid| @graph[pid] }
@@ -54,8 +54,8 @@ module Jobrnr
       def import(prefix, filename, *plus_options)
         unless prefix.is_a?(String) && !prefix.strip.empty?
           raise Jobrnr::ArgumentError,
-            "import prefix argument must be a non-blank string " \
-            "@ #{caller_source}"
+                "import prefix argument must be a non-blank string " \
+                "@ #{caller_source}"
         end
 
         expanded_filename = Jobrnr::Util.expand_envars(filename)
@@ -70,8 +70,8 @@ module Jobrnr
 
         unless File.exist?(load_filename)
           raise Jobrnr::ArgumentError,
-            "file '#{filename}' not found " \
-            "@ #{caller_source}"
+                "file '#{filename}' not found " \
+                "@ #{caller_source}"
         end
 
         Jobrnr::DSL::Loader.instance.evaluate(
@@ -92,7 +92,7 @@ module Jobrnr
       end
 
       def importer_filename
-        caller(2)[0].split(/:/).first
+        caller(2)[0].split(":").first
       end
 
       def caller_source

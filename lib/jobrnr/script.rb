@@ -20,7 +20,7 @@ module Jobrnr
       begin
         obj.instance_eval(code, filename)
       rescue ::SyntaxError => e
-        raise Jobrnr::SyntaxError.new(e)
+        raise Jobrnr::SyntaxError, e
       end
 
       obj
@@ -32,7 +32,7 @@ module Jobrnr
     # param options [Struct] the options struct
     # param plus_options [Struct] the plus options struct
     def self.load(filename:, graph:, baseclass:, options:, plus_options:)
-      code = IO.read(filename)
+      code = File.read(filename)
       self.eval(
         code: code,
         filename: filename,

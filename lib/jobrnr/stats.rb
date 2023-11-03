@@ -39,8 +39,8 @@ module Jobrnr
     end
 
     def to_s
-      "Running:#{running} Queued:#{queued} Completed:#{completed}" \
-        " Passed:#{passed} Failed:#{failed}"
+      "Running:#{running} Queued:#{queued} Completed:#{completed} " \
+        "Passed:#{passed} Failed:#{failed}"
     end
   end
 end

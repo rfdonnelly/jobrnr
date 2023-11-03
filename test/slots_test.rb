@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 describe Jobrnr::Job::Slots do
@@ -53,7 +55,7 @@ describe Jobrnr::Job::Slots do
 
       it "returns slots in order of dealloc" do
         @size.times { @obj.allocate }
-        (0..@size-1).reverse_each { |slot| @obj.deallocate(slot, true) }
+        (0..@size - 1).reverse_each { |slot| @obj.deallocate(slot, true) }
         actual =
           @size
           .times
@@ -103,8 +105,8 @@ describe Jobrnr::Job::Slots do
 
         actual =
           2.times
-          .map { @obj.allocate }
-          .to_a
+           .map { @obj.allocate }
+           .to_a
         expect(actual).must_equal [2, 3]
       end
 
@@ -120,8 +122,8 @@ describe Jobrnr::Job::Slots do
 
         actual =
           6.times
-          .map { @obj.allocate }
-          .to_a
+           .map { @obj.allocate }
+           .to_a
         expect(actual).must_equal [2, 3, 4, 5, 0, 1]
       end
 
@@ -142,8 +144,8 @@ describe Jobrnr::Job::Slots do
 
         actual =
           6.times
-          .map { @obj.allocate }
-          .to_a
+           .map { @obj.allocate }
+           .to_a
         expect(actual).must_equal [2, 3, 4, 5, 6, 1]
       end
 

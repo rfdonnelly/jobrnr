@@ -89,7 +89,8 @@ describe "DSL command usage errors" do
             end
           end
         end
-        assert_match(/^'execute' expects a String or block but was given value of '5' of type '\w+' @ file:line$/, e.message)
+        assert_match(/^'execute' expects a String or block but was given value of '5' of type '\w+' @ file:line$/,
+                     e.message)
       end
     end
 
@@ -115,7 +116,8 @@ describe "DSL command usage errors" do
             end
           end
         end
-        assert_match(/'repeat' expects a positive Integer but was given value of '-1' of type '\w+' @ file:line$/, e.message)
+        assert_match(/'repeat' expects a positive Integer but was given value of '-1' of type '\w+' @ file:line$/,
+                     e.message)
       end
     end
   end

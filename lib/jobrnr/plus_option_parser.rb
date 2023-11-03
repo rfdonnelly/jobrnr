@@ -54,8 +54,8 @@ module Jobrnr
           false
         else
           raise Jobrnr::ArgumentError,
-            "Could not parse '#{value}' as Boolean " \
-            "type for the '+#{name}' option"
+                "Could not parse '#{value}' as Boolean " \
+                "type for the '+#{name}' option"
         end
       end
     end
@@ -65,7 +65,7 @@ module Jobrnr
       def parse_value(value)
         if value == :noarg
           raise Jobrnr::ArgumentError,
-            "No argument given for '+#{name}' option"
+                "No argument given for '+#{name}' option"
         end
 
         value
@@ -77,14 +77,14 @@ module Jobrnr
       def parse_value(value)
         if value == :noarg
           raise Jobrnr::ArgumentError,
-            "No argument given for '+#{name}' option"
+                "No argument given for '+#{name}' option"
         end
 
         begin
           Integer(value)
         rescue StandardError
           raise Jobrnr::ArgumentError, "Could not parse '#{value}' as " \
-            "Integer type for the '+#{name}' option"
+                                       "Integer type for the '+#{name}' option"
         end
       end
     end
@@ -191,11 +191,11 @@ module Jobrnr
 
       unless Jobrnr::Util.array_subset_of?(plus_options_hash.keys, option_definitions.keys)
         raise Jobrnr::ArgumentError,
-          format(
-            "The following options are not valid options: %<invalid_options>s\n\n%<help>s",
-            invalid_options: unsupported_options(plus_options_hash, option_definitions),
-            help: help(option_definitions)
-          )
+              format(
+                "The following options are not valid options: %<invalid_options>s\n\n%<help>s",
+                invalid_options: unsupported_options(plus_options_hash, option_definitions),
+                help: help(option_definitions)
+              )
       end
 
       plus_options_hash.each { |option_name, option_value| option_definitions[option_name].value = option_value }
@@ -272,7 +272,7 @@ module Jobrnr
       value_type = VALUE_OPTION_TYPE_MAP.keys.find { |value_type| spec[:default].is_a?(value_type) }
       if value_type.nil?
         raise Jobrnr::TypeError, "Could not infer type from default value of " \
-          "'#{spec[:default]}' for option '#{sym_to_s(id)}'"
+                                 "'#{spec[:default]}' for option '#{sym_to_s(id)}'"
       end
 
       option_type = VALUE_OPTION_TYPE_MAP[value_type]

@@ -3,10 +3,10 @@
 def handle(sig)
   Signal.trap(sig) do
     if rand < 0.33
-      $stderr.puts format("Exiting on SIG%s", sig)
+      warn format("Exiting on SIG%s", sig)
       exit Signal.list[sig]
     else
-      $stderr.puts format("Ignoring SIG%s", sig)
+      warn format("Ignoring SIG%s", sig)
     end
   end
 end

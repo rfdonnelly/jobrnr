@@ -3,12 +3,10 @@
 require "test_helper"
 
 describe "CLI Plus Options" do
-  def assert_io_matches(exp_out, exp_err)
+  def assert_io_matches(exp_out, exp_err, &block)
     out, err = capture_io do
       speedup do
-        Kernel.stub(:trap, nil) do
-          yield
-        end
+        Kernel.stub(:trap, nil, &block)
       end
     end
 
