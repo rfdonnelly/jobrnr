@@ -11,7 +11,117 @@
 
 == {unreleased}
 
+=== Highlights
+
+==== Graceful and Progressive Ctrl-C Handling
+
+Previously, Ctrl-C resulted in a stacktrace.
+
+[listing]
+----
+> jobrnr test.jr
+Running: 'sleep 10' slot:0 iter:0
+Running: 'sleep 10' slot:1 iter:1
+Running: 'sleep 10' slot:2 iter:2
+Running: 'sleep 10' slot:3 iter:3
+Running: 'sleep 10' slot:4 iter:4
+Running: 'sleep 10' slot:5 iter:5
+Running: 'sleep 10' slot:6 iter:6
+Running: 'sleep 10' slot:7 iter:7
+Running:8 Queued:92 Completed:0 Passed:0 Failed:0
+^C
+Traceback (most recent call last):
+        19: from $GEM_PATH/bin/bundle:23:in `<main>'
+        18: from $GEM_PATH/bin/bundle:23:in `load'
+        17: from $GEM_PATH/gems/bundler-2.2.5/exe/bundle:37:in `<top (required)>'
+        16: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/friendly_errors.rb:130:in `with_friendly_errors'
+        15: from $GEM_PATH/gems/bundler-2.2.5/exe/bundle:49:in `block in <top (required)>'
+        14: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli.rb:24:in `start'
+        13: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/vendor/thor/lib/thor/base.rb:485:in `start'
+        12: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli.rb:30:in `dispatch'
+        11: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/vendor/thor/lib/thor.rb:392:in `dispatch'
+        10: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/vendor/thor/lib/thor/invocation.rb:127:in `invoke_command'
+         9: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/vendor/thor/lib/thor/command.rb:27:in `run'
+         8: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli.rb:494:in `exec'
+         7: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli/exec.rb:28:in `run'
+         6: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli/exec.rb:63:in `kernel_load'
+         5: from $GEM_PATH/gems/bundler-2.2.5/lib/bundler/cli/exec.rb:63:in `load'
+         4: from bin/jobrnr:5:in `<top (required)>'
+         3: from lib/jobrnr/application.rb:11:in `run'
+         2: from lib/jobrnr/application.rb:48:in `run_with_exceptions'
+         1: from lib/jobrnr/job/dispatch.rb:88:in `run'
+lib/jobrnr/job/dispatch.rb:88:in `sleep': Interrupt
+----
+
+Now, Ctrl-C is handled gracefully and progressively.
+First Ctrl-C stops submission of new jobs and allows active jobs to complete.
+Second Ctrl-C sends Ctrl-C (SIGINT) to active jobs.
+Third Ctrl-C sends SIGTERM to active jobs.
+Fourth Ctrl-C sends SIGKILL to active jobs.
+
+[listing]
+----
+> jobrnr test.jr
+Press '?' for help.
+Running: 'sleep 10' slot:0 iter:0
+Running: 'sleep 10' slot:1 iter:1
+Running: 'sleep 10' slot:2 iter:2
+Running: 'sleep 10' slot:3 iter:3
+Running: 'sleep 10' slot:4 iter:4
+Running: 'sleep 10' slot:5 iter:5
+Running: 'sleep 10' slot:6 iter:6
+Running: 'sleep 10' slot:7 iter:7
+Running:8 Queued:92 Completed:0 Passed:0 Failed:0
+^C
+Stopping job submission. Allowing active jobs to finish.
+Ctrl-C again to interrupt active jobs with SIGINT.
+^C
+Interrupting jobs with SIGINT.
+Ctrl-C again to terminate active jobs with SIGTERM.
+^C
+Terminating jobs with SIGTERM.
+Ctrl-C again to kill active jobs with SIGKILL.
+FAILED: 'sleep 10' slot:0 iter:0 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:1 iter:1 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:2 iter:2 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:3 iter:3 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:4 iter:4 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:5 iter:5 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:6 iter:6 exitcode:n/a in 1.20s
+FAILED: 'sleep 10' slot:7 iter:7 exitcode:n/a in 1.20s
+Running:0 Queued:92 Completed:8 Passed:0 Failed:8
+----
+
+==== Interactivity
+
+Jobrnr now supports various interactive commands.
+There are various commands for inspecting jobs and controlling jobs.
+For example, jobs can be selectively terminated or restarted.
+
+==== Variable Max Jobs
+
+Previously, the number of max concurrent jobs could only be set via the `--max-jobs` option.
+This made it difficult to respond to resouce changes without killing all jobs and restarting with a different `--max-jobs` value.
+Now, max jobs can be changed at will via an interactive command.
+
+If max jobs is increased, more jobs will be immediately started.
+If max jobs is decreased, job submission will pause until enough active jobs complete and the number of active jobs falls below the number of max jobs.
+
+==== Override Output Directory
+
+Previously, if a script set the Jobrnr output directory option via `jobrnr_options.output_directory`, the output directory could not be overriden on the command line.
+Now, the output directory can be overridden on the command via the `--output-directory` option if it is _after_ the script path.
+
+For example,
+
+ jobrnr script.jr --output-directory some-path
+
 === Changed
+
+* Changed path to job log files
++
+Previously, log paths were in the form of `/some/output/dir/dirXX`.
+Now, log paths are in the form of `/some/output/dir/X`.
 
 * Changed handling of relative output directory paths.
 +
@@ -29,28 +139,31 @@ Previous behavior can be kept by making the following change:
 
 * Re-licensed under the more permissive MIT/Apache 2.0
 
+* Migrated from Travis CI to GitHub Actions
+
 === Added
 
 * Added graceful Ctrl-C handling
+
+* Added progressive Ctrl-C handling
 +
 First Ctrl-C stops submission of new jobs and allows active jobs to complete.
-Second Ctrl-C sends Ctrl-C (i.e. SIGINT) to active jobs.
+Second Ctrl-C sends Ctrl-C (SIGINT) to active jobs.
 Third Ctrl-C sends SIGTERM to active jobs.
 Fourth Ctrl-C sends SIGKILL to active jobs.
 
-* Added internal support for dynamic job scaling.
-+
-This effectively allows `--max-jobs` to be modified at runtime.
-However, the functionality has not yet been exposed to the user.
+* Added support for interactively modifying max jobs (`--max-jobs`) at runtime
 
-* Allow the `--output-directory` option to override the value set by the job description via `jobrnr_options.output_directory`.
+* Added ability for the `--output-directory` option to override the value set by the job description via `jobrnr_options.output_directory`
+* Added slot and exit code to job messages
 
 * Added documentation for setting the output directory via the job description.
 * Added documentation for job command string handling including seed substitution.
 
 === Fixed
 
-* Fixed missing `--version` option.
+* Fixed typo of `--verbose` option
+* Fixed missing `--version` option
 * Fixed coloring output when STDOUT is not a TTY
 
 === Removed
