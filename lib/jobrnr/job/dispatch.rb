@@ -58,7 +58,7 @@ module Jobrnr
       end
 
       def run
-        cummulative_completed_instances = []
+        cumulative_completed_instances = []
 
         enqueue(*graph.roots)
 
@@ -74,7 +74,7 @@ module Jobrnr
           end
 
           # process completed job instances
-          cummulative_completed_instances.push(*completed)
+          cumulative_completed_instances.push(*completed)
           completed.each do |job_instance|
             ui.post_instance(job_instance)
             stats.post_instance(job_instance)
@@ -104,7 +104,7 @@ module Jobrnr
         plugins.post_application(
           Jobrnr::PostApplicationMessage.new(
             status_code,
-            cummulative_completed_instances,
+            cumulative_completed_instances,
             stats,
             options
           )
