@@ -179,7 +179,7 @@ module Jobrnr
         $stdout.write "kill (SIGKILL) job (slot): "
         parse_integer("slot") { |slot| instance_by_slot(slot, &:sigkill) }
       when "l"
-        insts = [*@failed, *pool.instances, *@passed]
+        insts = [*@passed, *pool.instances, *@failed]
         print_insts(insts)
       when "o"
         $stdout.write "view output (slot): "
