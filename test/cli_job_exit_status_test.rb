@@ -9,13 +9,11 @@ describe "CLI Job Exit Status" do
     ENV.delete("NO_COLOR")
   end
 
-  def assert_io_matches(exp_out, exp_err)
+  def assert_io_matches(exp_out, exp_err, &block)
     out, err = capture_io do
       no_color do
         speedup do
-          Kernel.stub(:trap, nil) do
-            yield
-          end
+          Kernel.stub(:trap, nil, &block)
         end
       end
     end
@@ -46,7 +44,7 @@ describe "CLI Job Exit Status" do
     expect(out).must_match(/PASSED: 'job 0' slot:recycled exitcode:0/)
     expect(out).must_match(/FAILED: 'job 1' slot:0 exitcode:1/)
     expect(out).must_match(/FAILED: 'job 42' slot:1 exitcode:42/)
-    expect(out).must_match(/FAILED: 'command_not_found arg' slot:2 exitcode:n\/a/)
+    expect(out).must_match(%r{FAILED: 'command_not_found arg' slot:2 exitcode:n/a})
     expect(err).must_equal ""
 
     command_not_found_output = File.read("pass_and_fail/2")

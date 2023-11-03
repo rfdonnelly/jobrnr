@@ -73,7 +73,7 @@ module Jobrnr
     def classes_in_module(mod)
       mod
         .constants
-        .select { |c| Class === mod.const_get(c) }
+        .select { |c| mod.const_get(c).is_a?(Class) }
         .map { |c| mod.const_get(c) }
     end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ENV['PATH'] = [__dir__, ENV['PATH']].join(':')
+ENV["PATH"] = [__dir__, ENV.fetch("PATH", nil)].join(":")
 
 job :pass do
   execute "job 0"

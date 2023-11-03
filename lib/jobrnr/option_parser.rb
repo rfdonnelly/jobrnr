@@ -54,7 +54,7 @@ module Jobrnr
     def load_environment(options)
       options.max_failures = Integer(ENV["JOBRNR_MAX_FAILURES"]) if ENV.key?("JOBRNR_MAX_FAILURES")
       options.max_jobs = Integer(ENV["JOBRNR_MAX_JOBS"]) if ENV.key?("JOBRNR_MAX_JOBS")
-      options.plugin_paths = ENV["JOBRNR_PLUGIN_PATH"].split(/:/) if ENV.key?("JOBRNR_PLUGIN_PATH")
+      options.plugin_paths = ENV["JOBRNR_PLUGIN_PATH"].split(":") if ENV.key?("JOBRNR_PLUGIN_PATH")
       options.output_directory = ENV["JOBRNR_OUTPUT_DIRECTORY"] if ENV.key?("JOBRNR_OUTPUT_DIRECTORY")
     end
 
@@ -108,7 +108,7 @@ module Jobrnr
           exec "man #{man_path('jobrnr-plugin.3')}"
         end
         op.on("--version", "Display version") do
-          puts "Jobrnr version #{Jobrnr::version}"
+          puts "Jobrnr version #{Jobrnr.version}"
           exit
         end
       end

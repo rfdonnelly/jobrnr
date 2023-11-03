@@ -4,7 +4,6 @@ module Jobrnr
   # All errors raised by Jobrnr code shall be Jobrnr::Error or derived
   # from Jobrnr::Error
 
-  # rubocop: disable Layout/EmptyLineBetweenDefs
   class Error < StandardError; end
   class UsageError < Error; end
   class OptionsError < Error; end
@@ -14,5 +13,4 @@ module Jobrnr
   class SyntaxError < Error; end
 
   class HelpException < StandardError; end
-  # rubocop: enable Layout/EmptyLineBetweenDefs
 end

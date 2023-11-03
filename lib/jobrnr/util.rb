@@ -8,7 +8,7 @@ module Jobrnr
     # * Supports '${name}' and '$name' syntax
     # * Supports multiple environment variables in single string
     def self.expand_envars(path)
-      path.gsub(/\$\{?(\w+)\}?/) { ENV[Regexp.last_match.captures.first] }
+      path.gsub(/\$\{?(\w+)\}?/) { ENV.fetch(Regexp.last_match.captures.first, nil) }
     end
 
     # Makes from_file relative to to_file location.
@@ -36,7 +36,7 @@ module Jobrnr
     #   caller_source will return the file ane line number of the 'f1;'
     #   statement.
     def self.caller_source(additional_levels = 0)
-      caller[2 + additional_levels].split(/:/)[0..1].join(":")
+      caller[2 + additional_levels].split(":")[0..1].join(":")
     end
 
     # Strips indentation in heredocs.

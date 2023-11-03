@@ -92,7 +92,7 @@ module Jobrnr
       end
 
       def importer_filename
-        caller(2)[0].split(/:/).first
+        caller(2)[0].split(":").first
       end
 
       def caller_source

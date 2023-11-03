@@ -20,7 +20,7 @@ module Jobrnr
       begin
         obj.instance_eval(code, filename)
       rescue ::SyntaxError => e
-        raise Jobrnr::SyntaxError.new(e)
+        raise Jobrnr::SyntaxError, e
       end
 
       obj

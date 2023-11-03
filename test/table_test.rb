@@ -35,8 +35,8 @@ describe Jobrnr::Table do
       )
       expect(table.render).must_equal(<<~EOF.chomp)
         PID   Status  Duration Command#{'  '}
-        6050  #{color.yellow("Running")} 1s       echo true
-        45660 #{color.green("Passed")}  2s       echo true
+        6050  #{color.yellow('Running')} 1s       echo true
+        45660 #{color.green('Passed')}  2s       echo true
       EOF
     end
   end
