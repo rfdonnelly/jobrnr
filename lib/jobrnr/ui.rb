@@ -244,11 +244,7 @@ module Jobrnr
     end
 
     def format_command(inst)
-      format(
-        "'%<command>s' %<log>s",
-        command: inst.to_s,
-        log: File.basename(inst.log),
-      )
+      format("'%s'", inst.to_s)
     end
 
     def format_slot(inst)
