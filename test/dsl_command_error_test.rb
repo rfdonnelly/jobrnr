@@ -104,7 +104,7 @@ describe "DSL command usage errors" do
           end
         end
         assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
-          'repeat' expects a positive Integer but was given value of '5' of type 'String' @ file:line
+          'repeat' expects an Integer greater than zero but was given value of '5' of type 'String' @ file:line
         EOF
       end
 
@@ -116,7 +116,19 @@ describe "DSL command usage errors" do
             end
           end
         end
-        assert_match(/'repeat' expects a positive Integer but was given value of '-1' of type '\w+' @ file:line$/,
+        assert_match(/'repeat' expects an Integer greater than zero but was given value of '-1' of type '\w+' @ file:line$/,
+                     e.message)
+      end
+
+      it "requires a non-zero Integer" do
+        e = assert_raises(Jobrnr::TypeError) do
+          @obj.job :id do
+            stub :caller_source, "file:line" do
+              repeat(0)
+            end
+          end
+        end
+        assert_match(/'repeat' expects an Integer greater than zero but was given value of '0' of type '\w+' @ file:line$/,
                      e.message)
       end
     end
