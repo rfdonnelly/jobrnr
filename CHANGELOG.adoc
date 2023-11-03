@@ -12,6 +12,8 @@
 
 == {unreleased}
 
+No unreleased changes.
+
 == {v2_0_0_beta}
 
 === Highlights
