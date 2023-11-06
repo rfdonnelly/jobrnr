@@ -122,6 +122,20 @@ describe Jobrnr::PlusOptionParser do
         assert_equal(exp, act)
       end
 
+      it "accepts gnu negation" do
+        exp = {
+          default_true: false,
+          default_inferred: false,
+          integer: 1,
+          string: "hello world",
+        }
+        act = @obj.parse(
+          @specs,
+          %w[+no-default-true],
+        )
+        assert_equal(exp, act)
+      end
+
       describe "+help" do
         it "general" do
           e = assert_raises(Jobrnr::HelpException) { @obj.parse(@specs, %w[+help]) }
@@ -129,10 +143,10 @@ describe Jobrnr::PlusOptionParser do
           assert_equal(Jobrnr::Util.strip_heredoc(<<-EOF).strip, e.message)
             OPTIONS
 
-              +default-true[=<value>]
+              +[no-]default-true
                 An option with a default true value. Default: true
 
-              +default-inferred[=<value>]
+              +[no-]default-inferred
                 An option with an inferred default value. Default: false
 
               +integer=<value>
@@ -180,10 +194,10 @@ describe Jobrnr::PlusOptionParser do
 
             OPTIONS
 
-              +default-true[=<value>]
+              +[no-]default-true
                 An option with a default true value. Default: true
 
-              +default-inferred[=<value>]
+              +[no-]default-inferred
                 An option with an inferred default value. Default: false
 
               +integer=<value>
@@ -212,10 +226,10 @@ describe Jobrnr::PlusOptionParser do
 
           OPTIONS
 
-            +default-true[=<value>]
+            +[no-]default-true
               An option with a default true value. Default: true
 
-            +default-inferred[=<value>]
+            +[no-]default-inferred
               An option with an inferred default value. Default: false
 
             +integer=<value>

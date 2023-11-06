@@ -40,14 +40,23 @@ module Jobrnr
       end
 
       def parse_value(value); end
+
+      def format_help
+        [
+          "  +#{name}=<value>",
+          "    #{description} Default: #{default}"
+        ].join("\n")
+      end
     end
 
     # An option that accepts true/false values
     class BooleanOption < PlusOption
       def parse_value(value)
         case value
-        when :noarg
+        when :implicit_true
           true
+        when :implicit_false
+          false
         when /^(true|t|yes|y|1)$/ # rubocop: disable Lint/DuplicateBranch
           true
         when /^(false|f|no|n|0)$/
@@ -58,14 +67,26 @@ module Jobrnr
                 "type for the '+#{name}' option"
         end
       end
+
+      def format_help
+        [
+          "  +[no-]#{name}",
+          "    #{description} Default: #{default}"
+        ].join("\n")
+      end
     end
 
     # An option that accepts string values
     class StringOption < PlusOption
       def parse_value(value)
-        if value == :noarg
+        if value == :implicit_true
           raise Jobrnr::ArgumentError,
                 "No argument given for '+#{name}' option"
+        end
+
+        if value == :implicit_false
+          raise Jobrnr::ArgumentError,
+                "Unrecognized option '+no-#{name}'"
         end
 
         value
@@ -75,9 +96,14 @@ module Jobrnr
     # An option that accepts Integer values
     class IntegerOption < PlusOption
       def parse_value(value)
-        if value == :noarg
+        if value == :implicit_true
           raise Jobrnr::ArgumentError,
                 "No argument given for '+#{name}' option"
+        end
+
+        if value == :implicit_false
+          raise Jobrnr::ArgumentError,
+                "Unrecognized option '+no-#{name}'"
         end
 
         begin
@@ -236,7 +262,7 @@ module Jobrnr
 
       lines << [
         "OPTIONS",
-        option_definitions.values.map { |option_definition| help_format_option(option_definition) },
+        option_definitions.values.map(&:format_help),
         "  +help\n    Show this help and exit."
       ]
 
@@ -247,17 +273,6 @@ module Jobrnr
       end
 
       lines.join("\n\n")
-    end
-
-    def help_format_option(option_definition)
-      [
-        "  +#{help_format_name(option_definition)}",
-        "    #{option_definition.description} Default: #{option_definition.default}"
-      ].join("\n")
-    end
-
-    def help_format_name(option_definition)
-      option_definition.name + (option_definition.is_a?(BooleanOption) ? "[=<value>]" : "=<value>")
     end
 
     def specs_to_defs(options_spec)
@@ -288,8 +303,10 @@ module Jobrnr
       plus_options.each_with_object({}) do |plus_option, plus_options_hash|
         if (md = plus_option.match(/^\+(.*?)=(.*)/))
           plus_options_hash[s_to_sym(md.captures.first)] = md.captures.last
+        elsif (md = plus_option.match(/^\+no-((\w|-)+)$/))
+          plus_options_hash[s_to_sym(md.captures.first)] = :implicit_false
         elsif (md = plus_option.match(/^\+((\w|-)+)$/))
-          plus_options_hash[s_to_sym(md.captures.first)] = :noarg
+          plus_options_hash[s_to_sym(md.captures.first)] = :implicit_true
         end
       end
     end

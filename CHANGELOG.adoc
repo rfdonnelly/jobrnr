@@ -167,6 +167,8 @@ Fourth Ctrl-C sends SIGKILL to active jobs.
 
 * Added `--dry-run` option
 
+* Added GNU style negation for boolean plus options (e.g. `+no-flag` is the same as `+flag=false`)
+
 === Fixed
 
 * Fixed typo of `--verbose` option
