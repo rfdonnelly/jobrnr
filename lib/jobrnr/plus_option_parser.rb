@@ -55,6 +55,8 @@ module Jobrnr
         case value
         when :implicit_true
           true
+        when :implicit_false
+          false
         when /^(true|t|yes|y|1)$/ # rubocop: disable Lint/DuplicateBranch
           true
         when /^(false|f|no|n|0)$/
@@ -68,7 +70,7 @@ module Jobrnr
 
       def format_help
         [
-          "  +#{name}[=<value>]",
+          "  +[no-]#{name}",
           "    #{description} Default: #{default}"
         ].join("\n")
       end
@@ -82,6 +84,11 @@ module Jobrnr
                 "No argument given for '+#{name}' option"
         end
 
+        if value == :implicit_false
+          raise Jobrnr::ArgumentError,
+                "Unrecognized option '+no-#{name}'"
+        end
+
         value
       end
     end
@@ -92,6 +99,11 @@ module Jobrnr
         if value == :implicit_true
           raise Jobrnr::ArgumentError,
                 "No argument given for '+#{name}' option"
+        end
+
+        if value == :implicit_false
+          raise Jobrnr::ArgumentError,
+                "Unrecognized option '+no-#{name}'"
         end
 
         begin
@@ -291,6 +303,8 @@ module Jobrnr
       plus_options.each_with_object({}) do |plus_option, plus_options_hash|
         if (md = plus_option.match(/^\+(.*?)=(.*)/))
           plus_options_hash[s_to_sym(md.captures.first)] = md.captures.last
+        elsif (md = plus_option.match(/^\+no-((\w|-)+)$/))
+          plus_options_hash[s_to_sym(md.captures.first)] = :implicit_false
         elsif (md = plus_option.match(/^\+((\w|-)+)$/))
           plus_options_hash[s_to_sym(md.captures.first)] = :implicit_true
         end
