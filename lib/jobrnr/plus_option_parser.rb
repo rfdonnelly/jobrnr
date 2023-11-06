@@ -53,7 +53,7 @@ module Jobrnr
     class BooleanOption < PlusOption
       def parse_value(value)
         case value
-        when :noarg
+        when :implicit_true
           true
         when /^(true|t|yes|y|1)$/ # rubocop: disable Lint/DuplicateBranch
           true
@@ -77,7 +77,7 @@ module Jobrnr
     # An option that accepts string values
     class StringOption < PlusOption
       def parse_value(value)
-        if value == :noarg
+        if value == :implicit_true
           raise Jobrnr::ArgumentError,
                 "No argument given for '+#{name}' option"
         end
@@ -89,7 +89,7 @@ module Jobrnr
     # An option that accepts Integer values
     class IntegerOption < PlusOption
       def parse_value(value)
-        if value == :noarg
+        if value == :implicit_true
           raise Jobrnr::ArgumentError,
                 "No argument given for '+#{name}' option"
         end
@@ -292,7 +292,7 @@ module Jobrnr
         if (md = plus_option.match(/^\+(.*?)=(.*)/))
           plus_options_hash[s_to_sym(md.captures.first)] = md.captures.last
         elsif (md = plus_option.match(/^\+((\w|-)+)$/))
-          plus_options_hash[s_to_sym(md.captures.first)] = :noarg
+          plus_options_hash[s_to_sym(md.captures.first)] = :implicit_true
         end
       end
     end
