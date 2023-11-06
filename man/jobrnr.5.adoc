@@ -1,6 +1,6 @@
 = jobrnr(5)
 Rob Donnelly
-:version: v2.0.0-beta
+:version: v2.0.0-beta.2
 :doctype: manpage
 :manmanual: Jobrnr Manual
 :mansource: Jobrnr {version}

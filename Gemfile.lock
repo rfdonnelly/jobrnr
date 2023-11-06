@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jobrnr (2.0.0.pre.beta)
+    jobrnr (2.0.0.pre.beta.2)
 
 GEM
   remote: https://rubygems.org/
