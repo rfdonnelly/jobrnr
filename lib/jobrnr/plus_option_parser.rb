@@ -40,6 +40,13 @@ module Jobrnr
       end
 
       def parse_value(value); end
+
+      def format_help
+        [
+          "  +#{name}=<value>",
+          "    #{description} Default: #{default}"
+        ].join("\n")
+      end
     end
 
     # An option that accepts true/false values
@@ -57,6 +64,13 @@ module Jobrnr
                 "Could not parse '#{value}' as Boolean " \
                 "type for the '+#{name}' option"
         end
+      end
+
+      def format_help
+        [
+          "  +#{name}[=<value>]",
+          "    #{description} Default: #{default}"
+        ].join("\n")
       end
     end
 
@@ -236,7 +250,7 @@ module Jobrnr
 
       lines << [
         "OPTIONS",
-        option_definitions.values.map { |option_definition| help_format_option(option_definition) },
+        option_definitions.values.map(&:format_help),
         "  +help\n    Show this help and exit."
       ]
 
@@ -247,17 +261,6 @@ module Jobrnr
       end
 
       lines.join("\n\n")
-    end
-
-    def help_format_option(option_definition)
-      [
-        "  +#{help_format_name(option_definition)}",
-        "    #{option_definition.description} Default: #{option_definition.default}"
-      ].join("\n")
-    end
-
-    def help_format_name(option_definition)
-      option_definition.name + (option_definition.is_a?(BooleanOption) ? "[=<value>]" : "=<value>")
     end
 
     def specs_to_defs(options_spec)
