@@ -31,7 +31,12 @@ module Jobrnr
       @options = options
       @pool = pool
       @slots = slots
-      @time_slice_interval = Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
+      @time_slice_interval =
+        if options.dry_run
+          0
+        else
+          Float(ENV.fetch("JOBRNR_TIME_SLICE_INTERVAL", DEFAULT_TIME_SLICE_INTERVAL))
+        end
       @instances = []
       @passed = []
       @failed = []
